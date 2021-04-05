@@ -1,0 +1,28 @@
+{
+  "cidhaApp": {
+    "processoConflito": {
+      "home": {
+        "title": "Processo Conflitos",
+        "createLabel": "Criar novo Processo Conflito",
+        "createOrEditLabel": "Criar ou editar Processo Conflito",
+        "notFound": "Nenhum Processo Conflito encontrado"
+      },
+      "created": "Um novo Processo Conflito foi criado com o identificador {{ param }}",
+      "updated": "Um Processo Conflito foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Processo Conflito foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Processo Conflito {{ id }}?"
+      },
+      "detail": {
+        "title": "Processo Conflito"
+      },
+      "inicioConflitoObservacoes": "Inicio Conflito Observacoes",
+      "historicoConlito": "Historico Conlito",
+      "nomeCasoComuidade": "Nome Caso Comuidade",
+      "consultaPrevia": "Consulta Previa",
+      "conflito": "Conflito",
+      "direito": "Direito",
+      "processo": "Processo"
+    }
+  }
+}

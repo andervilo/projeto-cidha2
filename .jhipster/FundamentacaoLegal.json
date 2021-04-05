@@ -1,0 +1,40 @@
+{
+  "name": "FundamentacaoLegal",
+  "fields": [
+    {
+      "fieldName": "fundamentacaoLegal",
+      "fieldType": "byte[]",
+      "fieldTypeBlobContent": "text"
+    },
+    {
+      "fieldName": "folhasFundamentacaoLegal",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "fundamentacaoLegalSugerida",
+      "fieldType": "byte[]",
+      "fieldTypeBlobContent": "text"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "many-to-many",
+      "otherEntityName": "problemaJuridico",
+      "otherEntityRelationshipName": "fundamentacaoLegal",
+      "relationshipName": "problemaJuridico",
+      "otherEntityField": "id",
+      "ownerSide": false
+    }
+  ],
+  "changelogDate": "20210405143817",
+  "entityTableName": "fundamentacao_legal",
+  "dto": "no",
+  "pagination": "pagination",
+  "service": "serviceClass",
+  "jpaMetamodelFiltering": true,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": "*"
+}

@@ -1,0 +1,23 @@
+{
+  "cidhaApp": {
+    "embargoRecursoEspecial": {
+      "home": {
+        "title": "Embargo Recurso Especials",
+        "createLabel": "Criar novo Embargo Recurso Especial",
+        "createOrEditLabel": "Criar ou editar Embargo Recurso Especial",
+        "notFound": "Nenhum Embargo Recurso Especial encontrado"
+      },
+      "created": "Um novo Embargo Recurso Especial foi criado com o identificador {{ param }}",
+      "updated": "Um Embargo Recurso Especial foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Embargo Recurso Especial foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Embargo Recurso Especial {{ id }}?"
+      },
+      "detail": {
+        "title": "Embargo Recurso Especial"
+      },
+      "descricao": "Descricao",
+      "processo": "Processo"
+    }
+  }
+}

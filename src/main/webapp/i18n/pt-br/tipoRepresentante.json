@@ -1,0 +1,22 @@
+{
+  "cidhaApp": {
+    "tipoRepresentante": {
+      "home": {
+        "title": "Tipo Representantes",
+        "createLabel": "Criar novo Tipo Representante",
+        "createOrEditLabel": "Criar ou editar Tipo Representante",
+        "notFound": "Nenhum Tipo Representante encontrado"
+      },
+      "created": "Um novo Tipo Representante foi criado com o identificador {{ param }}",
+      "updated": "Um Tipo Representante foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Tipo Representante foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Tipo Representante {{ id }}?"
+      },
+      "detail": {
+        "title": "Tipo Representante"
+      },
+      "descricao": "Descricao"
+    }
+  }
+}

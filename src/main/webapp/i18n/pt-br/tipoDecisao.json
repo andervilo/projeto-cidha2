@@ -1,0 +1,22 @@
+{
+  "cidhaApp": {
+    "tipoDecisao": {
+      "home": {
+        "title": "Tipo Decisaos",
+        "createLabel": "Criar novo Tipo Decisao",
+        "createOrEditLabel": "Criar ou editar Tipo Decisao",
+        "notFound": "Nenhum Tipo Decisao encontrado"
+      },
+      "created": "Um novo Tipo Decisao foi criado com o identificador {{ param }}",
+      "updated": "Um Tipo Decisao foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Tipo Decisao foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Tipo Decisao {{ id }}?"
+      },
+      "detail": {
+        "title": "Tipo Decisao"
+      },
+      "descricao": "Descricao"
+    }
+  }
+}

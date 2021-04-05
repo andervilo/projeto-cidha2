@@ -1,0 +1,23 @@
+{
+  "cidhaApp": {
+    "conflito": {
+      "home": {
+        "title": "Conflitos",
+        "createLabel": "Criar novo Conflito",
+        "createOrEditLabel": "Criar ou editar Conflito",
+        "notFound": "Nenhum Conflito encontrado"
+      },
+      "created": "Um novo Conflito foi criado com o identificador {{ param }}",
+      "updated": "Um Conflito foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Conflito foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Conflito {{ id }}?"
+      },
+      "detail": {
+        "title": "Conflito"
+      },
+      "descricao": "Descricao",
+      "processoConflito": "Processo Conflito"
+    }
+  }
+}

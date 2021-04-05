@@ -1,0 +1,23 @@
+{
+  "cidhaApp": {
+    "direito": {
+      "home": {
+        "title": "Direitos",
+        "createLabel": "Criar novo Direito",
+        "createOrEditLabel": "Criar ou editar Direito",
+        "notFound": "Nenhum Direito encontrado"
+      },
+      "created": "Um novo Direito foi criado com o identificador {{ param }}",
+      "updated": "Um Direito foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Direito foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Direito {{ id }}?"
+      },
+      "detail": {
+        "title": "Direito"
+      },
+      "descricao": "Descricao",
+      "processoConflito": "Processo Conflito"
+    }
+  }
+}

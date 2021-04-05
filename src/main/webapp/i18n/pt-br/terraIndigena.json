@@ -1,0 +1,24 @@
+{
+  "cidhaApp": {
+    "terraIndigena": {
+      "home": {
+        "title": "Terra Indigenas",
+        "createLabel": "Criar novo Terra Indigena",
+        "createOrEditLabel": "Criar ou editar Terra Indigena",
+        "notFound": "Nenhum Terra Indigena encontrado"
+      },
+      "created": "Um novo Terra Indigena foi criado com o identificador {{ param }}",
+      "updated": "Um Terra Indigena foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Terra Indigena foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Terra Indigena {{ id }}?"
+      },
+      "detail": {
+        "title": "Terra Indigena"
+      },
+      "descricao": "Descricao",
+      "etnia": "Etnia",
+      "processo": "Processo"
+    }
+  }
+}

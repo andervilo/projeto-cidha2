@@ -1,0 +1,23 @@
+{
+  "cidhaApp": {
+    "etniaIndigena": {
+      "home": {
+        "title": "Etnia Indigenas",
+        "createLabel": "Criar novo Etnia Indigena",
+        "createOrEditLabel": "Criar ou editar Etnia Indigena",
+        "notFound": "Nenhum Etnia Indigena encontrado"
+      },
+      "created": "Um novo Etnia Indigena foi criado com o identificador {{ param }}",
+      "updated": "Um Etnia Indigena foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Etnia Indigena foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Etnia Indigena {{ id }}?"
+      },
+      "detail": {
+        "title": "Etnia Indigena"
+      },
+      "nome": "Nome",
+      "terraIndigena": "Terra Indigena"
+    }
+  }
+}

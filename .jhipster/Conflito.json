@@ -1,0 +1,30 @@
+{
+  "name": "Conflito",
+  "fields": [
+    {
+      "fieldName": "descricao",
+      "fieldType": "byte[]",
+      "fieldTypeBlobContent": "text"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "processoConflito",
+      "otherEntityRelationshipName": "conflito",
+      "relationshipName": "processoConflito",
+      "otherEntityField": "id"
+    }
+  ],
+  "changelogDate": "20210405144917",
+  "entityTableName": "conflito",
+  "dto": "no",
+  "pagination": "pagination",
+  "service": "serviceClass",
+  "jpaMetamodelFiltering": true,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": "*"
+}

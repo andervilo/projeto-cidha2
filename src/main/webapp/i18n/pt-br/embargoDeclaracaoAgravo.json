@@ -1,0 +1,23 @@
+{
+  "cidhaApp": {
+    "embargoDeclaracaoAgravo": {
+      "home": {
+        "title": "Embargo Declaracao Agravos",
+        "createLabel": "Criar novo Embargo Declaracao Agravo",
+        "createOrEditLabel": "Criar ou editar Embargo Declaracao Agravo",
+        "notFound": "Nenhum Embargo Declaracao Agravo encontrado"
+      },
+      "created": "Um novo Embargo Declaracao Agravo foi criado com o identificador {{ param }}",
+      "updated": "Um Embargo Declaracao Agravo foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Embargo Declaracao Agravo foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Embargo Declaracao Agravo {{ id }}?"
+      },
+      "detail": {
+        "title": "Embargo Declaracao Agravo"
+      },
+      "descricao": "Descricao",
+      "processo": "Processo"
+    }
+  }
+}

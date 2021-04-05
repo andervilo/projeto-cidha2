@@ -1,0 +1,23 @@
+{
+  "cidhaApp": {
+    "unidadeConservacao": {
+      "home": {
+        "title": "Unidade Conservacaos",
+        "createLabel": "Criar novo Unidade Conservacao",
+        "createOrEditLabel": "Criar ou editar Unidade Conservacao",
+        "notFound": "Nenhum Unidade Conservacao encontrado"
+      },
+      "created": "Um novo Unidade Conservacao foi criado com o identificador {{ param }}",
+      "updated": "Um Unidade Conservacao foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Unidade Conservacao foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Unidade Conservacao {{ id }}?"
+      },
+      "detail": {
+        "title": "Unidade Conservacao"
+      },
+      "descricao": "Descricao",
+      "processo": "Processo"
+    }
+  }
+}

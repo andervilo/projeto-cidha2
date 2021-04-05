@@ -1,0 +1,40 @@
+{
+  "name": "InstrumentoInternacional",
+  "fields": [
+    {
+      "fieldName": "instrumentoInternacionalCitadoDescricao",
+      "fieldType": "byte[]",
+      "fieldTypeBlobContent": "text"
+    },
+    {
+      "fieldName": "folhasInstrumentoInternacional",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "instrumentoInternacionalSugerido",
+      "fieldType": "byte[]",
+      "fieldTypeBlobContent": "text"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "many-to-many",
+      "otherEntityName": "problemaJuridico",
+      "otherEntityRelationshipName": "instrumentoInternacional",
+      "relationshipName": "problemaJuridico",
+      "otherEntityField": "id",
+      "ownerSide": false
+    }
+  ],
+  "changelogDate": "20210405143917",
+  "entityTableName": "instrumento_internacional",
+  "dto": "no",
+  "pagination": "pagination",
+  "service": "serviceClass",
+  "jpaMetamodelFiltering": true,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": "*"
+}

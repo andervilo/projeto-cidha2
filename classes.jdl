@@ -1,0 +1,224 @@
+//jhipster import-jdl ./jdl/system.jdl
+entity Comarca
+ {
+    nome String
+    codigoCnj BigDecimal
+}
+
+entity Quilombo
+ {
+    nome String
+}
+
+entity Processo
+ {
+    oficio String,
+    assunto TextBlob,
+    linkUnico String,
+    linkTrf String,
+    subsecaoJudiciaria String,
+    turmaTrf1 String,
+    numeroProcessoAdministrativo String,
+    numeroProcessoJudicialPrimeiraInstancia String,
+    numeroProcessoJudicialPrimeiraInstanciaLink String,
+    numeroProcessoJudicialPrimeiraInstanciaObservacoes TextBlob,
+    parecer Boolean
+}
+
+entity ConcessaoLiminar
+ {
+    descricao String
+}
+
+entity TipoEmpreendimento {
+	descricao String
+}
+
+entity TipoDecisao {
+	descricao String
+}
+
+entity EmbargoRespRe {
+	descricao String
+}
+
+entity ConcessaoLiminarCassada {
+	descricao String
+}
+
+entity EmbargoDeclaracao {
+	descricao String
+}
+
+entity EmbargoDeclaracaoAgravo {
+	descricao String
+}
+
+entity Recurso {
+	observacoes TextBlob
+}
+
+entity TipoRecurso {
+	descricao String
+}
+
+entity OpcaoRecurso {
+	descricao String
+}
+
+entity EnvolvidosConflitoLitigio {
+	numeroIndividuos Integer
+	fonteInformacaoQtde TextBlob
+    observacoes TextBlob
+}
+
+entity TipoData {
+	descricao String
+}
+
+entity Data {
+	data LocalDate
+}
+
+entity FundamentacaoDoutrinaria {
+	fundamentacaoDoutrinariaCitada TextBlob
+	folhasFundamentacaoDoutrinaria String
+    fundamentacaoDoutrinariaSugerida TextBlob
+}
+
+entity Jurisprudencia {
+	jurisprudenciaCitadaDescricao TextBlob
+	folhasJurisprudenciaCitada String
+    jurisprudenciaSugerida TextBlob
+}
+
+entity FundamentacaoLegal {
+	fundamentacaoLegal TextBlob
+	folhasFundamentacaoLegal String
+    fundamentacaoLegalSugerida TextBlob
+}
+
+entity InstrumentoInternacional {
+	instrumentoInternacionalCitadoDescricao TextBlob
+	folhasInstrumentoInternacional String
+    instrumentoInternacionalSugerido TextBlob
+}
+
+entity ProblemaJuridico {
+	prolemaJuridicoRespondido TextBlob
+	folhasProblemaJuridico String
+}
+
+entity Municipio{
+    amazoniaLegal Boolean
+    codigoIbge Integer
+    estado String
+    nome String
+}
+
+entity Territorio{
+    nome String
+}
+
+entity EmbargoRecursoEspecial{
+    descricao String
+}
+
+entity AtividadeExploracaoIlegal{
+    descricao String
+}
+
+entity UnidadeConservacao{
+    descricao String
+}
+
+entity TerraIndigena{
+    descricao TextBlob
+}
+
+entity EtniaIndigena{
+    nome String
+}
+
+entity Direito{
+    descricao TextBlob
+}
+
+entity Conflito{
+    descricao TextBlob
+}
+
+entity ProcessoConflito{
+    inicioConflitoObservacoes TextBlob
+    historicoConlito TextBlob
+    nomeCasoComuidade String
+    consultaPrevia Boolean
+}
+
+entity TipoRepresentante{
+    descricao String
+}
+
+entity RepresentanteLegal{
+    nome String
+}
+
+entity ParteInteresssada{
+    nome String
+    classificacao String
+}
+
+entity Relator{
+    nome String
+}
+
+relationship OneToOne {
+    Recurso{tipoRecurso(descricao)} to TipoRecurso
+    Recurso{opcaoRecurso(descricao)} to OpcaoRecurso
+    Data{tipoData(descricao)} to TipoData
+}
+
+relationship ManyToOne {
+    Processo{tipoDecisao(descricao)} to TipoDecisao
+    Processo{tipoEmpreendimento(descricao)} to TipoEmpreendimento
+    Data{processo(oficio)} to Processo
+    Recurso{processo(oficio)} to Processo
+    RepresentanteLegal{TipoRepresentante(descricao)} to TipoRepresentante
+}
+
+relationship OneToMany {
+	Processo{concessaoLiminar} to ConcessaoLiminar
+    Processo{concessaoLiminarCassada} to ConcessaoLiminarCassada
+    Processo{embargoRespRe(descricao)} to EmbargoRespRe
+    Processo{embargoDeclaracaoAgravo(descricao)} to EmbargoDeclaracaoAgravo
+    Processo{embargoDeclaracao(descricao)} to EmbargoDeclaracao
+    Processo{embargoRecursoEspecial(descricao)} to EmbargoRecursoEspecial
+    ProcessoConflito{conflito(descricao)} to Conflito
+}
+
+relationship ManyToMany {
+  Processo{comarca(nome)} to Comarca{processo(oficio)}
+  Processo{quilombo(nome)} to Quilombo{processo(oficio)}
+  Processo{municipio(nome)} to Municipio{processo(oficio)}
+  Processo{territorio(nome)} to Territorio{processo(oficio)}
+  Processo{atividadeExploracaoIlegal(descricao)} to AtividadeExploracaoIlegal{processo(oficio)}
+  Processo{unidadeConservacao(descricao)} to UnidadeConservacao{processo(oficio)}
+  Processo{envolvidosConflitoLitigio(id)} to EnvolvidosConflitoLitigio{processo(oficio)}
+  ProblemaJuridico{fundamentacaoDoutrinaria(fundamentacaoDoutrinariaCitada)} to FundamentacaoDoutrinaria{problemaJuridico}
+  ProblemaJuridico{jurisprudencia(jurisprudenciaCitadaDescricao)} to Jurisprudencia{problemaJuridico}
+  ProblemaJuridico{fundamentacaoLegal(fundamentacaoLegal)} to FundamentacaoLegal{problemaJuridico}
+  ProblemaJuridico{instrumentoInternacional(instrumentoInternacionalCitadoDescricao)} to InstrumentoInternacional{problemaJuridico}
+  ProblemaJuridico{processo(oficio)} to Processo{problemaJuridico}
+  TerraIndigena{etnia(nome)} to EtniaIndigena{terraIndigena(descricao)}
+  Processo{terraIndigena(descricao)} to TerraIndigena{processo(oficio)}
+  ProcessoConflito{direito(descricao)} to Direito{processoConflito(nomeCasoComuidade)}
+  Processo{processoConflito(nomeCasoComuidade)} to ProcessoConflito{processo(oficio)}
+  ParteInteresssada{representanteLegal(nome)} to RepresentanteLegal{processoConflito(nomeCasoComuidade)}
+  Processo{parteInteresssada(nome)} to ParteInteresssada{processo(oficio)}
+  Processo{relator(nome)} to Relator{processo(oficio)}
+}
+
+paginate * with pagination
+service * with serviceClass
+filter *
+

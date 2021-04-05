@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
+    <!--
+        Added the constraints for entity ConcessaoLiminarCassada.
+    -->
+    <changeSet id="20210405142717-2" author="jhipster">
+        
+        <addForeignKeyConstraint baseColumnNames="processo_id"
+                                 baseTableName="concessao_liminar_cassada"
+                                 constraintName="fk_concessao_liminar_cassada_processo_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="processo"/>
+
+    </changeSet>
+</databaseChangeLog>

@@ -1,0 +1,28 @@
+{
+  "cidhaApp": {
+    "problemaJuridico": {
+      "home": {
+        "title": "Problema Juridicos",
+        "createLabel": "Criar novo Problema Juridico",
+        "createOrEditLabel": "Criar ou editar Problema Juridico",
+        "notFound": "Nenhum Problema Juridico encontrado"
+      },
+      "created": "Um novo Problema Juridico foi criado com o identificador {{ param }}",
+      "updated": "Um Problema Juridico foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Problema Juridico foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Problema Juridico {{ id }}?"
+      },
+      "detail": {
+        "title": "Problema Juridico"
+      },
+      "prolemaJuridicoRespondido": "Prolema Juridico Respondido",
+      "folhasProblemaJuridico": "Folhas Problema Juridico",
+      "fundamentacaoDoutrinaria": "Fundamentacao Doutrinaria",
+      "jurisprudencia": "Jurisprudencia",
+      "fundamentacaoLegal": "Fundamentacao Legal",
+      "instrumentoInternacional": "Instrumento Internacional",
+      "processo": "Processo"
+    }
+  }
+}

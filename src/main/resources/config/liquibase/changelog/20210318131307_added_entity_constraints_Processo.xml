@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
+    <!--
+        Added the constraints for entity Processo.
+    -->
+    <changeSet id="20210318131307-2" author="jhipster">
+        
+        <addForeignKeyConstraint baseColumnNames="concessao_liminar_id"
+                                 baseTableName="processo"
+                                 constraintName="fk_processo_concessao_liminar_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="concessao_liminar"/>
+
+        <addForeignKeyConstraint baseColumnNames="processo_id"
+                                 baseTableName="processo_comarca"
+                                 constraintName="fk_processo_comarca_processo_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="processo"/>
+
+        <addForeignKeyConstraint baseColumnNames="comarca_id"
+                                 baseTableName="processo_comarca"
+                                 constraintName="fk_processo_comarca_comarca_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="comarca"/>
+        
+        <addForeignKeyConstraint baseColumnNames="processo_id"
+                                 baseTableName="processo_quilombo"
+                                 constraintName="fk_processo_quilombo_processo_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="processo"/>
+
+        <addForeignKeyConstraint baseColumnNames="quilombo_id"
+                                 baseTableName="processo_quilombo"
+                                 constraintName="fk_processo_quilombo_quilombo_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="quilombo"/>
+        
+        <addForeignKeyConstraint baseColumnNames="tipo_decisao_id"
+                                 baseTableName="processo"
+                                 constraintName="fk_processo_tipo_decisao_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="tipo_decisao"/>
+
+        <addForeignKeyConstraint baseColumnNames="concessao_liminar_cassada_id"
+                                 baseTableName="processo"
+                                 constraintName="fk_processo_concessao_liminar_cassada_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="concessao_liminar_cassada"/>
+
+        <addForeignKeyConstraint baseColumnNames="embargo_recurso_especial_id"
+                                 baseTableName="processo"
+                                 constraintName="fk_processo_embargo_recurso_especial_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="embargo_recurso_especial"/>
+
+    </changeSet>
+</databaseChangeLog>
