@@ -23,10 +23,9 @@ const Filter = ({
         }
 
         useEffect(() => {
-        //   return () => {
+          return () => {
             setSearch('');
-            console.log(filter+":"+isForReset);
-        //   };
+          };
         }, [isForReset])
 
         
