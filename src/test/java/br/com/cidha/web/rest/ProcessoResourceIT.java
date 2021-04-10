@@ -94,6 +94,9 @@ public class ProcessoResourceIT {
     private static final Boolean DEFAULT_PARECER = false;
     private static final Boolean UPDATED_PARECER = true;
 
+    private static final String DEFAULT_APELACAO = "AAAAAAAAAA";
+    private static final String UPDATED_APELACAO = "BBBBBBBBBB";
+
     @Autowired
     private ProcessoRepository processoRepository;
 
@@ -135,7 +138,8 @@ public class ProcessoResourceIT {
             .numeroProcessoJudicialPrimeiraInstancia(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA)
             .numeroProcessoJudicialPrimeiraInstanciaLink(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK)
             .numeroProcessoJudicialPrimeiraInstanciaObservacoes(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_OBSERVACOES)
-            .parecer(DEFAULT_PARECER);
+            .parecer(DEFAULT_PARECER)
+            .apelacao(DEFAULT_APELACAO);
         return processo;
     }
     /**
@@ -156,7 +160,8 @@ public class ProcessoResourceIT {
             .numeroProcessoJudicialPrimeiraInstancia(UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA)
             .numeroProcessoJudicialPrimeiraInstanciaLink(UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK)
             .numeroProcessoJudicialPrimeiraInstanciaObservacoes(UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_OBSERVACOES)
-            .parecer(UPDATED_PARECER);
+            .parecer(UPDATED_PARECER)
+            .apelacao(UPDATED_APELACAO);
         return processo;
     }
 
@@ -190,6 +195,7 @@ public class ProcessoResourceIT {
         assertThat(testProcesso.getNumeroProcessoJudicialPrimeiraInstanciaLink()).isEqualTo(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK);
         assertThat(testProcesso.getNumeroProcessoJudicialPrimeiraInstanciaObservacoes()).isEqualTo(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_OBSERVACOES);
         assertThat(testProcesso.isParecer()).isEqualTo(DEFAULT_PARECER);
+        assertThat(testProcesso.getApelacao()).isEqualTo(DEFAULT_APELACAO);
     }
 
     @Test
@@ -233,7 +239,8 @@ public class ProcessoResourceIT {
             .andExpect(jsonPath("$.[*].numeroProcessoJudicialPrimeiraInstancia").value(hasItem(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA)))
             .andExpect(jsonPath("$.[*].numeroProcessoJudicialPrimeiraInstanciaLink").value(hasItem(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK)))
             .andExpect(jsonPath("$.[*].numeroProcessoJudicialPrimeiraInstanciaObservacoes").value(hasItem(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_OBSERVACOES.toString())))
-            .andExpect(jsonPath("$.[*].parecer").value(hasItem(DEFAULT_PARECER.booleanValue())));
+            .andExpect(jsonPath("$.[*].parecer").value(hasItem(DEFAULT_PARECER.booleanValue())))
+            .andExpect(jsonPath("$.[*].apelacao").value(hasItem(DEFAULT_APELACAO)));
     }
     
     @SuppressWarnings({"unchecked"})
@@ -277,7 +284,8 @@ public class ProcessoResourceIT {
             .andExpect(jsonPath("$.numeroProcessoJudicialPrimeiraInstancia").value(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA))
             .andExpect(jsonPath("$.numeroProcessoJudicialPrimeiraInstanciaLink").value(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK))
             .andExpect(jsonPath("$.numeroProcessoJudicialPrimeiraInstanciaObservacoes").value(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_OBSERVACOES.toString()))
-            .andExpect(jsonPath("$.parecer").value(DEFAULT_PARECER.booleanValue()));
+            .andExpect(jsonPath("$.parecer").value(DEFAULT_PARECER.booleanValue()))
+            .andExpect(jsonPath("$.apelacao").value(DEFAULT_APELACAO));
     }
 
 
@@ -978,6 +986,84 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
+    public void getAllProcessosByApelacaoIsEqualToSomething() throws Exception {
+        // Initialize the database
+        processoRepository.saveAndFlush(processo);
+
+        // Get all the processoList where apelacao equals to DEFAULT_APELACAO
+        defaultProcessoShouldBeFound("apelacao.equals=" + DEFAULT_APELACAO);
+
+        // Get all the processoList where apelacao equals to UPDATED_APELACAO
+        defaultProcessoShouldNotBeFound("apelacao.equals=" + UPDATED_APELACAO);
+    }
+
+    @Test
+    @Transactional
+    public void getAllProcessosByApelacaoIsNotEqualToSomething() throws Exception {
+        // Initialize the database
+        processoRepository.saveAndFlush(processo);
+
+        // Get all the processoList where apelacao not equals to DEFAULT_APELACAO
+        defaultProcessoShouldNotBeFound("apelacao.notEquals=" + DEFAULT_APELACAO);
+
+        // Get all the processoList where apelacao not equals to UPDATED_APELACAO
+        defaultProcessoShouldBeFound("apelacao.notEquals=" + UPDATED_APELACAO);
+    }
+
+    @Test
+    @Transactional
+    public void getAllProcessosByApelacaoIsInShouldWork() throws Exception {
+        // Initialize the database
+        processoRepository.saveAndFlush(processo);
+
+        // Get all the processoList where apelacao in DEFAULT_APELACAO or UPDATED_APELACAO
+        defaultProcessoShouldBeFound("apelacao.in=" + DEFAULT_APELACAO + "," + UPDATED_APELACAO);
+
+        // Get all the processoList where apelacao equals to UPDATED_APELACAO
+        defaultProcessoShouldNotBeFound("apelacao.in=" + UPDATED_APELACAO);
+    }
+
+    @Test
+    @Transactional
+    public void getAllProcessosByApelacaoIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        processoRepository.saveAndFlush(processo);
+
+        // Get all the processoList where apelacao is not null
+        defaultProcessoShouldBeFound("apelacao.specified=true");
+
+        // Get all the processoList where apelacao is null
+        defaultProcessoShouldNotBeFound("apelacao.specified=false");
+    }
+                @Test
+    @Transactional
+    public void getAllProcessosByApelacaoContainsSomething() throws Exception {
+        // Initialize the database
+        processoRepository.saveAndFlush(processo);
+
+        // Get all the processoList where apelacao contains DEFAULT_APELACAO
+        defaultProcessoShouldBeFound("apelacao.contains=" + DEFAULT_APELACAO);
+
+        // Get all the processoList where apelacao contains UPDATED_APELACAO
+        defaultProcessoShouldNotBeFound("apelacao.contains=" + UPDATED_APELACAO);
+    }
+
+    @Test
+    @Transactional
+    public void getAllProcessosByApelacaoNotContainsSomething() throws Exception {
+        // Initialize the database
+        processoRepository.saveAndFlush(processo);
+
+        // Get all the processoList where apelacao does not contain DEFAULT_APELACAO
+        defaultProcessoShouldNotBeFound("apelacao.doesNotContain=" + DEFAULT_APELACAO);
+
+        // Get all the processoList where apelacao does not contain UPDATED_APELACAO
+        defaultProcessoShouldBeFound("apelacao.doesNotContain=" + UPDATED_APELACAO);
+    }
+
+
+    @Test
+    @Transactional
     public void getAllProcessosByConcessaoLiminarIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
@@ -1393,7 +1479,8 @@ public class ProcessoResourceIT {
             .andExpect(jsonPath("$.[*].numeroProcessoJudicialPrimeiraInstancia").value(hasItem(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA)))
             .andExpect(jsonPath("$.[*].numeroProcessoJudicialPrimeiraInstanciaLink").value(hasItem(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK)))
             .andExpect(jsonPath("$.[*].numeroProcessoJudicialPrimeiraInstanciaObservacoes").value(hasItem(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_OBSERVACOES.toString())))
-            .andExpect(jsonPath("$.[*].parecer").value(hasItem(DEFAULT_PARECER.booleanValue())));
+            .andExpect(jsonPath("$.[*].parecer").value(hasItem(DEFAULT_PARECER.booleanValue())))
+            .andExpect(jsonPath("$.[*].apelacao").value(hasItem(DEFAULT_APELACAO)));
 
         // Check, that the count call also returns 1
         restProcessoMockMvc.perform(get("/api/processos/count?sort=id,desc&" + filter))
@@ -1450,7 +1537,8 @@ public class ProcessoResourceIT {
             .numeroProcessoJudicialPrimeiraInstancia(UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA)
             .numeroProcessoJudicialPrimeiraInstanciaLink(UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK)
             .numeroProcessoJudicialPrimeiraInstanciaObservacoes(UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_OBSERVACOES)
-            .parecer(UPDATED_PARECER);
+            .parecer(UPDATED_PARECER)
+            .apelacao(UPDATED_APELACAO);
 
         restProcessoMockMvc.perform(put("/api/processos")
             .contentType(MediaType.APPLICATION_JSON)
@@ -1472,6 +1560,7 @@ public class ProcessoResourceIT {
         assertThat(testProcesso.getNumeroProcessoJudicialPrimeiraInstanciaLink()).isEqualTo(UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK);
         assertThat(testProcesso.getNumeroProcessoJudicialPrimeiraInstanciaObservacoes()).isEqualTo(UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_OBSERVACOES);
         assertThat(testProcesso.isParecer()).isEqualTo(UPDATED_PARECER);
+        assertThat(testProcesso.getApelacao()).isEqualTo(UPDATED_APELACAO);
     }
 
     @Test

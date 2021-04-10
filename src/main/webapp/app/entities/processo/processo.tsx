@@ -127,6 +127,9 @@ export const Processo = (props: IProcessoProps) => {
                 <th className="hand" onClick={sort('parecer')}>
                   <Translate contentKey="cidhaApp.processo.parecer">Parecer</Translate> <FontAwesomeIcon icon="sort" />
                 </th>
+                <th className="hand" onClick={sort('apelacao')}>
+                  <Translate contentKey="cidhaApp.processo.apelacao">Apelacao</Translate> <FontAwesomeIcon icon="sort" />
+                </th>
                 <th>
                   <Translate contentKey="cidhaApp.processo.tipoDecisao">Tipo Decisao</Translate> <FontAwesomeIcon icon="sort" />
                 </th>
@@ -156,6 +159,7 @@ export const Processo = (props: IProcessoProps) => {
                   <td>{processo.numeroProcessoJudicialPrimeiraInstanciaLink}</td>
                   <td>{processo.numeroProcessoJudicialPrimeiraInstanciaObservacoes}</td>
                   <td>{processo.parecer ? 'true' : 'false'}</td>
+                  <td>{processo.apelacao}</td>
                   <td>
                     {processo.tipoDecisao ? (
                       <Link to={`tipo-decisao/${processo.tipoDecisao.id}`}>{processo.tipoDecisao.descricao}</Link>

@@ -48,6 +48,9 @@
             <column name="parecer" type="boolean">
                 <constraints nullable="true" />
             </column>
+            <column name="apelacao" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
             <column name="tipo_decisao_id" type="bigint">
                 <constraints nullable="true" />
             </column>
@@ -209,6 +212,7 @@
             <column name="numero_processo_judicial_primeira_instancia_link" type="string"/>
             <column name="numero_processo_judicial_primeira_instancia_observacoes" type="clob"/>
             <column name="parecer" type="boolean"/>
+            <column name="apelacao" type="string"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>

@@ -112,6 +112,9 @@ public class ProcessoQueryService extends QueryService<Processo> {
             if (criteria.getParecer() != null) {
                 specification = specification.and(buildSpecification(criteria.getParecer(), Processo_.parecer));
             }
+            if (criteria.getApelacao() != null) {
+                specification = specification.and(buildStringSpecification(criteria.getApelacao(), Processo_.apelacao));
+            }
             if (criteria.getConcessaoLiminarId() != null) {
                 specification = specification.and(buildSpecification(criteria.getConcessaoLiminarId(),
                     root -> root.join(Processo_.concessaoLiminars, JoinType.LEFT).get(ConcessaoLiminar_.id)));

@@ -32,6 +32,7 @@ export interface IProcesso {
   numeroProcessoJudicialPrimeiraInstanciaLink?: string;
   numeroProcessoJudicialPrimeiraInstanciaObservacoes?: any;
   parecer?: boolean;
+  apelacao?: string;
   concessaoLiminars?: IConcessaoLiminar[];
   concessaoLiminarCassadas?: IConcessaoLiminarCassada[];
   embargoRespRes?: IEmbargoRespRe[];

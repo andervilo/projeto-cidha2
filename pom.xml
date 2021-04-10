@@ -321,6 +321,10 @@
             <artifactId>spring-cloud-heroku-connector</artifactId>
         </dependency>
         <!-- jhipster-needle-maven-add-dependency -->
+        <dependency>
+        	<groupId>org.springframework.boot</groupId>
+        	<artifactId>spring-boot-devtools</artifactId>
+        </dependency>
     </dependencies>
 
     <build>
@@ -630,10 +634,10 @@
                         <changeLogFile>${project.basedir}/src/main/resources/config/liquibase/master.xml</changeLogFile>
                         <diffChangeLogFile>${project.basedir}/src/main/resources/config/liquibase/changelog/${maven.build.timestamp}_changelog.xml</diffChangeLogFile>
                         <driver>org.postgresql.Driver</driver>
-                        <url>jdbc:postgresql://ec2-3-234-85-177.compute-1.amazonaws.com:5432/d940nr7d8h801q</url>
+                        <url>jdbc:postgresql://ec2-18-214-140-149.compute-1.amazonaws.com/dkuevdvbt5mtj</url>
                         <defaultSchemaName></defaultSchemaName>
-                        <username>snmvlaicpxciqd</username>
-                        <password>3a8afa2787d242adf9a84b7da7668828302f34a9bc14f06a060fa23266ac5e26</password>
+                        <username>dvxguxetiwivzj</username>
+                        <password>ea5a70f20630a5388e9c04c11e149a1777cdad131d98916c8fb395df79385d69</password>
                         <referenceUrl>hibernate:spring:br.com.cidha.domain?dialect=io.github.jhipster.domain.util.FixedPostgreSQL10Dialect&amp;hibernate.physical_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy&amp;hibernate.implicit_naming_strategy=org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy</referenceUrl>
                         <verbose>true</verbose>
                         <logging>debug</logging>

@@ -1,4 +1,4 @@
-//jhipster import-jdl ./jdl/system.jdl
+//jhipster import-jdl system.jdl
 entity Comarca
  {
     nome String

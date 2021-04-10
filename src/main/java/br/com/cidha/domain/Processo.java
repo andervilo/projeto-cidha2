@@ -64,6 +64,9 @@ public class Processo implements Serializable {
     @Column(name = "parecer")
     private Boolean parecer;
 
+    @Column(name = "apelacao")
+    private String apelacao;
+
     @OneToMany(mappedBy = "processo")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     private Set<ConcessaoLiminar> concessaoLiminars = new HashSet<>();
@@ -328,6 +331,19 @@ public class Processo implements Serializable {
 
     public void setParecer(Boolean parecer) {
         this.parecer = parecer;
+    }
+
+    public String getApelacao() {
+        return apelacao;
+    }
+
+    public Processo apelacao(String apelacao) {
+        this.apelacao = apelacao;
+        return this;
+    }
+
+    public void setApelacao(String apelacao) {
+        this.apelacao = apelacao;
     }
 
     public Set<ConcessaoLiminar> getConcessaoLiminars() {
@@ -839,6 +855,7 @@ public class Processo implements Serializable {
             ", numeroProcessoJudicialPrimeiraInstanciaLink='" + getNumeroProcessoJudicialPrimeiraInstanciaLink() + "'" +
             ", numeroProcessoJudicialPrimeiraInstanciaObservacoes='" + getNumeroProcessoJudicialPrimeiraInstanciaObservacoes() + "'" +
             ", parecer='" + isParecer() + "'" +
+            ", apelacao='" + getApelacao() + "'" +
             "}";
     }
 }

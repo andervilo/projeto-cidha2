@@ -98,6 +98,12 @@ export const ProcessoDetail = (props: IProcessoDetailProps) => {
           </dt>
           <dd>{processoEntity.parecer ? 'true' : 'false'}</dd>
           <dt>
+            <span id="apelacao">
+              <Translate contentKey="cidhaApp.processo.apelacao">Apelacao</Translate>
+            </span>
+          </dt>
+          <dd>{processoEntity.apelacao}</dd>
+          <dt>
             <Translate contentKey="cidhaApp.processo.tipoDecisao">Tipo Decisao</Translate>
           </dt>
           <dd>{processoEntity.tipoDecisao ? processoEntity.tipoDecisao.descricao : ''}</dd>

@@ -46,6 +46,10 @@
     {
       "fieldName": "parecer",
       "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "apelacao",
+      "fieldType": "String"
     }
   ],
   "relationships": [
@@ -206,5 +210,7 @@
   "readOnly": false,
   "embedded": false,
   "clientRootFolder": "",
-  "applications": "*"
+  "applications": "*",
+  "searchEngine": false,
+  "databaseType": "sql"
 }

@@ -255,6 +255,12 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
                 </Label>
               </AvGroup>
               <AvGroup>
+                <Label id="apelacaoLabel" for="processo-apelacao">
+                  <Translate contentKey="cidhaApp.processo.apelacao">Apelacao</Translate>
+                </Label>
+                <AvField id="processo-apelacao" type="text" name="apelacao" />
+              </AvGroup>
+              <AvGroup>
                 <Label for="processo-tipoDecisao">
                   <Translate contentKey="cidhaApp.processo.tipoDecisao">Tipo Decisao</Translate>
                 </Label>

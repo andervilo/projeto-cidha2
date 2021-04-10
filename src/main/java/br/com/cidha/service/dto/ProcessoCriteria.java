@@ -44,6 +44,8 @@ public class ProcessoCriteria implements Serializable, Criteria {
 
     private BooleanFilter parecer;
 
+    private StringFilter apelacao;
+
     private LongFilter concessaoLiminarId;
 
     private LongFilter concessaoLiminarCassadaId;
@@ -98,6 +100,7 @@ public class ProcessoCriteria implements Serializable, Criteria {
         this.numeroProcessoJudicialPrimeiraInstancia = other.numeroProcessoJudicialPrimeiraInstancia == null ? null : other.numeroProcessoJudicialPrimeiraInstancia.copy();
         this.numeroProcessoJudicialPrimeiraInstanciaLink = other.numeroProcessoJudicialPrimeiraInstanciaLink == null ? null : other.numeroProcessoJudicialPrimeiraInstanciaLink.copy();
         this.parecer = other.parecer == null ? null : other.parecer.copy();
+        this.apelacao = other.apelacao == null ? null : other.apelacao.copy();
         this.concessaoLiminarId = other.concessaoLiminarId == null ? null : other.concessaoLiminarId.copy();
         this.concessaoLiminarCassadaId = other.concessaoLiminarCassadaId == null ? null : other.concessaoLiminarCassadaId.copy();
         this.embargoRespReId = other.embargoRespReId == null ? null : other.embargoRespReId.copy();
@@ -203,6 +206,14 @@ public class ProcessoCriteria implements Serializable, Criteria {
 
     public void setParecer(BooleanFilter parecer) {
         this.parecer = parecer;
+    }
+
+    public StringFilter getApelacao() {
+        return apelacao;
+    }
+
+    public void setApelacao(StringFilter apelacao) {
+        this.apelacao = apelacao;
     }
 
     public LongFilter getConcessaoLiminarId() {
@@ -386,6 +397,7 @@ public class ProcessoCriteria implements Serializable, Criteria {
             Objects.equals(numeroProcessoJudicialPrimeiraInstancia, that.numeroProcessoJudicialPrimeiraInstancia) &&
             Objects.equals(numeroProcessoJudicialPrimeiraInstanciaLink, that.numeroProcessoJudicialPrimeiraInstanciaLink) &&
             Objects.equals(parecer, that.parecer) &&
+            Objects.equals(apelacao, that.apelacao) &&
             Objects.equals(concessaoLiminarId, that.concessaoLiminarId) &&
             Objects.equals(concessaoLiminarCassadaId, that.concessaoLiminarCassadaId) &&
             Objects.equals(embargoRespReId, that.embargoRespReId) &&
@@ -421,6 +433,7 @@ public class ProcessoCriteria implements Serializable, Criteria {
         numeroProcessoJudicialPrimeiraInstancia,
         numeroProcessoJudicialPrimeiraInstanciaLink,
         parecer,
+        apelacao,
         concessaoLiminarId,
         concessaoLiminarCassadaId,
         embargoRespReId,
@@ -458,6 +471,7 @@ public class ProcessoCriteria implements Serializable, Criteria {
                 (numeroProcessoJudicialPrimeiraInstancia != null ? "numeroProcessoJudicialPrimeiraInstancia=" + numeroProcessoJudicialPrimeiraInstancia + ", " : "") +
                 (numeroProcessoJudicialPrimeiraInstanciaLink != null ? "numeroProcessoJudicialPrimeiraInstanciaLink=" + numeroProcessoJudicialPrimeiraInstanciaLink + ", " : "") +
                 (parecer != null ? "parecer=" + parecer + ", " : "") +
+                (apelacao != null ? "apelacao=" + apelacao + ", " : "") +
                 (concessaoLiminarId != null ? "concessaoLiminarId=" + concessaoLiminarId + ", " : "") +
                 (concessaoLiminarCassadaId != null ? "concessaoLiminarCassadaId=" + concessaoLiminarCassadaId + ", " : "") +
                 (embargoRespReId != null ? "embargoRespReId=" + embargoRespReId + ", " : "") +
