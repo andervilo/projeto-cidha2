@@ -3,6 +3,7 @@
     "fundamentacaoDoutrinaria": {
       "home": {
         "title": "Fundamentacao Doutrinarias",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Fundamentacao Doutrinaria",
         "createOrEditLabel": "Criar ou editar Fundamentacao Doutrinaria",
         "notFound": "Nenhum Fundamentacao Doutrinaria encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Fundamentacao Doutrinaria"
       },
+      "id": "ID",
       "fundamentacaoDoutrinariaCitada": "Fundamentacao Doutrinaria Citada",
       "folhasFundamentacaoDoutrinaria": "Folhas Fundamentacao Doutrinaria",
       "fundamentacaoDoutrinariaSugerida": "Fundamentacao Doutrinaria Sugerida",

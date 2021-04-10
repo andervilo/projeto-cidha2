@@ -2,15 +2,13 @@ package br.com.cidha.service;
 
 import br.com.cidha.domain.FundamentacaoLegal;
 import br.com.cidha.repository.FundamentacaoLegalRepository;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 /**
  * Service Implementation for managing {@link FundamentacaoLegal}.
@@ -39,6 +37,35 @@ public class FundamentacaoLegalService {
     }
 
     /**
+     * Partially update a fundamentacaoLegal.
+     *
+     * @param fundamentacaoLegal the entity to update partially.
+     * @return the persisted entity.
+     */
+    public Optional<FundamentacaoLegal> partialUpdate(FundamentacaoLegal fundamentacaoLegal) {
+        log.debug("Request to partially update FundamentacaoLegal : {}", fundamentacaoLegal);
+
+        return fundamentacaoLegalRepository
+            .findById(fundamentacaoLegal.getId())
+            .map(
+                existingFundamentacaoLegal -> {
+                    if (fundamentacaoLegal.getFundamentacaoLegal() != null) {
+                        existingFundamentacaoLegal.setFundamentacaoLegal(fundamentacaoLegal.getFundamentacaoLegal());
+                    }
+                    if (fundamentacaoLegal.getFolhasFundamentacaoLegal() != null) {
+                        existingFundamentacaoLegal.setFolhasFundamentacaoLegal(fundamentacaoLegal.getFolhasFundamentacaoLegal());
+                    }
+                    if (fundamentacaoLegal.getFundamentacaoLegalSugerida() != null) {
+                        existingFundamentacaoLegal.setFundamentacaoLegalSugerida(fundamentacaoLegal.getFundamentacaoLegalSugerida());
+                    }
+
+                    return existingFundamentacaoLegal;
+                }
+            )
+            .map(fundamentacaoLegalRepository::save);
+    }
+
+    /**
      * Get all the fundamentacaoLegals.
      *
      * @param pageable the pagination information.
@@ -49,7 +76,6 @@ public class FundamentacaoLegalService {
         log.debug("Request to get all FundamentacaoLegals");
         return fundamentacaoLegalRepository.findAll(pageable);
     }
-
 
     /**
      * Get one fundamentacaoLegal by id.

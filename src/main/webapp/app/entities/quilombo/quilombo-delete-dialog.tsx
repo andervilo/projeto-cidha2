@@ -2,10 +2,9 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
-import { Translate, ICrudGetAction, ICrudDeleteAction } from 'react-jhipster';
+import { Translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { IQuilombo } from 'app/shared/model/quilombo.model';
 import { IRootState } from 'app/shared/reducers';
 import { getEntity, deleteEntity } from './quilombo.reducer';
 
@@ -33,7 +32,7 @@ export const QuilomboDeleteDialog = (props: IQuilomboDeleteDialogProps) => {
   const { quilomboEntity } = props;
   return (
     <Modal isOpen toggle={handleClose}>
-      <ModalHeader toggle={handleClose}>
+      <ModalHeader toggle={handleClose} data-cy="quilomboDeleteDialogHeading">
         <Translate contentKey="entity.delete.title">Confirm delete operation</Translate>
       </ModalHeader>
       <ModalBody id="cidhaApp.quilombo.delete.question">
@@ -47,7 +46,7 @@ export const QuilomboDeleteDialog = (props: IQuilomboDeleteDialogProps) => {
           &nbsp;
           <Translate contentKey="entity.action.cancel">Cancel</Translate>
         </Button>
-        <Button id="jhi-confirm-delete-quilombo" color="danger" onClick={confirmDelete}>
+        <Button id="jhi-confirm-delete-quilombo" data-cy="entityConfirmDeleteButton" color="danger" onClick={confirmDelete}>
           <FontAwesomeIcon icon="trash" />
           &nbsp;
           <Translate contentKey="entity.action.delete">Delete</Translate>

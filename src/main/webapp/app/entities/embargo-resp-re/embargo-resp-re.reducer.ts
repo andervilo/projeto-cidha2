@@ -11,6 +11,7 @@ export const ACTION_TYPES = {
   FETCH_EMBARGORESPRE: 'embargoRespRe/FETCH_EMBARGORESPRE',
   CREATE_EMBARGORESPRE: 'embargoRespRe/CREATE_EMBARGORESPRE',
   UPDATE_EMBARGORESPRE: 'embargoRespRe/UPDATE_EMBARGORESPRE',
+  PARTIAL_UPDATE_EMBARGORESPRE: 'embargoRespRe/PARTIAL_UPDATE_EMBARGORESPRE',
   DELETE_EMBARGORESPRE: 'embargoRespRe/DELETE_EMBARGORESPRE',
   RESET: 'embargoRespRe/RESET',
 };
@@ -42,6 +43,7 @@ export default (state: EmbargoRespReState = initialState, action): EmbargoRespRe
     case REQUEST(ACTION_TYPES.CREATE_EMBARGORESPRE):
     case REQUEST(ACTION_TYPES.UPDATE_EMBARGORESPRE):
     case REQUEST(ACTION_TYPES.DELETE_EMBARGORESPRE):
+    case REQUEST(ACTION_TYPES.PARTIAL_UPDATE_EMBARGORESPRE):
       return {
         ...state,
         errorMessage: null,
@@ -52,6 +54,7 @@ export default (state: EmbargoRespReState = initialState, action): EmbargoRespRe
     case FAILURE(ACTION_TYPES.FETCH_EMBARGORESPRE):
     case FAILURE(ACTION_TYPES.CREATE_EMBARGORESPRE):
     case FAILURE(ACTION_TYPES.UPDATE_EMBARGORESPRE):
+    case FAILURE(ACTION_TYPES.PARTIAL_UPDATE_EMBARGORESPRE):
     case FAILURE(ACTION_TYPES.DELETE_EMBARGORESPRE):
       return {
         ...state,
@@ -75,6 +78,7 @@ export default (state: EmbargoRespReState = initialState, action): EmbargoRespRe
       };
     case SUCCESS(ACTION_TYPES.CREATE_EMBARGORESPRE):
     case SUCCESS(ACTION_TYPES.UPDATE_EMBARGORESPRE):
+    case SUCCESS(ACTION_TYPES.PARTIAL_UPDATE_EMBARGORESPRE):
       return {
         ...state,
         updating: false,
@@ -129,7 +133,15 @@ export const createEntity: ICrudPutAction<IEmbargoRespRe> = entity => async disp
 export const updateEntity: ICrudPutAction<IEmbargoRespRe> = entity => async dispatch => {
   const result = await dispatch({
     type: ACTION_TYPES.UPDATE_EMBARGORESPRE,
-    payload: axios.put(apiUrl, cleanEntity(entity)),
+    payload: axios.put(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
+  });
+  return result;
+};
+
+export const partialUpdate: ICrudPutAction<IEmbargoRespRe> = entity => async dispatch => {
+  const result = await dispatch({
+    type: ACTION_TYPES.PARTIAL_UPDATE_EMBARGORESPRE,
+    payload: axios.patch(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
   });
   return result;
 };

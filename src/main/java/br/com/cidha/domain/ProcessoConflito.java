@@ -1,15 +1,13 @@
 package br.com.cidha.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Type;
-
-import javax.persistence.*;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.*;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Type;
 
 /**
  * A ProcessoConflito.
@@ -44,18 +42,46 @@ public class ProcessoConflito implements Serializable {
 
     @OneToMany(mappedBy = "processoConflito")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @JsonIgnoreProperties(value = { "processoConflito" }, allowSetters = true)
     private Set<Conflito> conflitos = new HashSet<>();
 
     @ManyToMany
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JoinTable(name = "processo_conflito_direito",
-               joinColumns = @JoinColumn(name = "processo_conflito_id", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name = "direito_id", referencedColumnName = "id"))
+    @JoinTable(
+        name = "rel_processo_conflito__direito",
+        joinColumns = @JoinColumn(name = "processo_conflito_id"),
+        inverseJoinColumns = @JoinColumn(name = "direito_id")
+    )
+    @JsonIgnoreProperties(value = { "processoConflitos" }, allowSetters = true)
     private Set<Direito> direitos = new HashSet<>();
 
     @ManyToMany(mappedBy = "processoConflitos")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnore
+    @JsonIgnoreProperties(
+        value = {
+            "concessaoLiminars",
+            "concessaoLiminarCassadas",
+            "embargoRespRes",
+            "embargoDeclaracaoAgravos",
+            "embargoDeclaracaos",
+            "embargoRecursoEspecials",
+            "tipoDecisao",
+            "tipoEmpreendimento",
+            "comarcas",
+            "quilombos",
+            "municipios",
+            "territorios",
+            "atividadeExploracaoIlegals",
+            "unidadeConservacaos",
+            "envolvidosConflitoLitigios",
+            "terraIndigenas",
+            "processoConflitos",
+            "parteInteresssadas",
+            "relators",
+            "problemaJuridicos",
+        },
+        allowSetters = true
+    )
     private Set<Processo> processos = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -67,8 +93,13 @@ public class ProcessoConflito implements Serializable {
         this.id = id;
     }
 
+    public ProcessoConflito id(Long id) {
+        this.id = id;
+        return this;
+    }
+
     public String getInicioConflitoObservacoes() {
-        return inicioConflitoObservacoes;
+        return this.inicioConflitoObservacoes;
     }
 
     public ProcessoConflito inicioConflitoObservacoes(String inicioConflitoObservacoes) {
@@ -81,7 +112,7 @@ public class ProcessoConflito implements Serializable {
     }
 
     public String getHistoricoConlito() {
-        return historicoConlito;
+        return this.historicoConlito;
     }
 
     public ProcessoConflito historicoConlito(String historicoConlito) {
@@ -94,7 +125,7 @@ public class ProcessoConflito implements Serializable {
     }
 
     public String getNomeCasoComuidade() {
-        return nomeCasoComuidade;
+        return this.nomeCasoComuidade;
     }
 
     public ProcessoConflito nomeCasoComuidade(String nomeCasoComuidade) {
@@ -106,8 +137,8 @@ public class ProcessoConflito implements Serializable {
         this.nomeCasoComuidade = nomeCasoComuidade;
     }
 
-    public Boolean isConsultaPrevia() {
-        return consultaPrevia;
+    public Boolean getConsultaPrevia() {
+        return this.consultaPrevia;
     }
 
     public ProcessoConflito consultaPrevia(Boolean consultaPrevia) {
@@ -120,11 +151,11 @@ public class ProcessoConflito implements Serializable {
     }
 
     public Set<Conflito> getConflitos() {
-        return conflitos;
+        return this.conflitos;
     }
 
     public ProcessoConflito conflitos(Set<Conflito> conflitos) {
-        this.conflitos = conflitos;
+        this.setConflitos(conflitos);
         return this;
     }
 
@@ -141,15 +172,21 @@ public class ProcessoConflito implements Serializable {
     }
 
     public void setConflitos(Set<Conflito> conflitos) {
+        if (this.conflitos != null) {
+            this.conflitos.forEach(i -> i.setProcessoConflito(null));
+        }
+        if (conflitos != null) {
+            conflitos.forEach(i -> i.setProcessoConflito(this));
+        }
         this.conflitos = conflitos;
     }
 
     public Set<Direito> getDireitos() {
-        return direitos;
+        return this.direitos;
     }
 
     public ProcessoConflito direitos(Set<Direito> direitos) {
-        this.direitos = direitos;
+        this.setDireitos(direitos);
         return this;
     }
 
@@ -170,11 +207,11 @@ public class ProcessoConflito implements Serializable {
     }
 
     public Set<Processo> getProcessos() {
-        return processos;
+        return this.processos;
     }
 
     public ProcessoConflito processos(Set<Processo> processos) {
-        this.processos = processos;
+        this.setProcessos(processos);
         return this;
     }
 
@@ -191,8 +228,15 @@ public class ProcessoConflito implements Serializable {
     }
 
     public void setProcessos(Set<Processo> processos) {
+        if (this.processos != null) {
+            this.processos.forEach(i -> i.removeProcessoConflito(this));
+        }
+        if (processos != null) {
+            processos.forEach(i -> i.addProcessoConflito(this));
+        }
         this.processos = processos;
     }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -208,7 +252,8 @@ public class ProcessoConflito implements Serializable {
 
     @Override
     public int hashCode() {
-        return 31;
+        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        return getClass().hashCode();
     }
 
     // prettier-ignore
@@ -219,7 +264,7 @@ public class ProcessoConflito implements Serializable {
             ", inicioConflitoObservacoes='" + getInicioConflitoObservacoes() + "'" +
             ", historicoConlito='" + getHistoricoConlito() + "'" +
             ", nomeCasoComuidade='" + getNomeCasoComuidade() + "'" +
-            ", consultaPrevia='" + isConsultaPrevia() + "'" +
+            ", consultaPrevia='" + getConsultaPrevia() + "'" +
             "}";
     }
 }

@@ -11,6 +11,7 @@ export const ACTION_TYPES = {
   FETCH_FUNDAMENTACAOLEGAL: 'fundamentacaoLegal/FETCH_FUNDAMENTACAOLEGAL',
   CREATE_FUNDAMENTACAOLEGAL: 'fundamentacaoLegal/CREATE_FUNDAMENTACAOLEGAL',
   UPDATE_FUNDAMENTACAOLEGAL: 'fundamentacaoLegal/UPDATE_FUNDAMENTACAOLEGAL',
+  PARTIAL_UPDATE_FUNDAMENTACAOLEGAL: 'fundamentacaoLegal/PARTIAL_UPDATE_FUNDAMENTACAOLEGAL',
   DELETE_FUNDAMENTACAOLEGAL: 'fundamentacaoLegal/DELETE_FUNDAMENTACAOLEGAL',
   SET_BLOB: 'fundamentacaoLegal/SET_BLOB',
   RESET: 'fundamentacaoLegal/RESET',
@@ -43,6 +44,7 @@ export default (state: FundamentacaoLegalState = initialState, action): Fundamen
     case REQUEST(ACTION_TYPES.CREATE_FUNDAMENTACAOLEGAL):
     case REQUEST(ACTION_TYPES.UPDATE_FUNDAMENTACAOLEGAL):
     case REQUEST(ACTION_TYPES.DELETE_FUNDAMENTACAOLEGAL):
+    case REQUEST(ACTION_TYPES.PARTIAL_UPDATE_FUNDAMENTACAOLEGAL):
       return {
         ...state,
         errorMessage: null,
@@ -53,6 +55,7 @@ export default (state: FundamentacaoLegalState = initialState, action): Fundamen
     case FAILURE(ACTION_TYPES.FETCH_FUNDAMENTACAOLEGAL):
     case FAILURE(ACTION_TYPES.CREATE_FUNDAMENTACAOLEGAL):
     case FAILURE(ACTION_TYPES.UPDATE_FUNDAMENTACAOLEGAL):
+    case FAILURE(ACTION_TYPES.PARTIAL_UPDATE_FUNDAMENTACAOLEGAL):
     case FAILURE(ACTION_TYPES.DELETE_FUNDAMENTACAOLEGAL):
       return {
         ...state,
@@ -76,6 +79,7 @@ export default (state: FundamentacaoLegalState = initialState, action): Fundamen
       };
     case SUCCESS(ACTION_TYPES.CREATE_FUNDAMENTACAOLEGAL):
     case SUCCESS(ACTION_TYPES.UPDATE_FUNDAMENTACAOLEGAL):
+    case SUCCESS(ACTION_TYPES.PARTIAL_UPDATE_FUNDAMENTACAOLEGAL):
       return {
         ...state,
         updating: false,
@@ -141,7 +145,15 @@ export const createEntity: ICrudPutAction<IFundamentacaoLegal> = entity => async
 export const updateEntity: ICrudPutAction<IFundamentacaoLegal> = entity => async dispatch => {
   const result = await dispatch({
     type: ACTION_TYPES.UPDATE_FUNDAMENTACAOLEGAL,
-    payload: axios.put(apiUrl, cleanEntity(entity)),
+    payload: axios.put(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
+  });
+  return result;
+};
+
+export const partialUpdate: ICrudPutAction<IFundamentacaoLegal> = entity => async dispatch => {
+  const result = await dispatch({
+    type: ACTION_TYPES.PARTIAL_UPDATE_FUNDAMENTACAOLEGAL,
+    payload: axios.patch(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
   });
   return result;
 };

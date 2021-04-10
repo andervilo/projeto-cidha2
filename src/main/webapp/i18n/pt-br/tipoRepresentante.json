@@ -3,6 +3,7 @@
     "tipoRepresentante": {
       "home": {
         "title": "Tipo Representantes",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Tipo Representante",
         "createOrEditLabel": "Criar ou editar Tipo Representante",
         "notFound": "Nenhum Tipo Representante encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Tipo Representante"
       },
+      "id": "ID",
       "descricao": "Descricao"
     }
   }

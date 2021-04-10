@@ -1,9 +1,11 @@
 package br.com.cidha.service;
 
+import br.com.cidha.domain.*; // for static metamodels
+import br.com.cidha.domain.TerraIndigena;
+import br.com.cidha.repository.TerraIndigenaRepository;
+import br.com.cidha.service.criteria.TerraIndigenaCriteria;
 import java.util.List;
-
 import javax.persistence.criteria.JoinType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -11,13 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import io.github.jhipster.service.QueryService;
-
-import br.com.cidha.domain.TerraIndigena;
-import br.com.cidha.domain.*; // for static metamodels
-import br.com.cidha.repository.TerraIndigenaRepository;
-import br.com.cidha.service.dto.TerraIndigenaCriteria;
+import tech.jhipster.service.QueryService;
 
 /**
  * Service for executing complex queries for {@link TerraIndigena} entities in the database.
@@ -86,12 +82,22 @@ public class TerraIndigenaQueryService extends QueryService<TerraIndigena> {
                 specification = specification.and(buildRangeSpecification(criteria.getId(), TerraIndigena_.id));
             }
             if (criteria.getEtniaId() != null) {
-                specification = specification.and(buildSpecification(criteria.getEtniaId(),
-                    root -> root.join(TerraIndigena_.etnias, JoinType.LEFT).get(EtniaIndigena_.id)));
+                specification =
+                    specification.and(
+                        buildSpecification(
+                            criteria.getEtniaId(),
+                            root -> root.join(TerraIndigena_.etnias, JoinType.LEFT).get(EtniaIndigena_.id)
+                        )
+                    );
             }
             if (criteria.getProcessoId() != null) {
-                specification = specification.and(buildSpecification(criteria.getProcessoId(),
-                    root -> root.join(TerraIndigena_.processos, JoinType.LEFT).get(Processo_.id)));
+                specification =
+                    specification.and(
+                        buildSpecification(
+                            criteria.getProcessoId(),
+                            root -> root.join(TerraIndigena_.processos, JoinType.LEFT).get(Processo_.id)
+                        )
+                    );
             }
         }
         return specification;

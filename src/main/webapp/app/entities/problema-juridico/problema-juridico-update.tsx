@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col, Label } from 'reactstrap';
 import { AvFeedback, AvForm, AvGroup, AvInput, AvField } from 'availity-reactstrap-validation';
-import { Translate, translate, ICrudGetAction, ICrudGetAllAction, setFileData, byteSize, ICrudPutAction } from 'react-jhipster';
+import { setFileData, byteSize, Translate, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
@@ -30,7 +30,7 @@ export const ProblemaJuridicoUpdate = (props: IProblemaJuridicoUpdateProps) => {
   const [idsfundamentacaoLegal, setIdsfundamentacaoLegal] = useState([]);
   const [idsinstrumentoInternacional, setIdsinstrumentoInternacional] = useState([]);
   const [idsprocesso, setIdsprocesso] = useState([]);
-  const [isNew, setIsNew] = useState(!props.match.params || !props.match.params.id);
+  const [isNew] = useState(!props.match.params || !props.match.params.id);
 
   const {
     problemaJuridicoEntity,
@@ -101,7 +101,7 @@ export const ProblemaJuridicoUpdate = (props: IProblemaJuridicoUpdateProps) => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="cidhaApp.problemaJuridico.home.createOrEditLabel">
+          <h2 id="cidhaApp.problemaJuridico.home.createOrEditLabel" data-cy="ProblemaJuridicoCreateUpdateHeading">
             <Translate contentKey="cidhaApp.problemaJuridico.home.createOrEditLabel">Create or edit a ProblemaJuridico</Translate>
           </h2>
         </Col>
@@ -124,13 +124,23 @@ export const ProblemaJuridicoUpdate = (props: IProblemaJuridicoUpdateProps) => {
                 <Label id="prolemaJuridicoRespondidoLabel" for="problema-juridico-prolemaJuridicoRespondido">
                   <Translate contentKey="cidhaApp.problemaJuridico.prolemaJuridicoRespondido">Prolema Juridico Respondido</Translate>
                 </Label>
-                <AvInput id="problema-juridico-prolemaJuridicoRespondido" type="textarea" name="prolemaJuridicoRespondido" />
+                <AvInput
+                  id="problema-juridico-prolemaJuridicoRespondido"
+                  data-cy="prolemaJuridicoRespondido"
+                  type="textarea"
+                  name="prolemaJuridicoRespondido"
+                />
               </AvGroup>
               <AvGroup>
                 <Label id="folhasProblemaJuridicoLabel" for="problema-juridico-folhasProblemaJuridico">
                   <Translate contentKey="cidhaApp.problemaJuridico.folhasProblemaJuridico">Folhas Problema Juridico</Translate>
                 </Label>
-                <AvField id="problema-juridico-folhasProblemaJuridico" type="text" name="folhasProblemaJuridico" />
+                <AvField
+                  id="problema-juridico-folhasProblemaJuridico"
+                  data-cy="folhasProblemaJuridico"
+                  type="text"
+                  name="folhasProblemaJuridico"
+                />
               </AvGroup>
               <AvGroup>
                 <Label for="problema-juridico-fundamentacaoDoutrinaria">
@@ -138,12 +148,15 @@ export const ProblemaJuridicoUpdate = (props: IProblemaJuridicoUpdateProps) => {
                 </Label>
                 <AvInput
                   id="problema-juridico-fundamentacaoDoutrinaria"
+                  data-cy="fundamentacaoDoutrinaria"
                   type="select"
                   multiple
                   className="form-control"
                   name="fundamentacaoDoutrinarias"
                   value={
-                    problemaJuridicoEntity.fundamentacaoDoutrinarias && problemaJuridicoEntity.fundamentacaoDoutrinarias.map(e => e.id)
+                    !isNew &&
+                    problemaJuridicoEntity.fundamentacaoDoutrinarias &&
+                    problemaJuridicoEntity.fundamentacaoDoutrinarias.map(e => e.id)
                   }
                 >
                   <option value="" key="0" />
@@ -162,11 +175,12 @@ export const ProblemaJuridicoUpdate = (props: IProblemaJuridicoUpdateProps) => {
                 </Label>
                 <AvInput
                   id="problema-juridico-jurisprudencia"
+                  data-cy="jurisprudencia"
                   type="select"
                   multiple
                   className="form-control"
                   name="jurisprudencias"
-                  value={problemaJuridicoEntity.jurisprudencias && problemaJuridicoEntity.jurisprudencias.map(e => e.id)}
+                  value={!isNew && problemaJuridicoEntity.jurisprudencias && problemaJuridicoEntity.jurisprudencias.map(e => e.id)}
                 >
                   <option value="" key="0" />
                   {jurisprudencias
@@ -184,11 +198,12 @@ export const ProblemaJuridicoUpdate = (props: IProblemaJuridicoUpdateProps) => {
                 </Label>
                 <AvInput
                   id="problema-juridico-fundamentacaoLegal"
+                  data-cy="fundamentacaoLegal"
                   type="select"
                   multiple
                   className="form-control"
                   name="fundamentacaoLegals"
-                  value={problemaJuridicoEntity.fundamentacaoLegals && problemaJuridicoEntity.fundamentacaoLegals.map(e => e.id)}
+                  value={!isNew && problemaJuridicoEntity.fundamentacaoLegals && problemaJuridicoEntity.fundamentacaoLegals.map(e => e.id)}
                 >
                   <option value="" key="0" />
                   {fundamentacaoLegals
@@ -206,12 +221,15 @@ export const ProblemaJuridicoUpdate = (props: IProblemaJuridicoUpdateProps) => {
                 </Label>
                 <AvInput
                   id="problema-juridico-instrumentoInternacional"
+                  data-cy="instrumentoInternacional"
                   type="select"
                   multiple
                   className="form-control"
                   name="instrumentoInternacionals"
                   value={
-                    problemaJuridicoEntity.instrumentoInternacionals && problemaJuridicoEntity.instrumentoInternacionals.map(e => e.id)
+                    !isNew &&
+                    problemaJuridicoEntity.instrumentoInternacionals &&
+                    problemaJuridicoEntity.instrumentoInternacionals.map(e => e.id)
                   }
                 >
                   <option value="" key="0" />
@@ -230,11 +248,12 @@ export const ProblemaJuridicoUpdate = (props: IProblemaJuridicoUpdateProps) => {
                 </Label>
                 <AvInput
                   id="problema-juridico-processo"
+                  data-cy="processo"
                   type="select"
                   multiple
                   className="form-control"
                   name="processos"
-                  value={problemaJuridicoEntity.processos && problemaJuridicoEntity.processos.map(e => e.id)}
+                  value={!isNew && problemaJuridicoEntity.processos && problemaJuridicoEntity.processos.map(e => e.id)}
                 >
                   <option value="" key="0" />
                   {processos
@@ -254,7 +273,7 @@ export const ProblemaJuridicoUpdate = (props: IProblemaJuridicoUpdateProps) => {
                 </span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp;
                 <Translate contentKey="entity.action.save">Save</Translate>

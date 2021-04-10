@@ -2,12 +2,11 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col } from 'reactstrap';
-import { Translate, ICrudGetAction, byteSize } from 'react-jhipster';
+import { Translate, byteSize } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
 import { getEntity } from './instrumento-internacional.reducer';
-import { IInstrumentoInternacional } from 'app/shared/model/instrumento-internacional.model';
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 
 export interface IInstrumentoInternacionalDetailProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
@@ -21,11 +20,16 @@ export const InstrumentoInternacionalDetail = (props: IInstrumentoInternacionalD
   return (
     <Row>
       <Col md="8">
-        <h2>
-          <Translate contentKey="cidhaApp.instrumentoInternacional.detail.title">InstrumentoInternacional</Translate> [
-          <b>{instrumentoInternacionalEntity.id}</b>]
+        <h2 data-cy="instrumentoInternacionalDetailsHeading">
+          <Translate contentKey="cidhaApp.instrumentoInternacional.detail.title">InstrumentoInternacional</Translate>
         </h2>
         <dl className="jh-entity-details">
+          <dt>
+            <span id="id">
+              <Translate contentKey="global.field.id">ID</Translate>
+            </span>
+          </dt>
+          <dd>{instrumentoInternacionalEntity.id}</dd>
           <dt>
             <span id="instrumentoInternacionalCitadoDescricao">
               <Translate contentKey="cidhaApp.instrumentoInternacional.instrumentoInternacionalCitadoDescricao">
@@ -51,7 +55,7 @@ export const InstrumentoInternacionalDetail = (props: IInstrumentoInternacionalD
           </dt>
           <dd>{instrumentoInternacionalEntity.instrumentoInternacionalSugerido}</dd>
         </dl>
-        <Button tag={Link} to="/instrumento-internacional" replace color="info">
+        <Button tag={Link} to="/instrumento-internacional" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" />{' '}
           <span className="d-none d-md-inline">
             <Translate contentKey="entity.action.back">Back</Translate>

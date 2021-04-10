@@ -1,9 +1,11 @@
 package br.com.cidha.service;
 
+import br.com.cidha.domain.*; // for static metamodels
+import br.com.cidha.domain.ParteInteresssada;
+import br.com.cidha.repository.ParteInteresssadaRepository;
+import br.com.cidha.service.criteria.ParteInteresssadaCriteria;
 import java.util.List;
-
 import javax.persistence.criteria.JoinType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -11,13 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import io.github.jhipster.service.QueryService;
-
-import br.com.cidha.domain.ParteInteresssada;
-import br.com.cidha.domain.*; // for static metamodels
-import br.com.cidha.repository.ParteInteresssadaRepository;
-import br.com.cidha.service.dto.ParteInteresssadaCriteria;
+import tech.jhipster.service.QueryService;
 
 /**
  * Service for executing complex queries for {@link ParteInteresssada} entities in the database.
@@ -92,12 +88,22 @@ public class ParteInteresssadaQueryService extends QueryService<ParteInteresssad
                 specification = specification.and(buildStringSpecification(criteria.getClassificacao(), ParteInteresssada_.classificacao));
             }
             if (criteria.getRepresentanteLegalId() != null) {
-                specification = specification.and(buildSpecification(criteria.getRepresentanteLegalId(),
-                    root -> root.join(ParteInteresssada_.representanteLegals, JoinType.LEFT).get(RepresentanteLegal_.id)));
+                specification =
+                    specification.and(
+                        buildSpecification(
+                            criteria.getRepresentanteLegalId(),
+                            root -> root.join(ParteInteresssada_.representanteLegals, JoinType.LEFT).get(RepresentanteLegal_.id)
+                        )
+                    );
             }
             if (criteria.getProcessoId() != null) {
-                specification = specification.and(buildSpecification(criteria.getProcessoId(),
-                    root -> root.join(ParteInteresssada_.processos, JoinType.LEFT).get(Processo_.id)));
+                specification =
+                    specification.and(
+                        buildSpecification(
+                            criteria.getProcessoId(),
+                            root -> root.join(ParteInteresssada_.processos, JoinType.LEFT).get(Processo_.id)
+                        )
+                    );
             }
         }
         return specification;

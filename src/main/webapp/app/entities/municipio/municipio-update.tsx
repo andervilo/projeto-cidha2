@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col, Label } from 'reactstrap';
 import { AvFeedback, AvForm, AvGroup, AvInput, AvField } from 'availity-reactstrap-validation';
-import { Translate, translate, ICrudGetAction, ICrudGetAllAction, ICrudPutAction } from 'react-jhipster';
+import { Translate, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
@@ -17,8 +17,7 @@ import { mapIdList } from 'app/shared/util/entity-utils';
 export interface IMunicipioUpdateProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
 
 export const MunicipioUpdate = (props: IMunicipioUpdateProps) => {
-  const [processoId, setProcessoId] = useState('0');
-  const [isNew, setIsNew] = useState(!props.match.params || !props.match.params.id);
+  const [isNew] = useState(!props.match.params || !props.match.params.id);
 
   const { municipioEntity, processos, loading, updating } = props;
 
@@ -61,7 +60,7 @@ export const MunicipioUpdate = (props: IMunicipioUpdateProps) => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="cidhaApp.municipio.home.createOrEditLabel">
+          <h2 id="cidhaApp.municipio.home.createOrEditLabel" data-cy="MunicipioCreateUpdateHeading">
             <Translate contentKey="cidhaApp.municipio.home.createOrEditLabel">Create or edit a Municipio</Translate>
           </h2>
         </Col>
@@ -82,7 +81,13 @@ export const MunicipioUpdate = (props: IMunicipioUpdateProps) => {
               ) : null}
               <AvGroup check>
                 <Label id="amazoniaLegalLabel">
-                  <AvInput id="municipio-amazoniaLegal" type="checkbox" className="form-check-input" name="amazoniaLegal" />
+                  <AvInput
+                    id="municipio-amazoniaLegal"
+                    data-cy="amazoniaLegal"
+                    type="checkbox"
+                    className="form-check-input"
+                    name="amazoniaLegal"
+                  />
                   <Translate contentKey="cidhaApp.municipio.amazoniaLegal">Amazonia Legal</Translate>
                 </Label>
               </AvGroup>
@@ -90,19 +95,19 @@ export const MunicipioUpdate = (props: IMunicipioUpdateProps) => {
                 <Label id="codigoIbgeLabel" for="municipio-codigoIbge">
                   <Translate contentKey="cidhaApp.municipio.codigoIbge">Codigo Ibge</Translate>
                 </Label>
-                <AvField id="municipio-codigoIbge" type="string" className="form-control" name="codigoIbge" />
+                <AvField id="municipio-codigoIbge" data-cy="codigoIbge" type="string" className="form-control" name="codigoIbge" />
               </AvGroup>
               <AvGroup>
                 <Label id="estadoLabel" for="municipio-estado">
                   <Translate contentKey="cidhaApp.municipio.estado">Estado</Translate>
                 </Label>
-                <AvField id="municipio-estado" type="text" name="estado" />
+                <AvField id="municipio-estado" data-cy="estado" type="text" name="estado" />
               </AvGroup>
               <AvGroup>
                 <Label id="nomeLabel" for="municipio-nome">
                   <Translate contentKey="cidhaApp.municipio.nome">Nome</Translate>
                 </Label>
-                <AvField id="municipio-nome" type="text" name="nome" />
+                <AvField id="municipio-nome" data-cy="nome" type="text" name="nome" />
               </AvGroup>
               <Button tag={Link} id="cancel-save" to="/municipio" replace color="info">
                 <FontAwesomeIcon icon="arrow-left" />
@@ -112,7 +117,7 @@ export const MunicipioUpdate = (props: IMunicipioUpdateProps) => {
                 </span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp;
                 <Translate contentKey="entity.action.save">Save</Translate>

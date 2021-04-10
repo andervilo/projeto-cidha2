@@ -1,15 +1,13 @@
 package br.com.cidha.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Type;
-
-import javax.persistence.*;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.*;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Type;
 
 /**
  * A FundamentacaoDoutrinaria.
@@ -41,7 +39,10 @@ public class FundamentacaoDoutrinaria implements Serializable {
 
     @ManyToMany(mappedBy = "fundamentacaoDoutrinarias")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnore
+    @JsonIgnoreProperties(
+        value = { "fundamentacaoDoutrinarias", "jurisprudencias", "fundamentacaoLegals", "instrumentoInternacionals", "processos" },
+        allowSetters = true
+    )
     private Set<ProblemaJuridico> problemaJuridicos = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -53,8 +54,13 @@ public class FundamentacaoDoutrinaria implements Serializable {
         this.id = id;
     }
 
+    public FundamentacaoDoutrinaria id(Long id) {
+        this.id = id;
+        return this;
+    }
+
     public String getFundamentacaoDoutrinariaCitada() {
-        return fundamentacaoDoutrinariaCitada;
+        return this.fundamentacaoDoutrinariaCitada;
     }
 
     public FundamentacaoDoutrinaria fundamentacaoDoutrinariaCitada(String fundamentacaoDoutrinariaCitada) {
@@ -67,7 +73,7 @@ public class FundamentacaoDoutrinaria implements Serializable {
     }
 
     public String getFolhasFundamentacaoDoutrinaria() {
-        return folhasFundamentacaoDoutrinaria;
+        return this.folhasFundamentacaoDoutrinaria;
     }
 
     public FundamentacaoDoutrinaria folhasFundamentacaoDoutrinaria(String folhasFundamentacaoDoutrinaria) {
@@ -80,7 +86,7 @@ public class FundamentacaoDoutrinaria implements Serializable {
     }
 
     public String getFundamentacaoDoutrinariaSugerida() {
-        return fundamentacaoDoutrinariaSugerida;
+        return this.fundamentacaoDoutrinariaSugerida;
     }
 
     public FundamentacaoDoutrinaria fundamentacaoDoutrinariaSugerida(String fundamentacaoDoutrinariaSugerida) {
@@ -93,11 +99,11 @@ public class FundamentacaoDoutrinaria implements Serializable {
     }
 
     public Set<ProblemaJuridico> getProblemaJuridicos() {
-        return problemaJuridicos;
+        return this.problemaJuridicos;
     }
 
     public FundamentacaoDoutrinaria problemaJuridicos(Set<ProblemaJuridico> problemaJuridicos) {
-        this.problemaJuridicos = problemaJuridicos;
+        this.setProblemaJuridicos(problemaJuridicos);
         return this;
     }
 
@@ -114,8 +120,15 @@ public class FundamentacaoDoutrinaria implements Serializable {
     }
 
     public void setProblemaJuridicos(Set<ProblemaJuridico> problemaJuridicos) {
+        if (this.problemaJuridicos != null) {
+            this.problemaJuridicos.forEach(i -> i.removeFundamentacaoDoutrinaria(this));
+        }
+        if (problemaJuridicos != null) {
+            problemaJuridicos.forEach(i -> i.addFundamentacaoDoutrinaria(this));
+        }
         this.problemaJuridicos = problemaJuridicos;
     }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -131,7 +144,8 @@ public class FundamentacaoDoutrinaria implements Serializable {
 
     @Override
     public int hashCode() {
-        return 31;
+        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        return getClass().hashCode();
     }
 
     // prettier-ignore

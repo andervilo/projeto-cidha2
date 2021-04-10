@@ -3,6 +3,7 @@
     "tipoDecisao": {
       "home": {
         "title": "Tipo Decisaos",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Tipo Decisao",
         "createOrEditLabel": "Criar ou editar Tipo Decisao",
         "notFound": "Nenhum Tipo Decisao encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Tipo Decisao"
       },
+      "id": "ID",
       "descricao": "Descricao"
     }
   }

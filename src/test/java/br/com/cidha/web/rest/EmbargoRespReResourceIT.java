@@ -1,49 +1,47 @@
 package br.com.cidha.web.rest;
 
-import br.com.cidha.CidhaApp;
-import br.com.cidha.domain.EmbargoRespRe;
-import br.com.cidha.domain.Processo;
-import br.com.cidha.repository.EmbargoRespReRepository;
-import br.com.cidha.service.EmbargoRespReService;
-import br.com.cidha.service.dto.EmbargoRespReCriteria;
-import br.com.cidha.service.EmbargoRespReQueryService;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
-import javax.persistence.EntityManager;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import br.com.cidha.IntegrationTest;
+import br.com.cidha.domain.EmbargoRespRe;
+import br.com.cidha.domain.Processo;
+import br.com.cidha.repository.EmbargoRespReRepository;
+import br.com.cidha.service.criteria.EmbargoRespReCriteria;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
+import javax.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * Integration tests for the {@link EmbargoRespReResource} REST controller.
  */
-@SpringBootTest(classes = CidhaApp.class)
+@IntegrationTest
 @AutoConfigureMockMvc
 @WithMockUser
-public class EmbargoRespReResourceIT {
+class EmbargoRespReResourceIT {
 
     private static final String DEFAULT_DESCRICAO = "AAAAAAAAAA";
     private static final String UPDATED_DESCRICAO = "BBBBBBBBBB";
 
+    private static final String ENTITY_API_URL = "/api/embargo-resp-res";
+    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+
+    private static Random random = new Random();
+    private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
+
     @Autowired
     private EmbargoRespReRepository embargoRespReRepository;
-
-    @Autowired
-    private EmbargoRespReService embargoRespReService;
-
-    @Autowired
-    private EmbargoRespReQueryService embargoRespReQueryService;
 
     @Autowired
     private EntityManager em;
@@ -60,10 +58,10 @@ public class EmbargoRespReResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static EmbargoRespRe createEntity(EntityManager em) {
-        EmbargoRespRe embargoRespRe = new EmbargoRespRe()
-            .descricao(DEFAULT_DESCRICAO);
+        EmbargoRespRe embargoRespRe = new EmbargoRespRe().descricao(DEFAULT_DESCRICAO);
         return embargoRespRe;
     }
+
     /**
      * Create an updated entity for this test.
      *
@@ -71,8 +69,7 @@ public class EmbargoRespReResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static EmbargoRespRe createUpdatedEntity(EntityManager em) {
-        EmbargoRespRe embargoRespRe = new EmbargoRespRe()
-            .descricao(UPDATED_DESCRICAO);
+        EmbargoRespRe embargoRespRe = new EmbargoRespRe().descricao(UPDATED_DESCRICAO);
         return embargoRespRe;
     }
 
@@ -83,12 +80,11 @@ public class EmbargoRespReResourceIT {
 
     @Test
     @Transactional
-    public void createEmbargoRespRe() throws Exception {
+    void createEmbargoRespRe() throws Exception {
         int databaseSizeBeforeCreate = embargoRespReRepository.findAll().size();
         // Create the EmbargoRespRe
-        restEmbargoRespReMockMvc.perform(post("/api/embargo-resp-res")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(embargoRespRe)))
+        restEmbargoRespReMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(embargoRespRe)))
             .andExpect(status().isCreated());
 
         // Validate the EmbargoRespRe in the database
@@ -100,16 +96,15 @@ public class EmbargoRespReResourceIT {
 
     @Test
     @Transactional
-    public void createEmbargoRespReWithExistingId() throws Exception {
-        int databaseSizeBeforeCreate = embargoRespReRepository.findAll().size();
-
+    void createEmbargoRespReWithExistingId() throws Exception {
         // Create the EmbargoRespRe with an existing ID
         embargoRespRe.setId(1L);
 
+        int databaseSizeBeforeCreate = embargoRespReRepository.findAll().size();
+
         // An entity with an existing ID cannot be created, so this API call must fail
-        restEmbargoRespReMockMvc.perform(post("/api/embargo-resp-res")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(embargoRespRe)))
+        restEmbargoRespReMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(embargoRespRe)))
             .andExpect(status().isBadRequest());
 
         // Validate the EmbargoRespRe in the database
@@ -117,39 +112,39 @@ public class EmbargoRespReResourceIT {
         assertThat(embargoRespReList).hasSize(databaseSizeBeforeCreate);
     }
 
-
     @Test
     @Transactional
-    public void getAllEmbargoRespRes() throws Exception {
+    void getAllEmbargoRespRes() throws Exception {
         // Initialize the database
         embargoRespReRepository.saveAndFlush(embargoRespRe);
 
         // Get all the embargoRespReList
-        restEmbargoRespReMockMvc.perform(get("/api/embargo-resp-res?sort=id,desc"))
+        restEmbargoRespReMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(embargoRespRe.getId().intValue())))
             .andExpect(jsonPath("$.[*].descricao").value(hasItem(DEFAULT_DESCRICAO)));
     }
-    
+
     @Test
     @Transactional
-    public void getEmbargoRespRe() throws Exception {
+    void getEmbargoRespRe() throws Exception {
         // Initialize the database
         embargoRespReRepository.saveAndFlush(embargoRespRe);
 
         // Get the embargoRespRe
-        restEmbargoRespReMockMvc.perform(get("/api/embargo-resp-res/{id}", embargoRespRe.getId()))
+        restEmbargoRespReMockMvc
+            .perform(get(ENTITY_API_URL_ID, embargoRespRe.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(embargoRespRe.getId().intValue()))
             .andExpect(jsonPath("$.descricao").value(DEFAULT_DESCRICAO));
     }
 
-
     @Test
     @Transactional
-    public void getEmbargoRespResByIdFiltering() throws Exception {
+    void getEmbargoRespResByIdFiltering() throws Exception {
         // Initialize the database
         embargoRespReRepository.saveAndFlush(embargoRespRe);
 
@@ -165,10 +160,9 @@ public class EmbargoRespReResourceIT {
         defaultEmbargoRespReShouldNotBeFound("id.lessThan=" + id);
     }
 
-
     @Test
     @Transactional
-    public void getAllEmbargoRespResByDescricaoIsEqualToSomething() throws Exception {
+    void getAllEmbargoRespResByDescricaoIsEqualToSomething() throws Exception {
         // Initialize the database
         embargoRespReRepository.saveAndFlush(embargoRespRe);
 
@@ -181,7 +175,7 @@ public class EmbargoRespReResourceIT {
 
     @Test
     @Transactional
-    public void getAllEmbargoRespResByDescricaoIsNotEqualToSomething() throws Exception {
+    void getAllEmbargoRespResByDescricaoIsNotEqualToSomething() throws Exception {
         // Initialize the database
         embargoRespReRepository.saveAndFlush(embargoRespRe);
 
@@ -194,7 +188,7 @@ public class EmbargoRespReResourceIT {
 
     @Test
     @Transactional
-    public void getAllEmbargoRespResByDescricaoIsInShouldWork() throws Exception {
+    void getAllEmbargoRespResByDescricaoIsInShouldWork() throws Exception {
         // Initialize the database
         embargoRespReRepository.saveAndFlush(embargoRespRe);
 
@@ -207,7 +201,7 @@ public class EmbargoRespReResourceIT {
 
     @Test
     @Transactional
-    public void getAllEmbargoRespResByDescricaoIsNullOrNotNull() throws Exception {
+    void getAllEmbargoRespResByDescricaoIsNullOrNotNull() throws Exception {
         // Initialize the database
         embargoRespReRepository.saveAndFlush(embargoRespRe);
 
@@ -217,9 +211,10 @@ public class EmbargoRespReResourceIT {
         // Get all the embargoRespReList where descricao is null
         defaultEmbargoRespReShouldNotBeFound("descricao.specified=false");
     }
-                @Test
+
+    @Test
     @Transactional
-    public void getAllEmbargoRespResByDescricaoContainsSomething() throws Exception {
+    void getAllEmbargoRespResByDescricaoContainsSomething() throws Exception {
         // Initialize the database
         embargoRespReRepository.saveAndFlush(embargoRespRe);
 
@@ -232,7 +227,7 @@ public class EmbargoRespReResourceIT {
 
     @Test
     @Transactional
-    public void getAllEmbargoRespResByDescricaoNotContainsSomething() throws Exception {
+    void getAllEmbargoRespResByDescricaoNotContainsSomething() throws Exception {
         // Initialize the database
         embargoRespReRepository.saveAndFlush(embargoRespRe);
 
@@ -243,10 +238,9 @@ public class EmbargoRespReResourceIT {
         defaultEmbargoRespReShouldBeFound("descricao.doesNotContain=" + UPDATED_DESCRICAO);
     }
 
-
     @Test
     @Transactional
-    public void getAllEmbargoRespResByProcessoIsEqualToSomething() throws Exception {
+    void getAllEmbargoRespResByProcessoIsEqualToSomething() throws Exception {
         // Initialize the database
         embargoRespReRepository.saveAndFlush(embargoRespRe);
         Processo processo = ProcessoResourceIT.createEntity(em);
@@ -259,7 +253,7 @@ public class EmbargoRespReResourceIT {
         // Get all the embargoRespReList where processo equals to processoId
         defaultEmbargoRespReShouldBeFound("processoId.equals=" + processoId);
 
-        // Get all the embargoRespReList where processo equals to processoId + 1
+        // Get all the embargoRespReList where processo equals to (processoId + 1)
         defaultEmbargoRespReShouldNotBeFound("processoId.equals=" + (processoId + 1));
     }
 
@@ -267,14 +261,16 @@ public class EmbargoRespReResourceIT {
      * Executes the search, and checks that the default entity is returned.
      */
     private void defaultEmbargoRespReShouldBeFound(String filter) throws Exception {
-        restEmbargoRespReMockMvc.perform(get("/api/embargo-resp-res?sort=id,desc&" + filter))
+        restEmbargoRespReMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(embargoRespRe.getId().intValue())))
             .andExpect(jsonPath("$.[*].descricao").value(hasItem(DEFAULT_DESCRICAO)));
 
         // Check, that the count call also returns 1
-        restEmbargoRespReMockMvc.perform(get("/api/embargo-resp-res/count?sort=id,desc&" + filter))
+        restEmbargoRespReMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("1"));
@@ -284,14 +280,16 @@ public class EmbargoRespReResourceIT {
      * Executes the search, and checks that the default entity is not returned.
      */
     private void defaultEmbargoRespReShouldNotBeFound(String filter) throws Exception {
-        restEmbargoRespReMockMvc.perform(get("/api/embargo-resp-res?sort=id,desc&" + filter))
+        restEmbargoRespReMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$").isEmpty());
 
         // Check, that the count call also returns 0
-        restEmbargoRespReMockMvc.perform(get("/api/embargo-resp-res/count?sort=id,desc&" + filter))
+        restEmbargoRespReMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("0"));
@@ -299,17 +297,16 @@ public class EmbargoRespReResourceIT {
 
     @Test
     @Transactional
-    public void getNonExistingEmbargoRespRe() throws Exception {
+    void getNonExistingEmbargoRespRe() throws Exception {
         // Get the embargoRespRe
-        restEmbargoRespReMockMvc.perform(get("/api/embargo-resp-res/{id}", Long.MAX_VALUE))
-            .andExpect(status().isNotFound());
+        restEmbargoRespReMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
     @Test
     @Transactional
-    public void updateEmbargoRespRe() throws Exception {
+    void putNewEmbargoRespRe() throws Exception {
         // Initialize the database
-        embargoRespReService.save(embargoRespRe);
+        embargoRespReRepository.saveAndFlush(embargoRespRe);
 
         int databaseSizeBeforeUpdate = embargoRespReRepository.findAll().size();
 
@@ -317,12 +314,14 @@ public class EmbargoRespReResourceIT {
         EmbargoRespRe updatedEmbargoRespRe = embargoRespReRepository.findById(embargoRespRe.getId()).get();
         // Disconnect from session so that the updates on updatedEmbargoRespRe are not directly saved in db
         em.detach(updatedEmbargoRespRe);
-        updatedEmbargoRespRe
-            .descricao(UPDATED_DESCRICAO);
+        updatedEmbargoRespRe.descricao(UPDATED_DESCRICAO);
 
-        restEmbargoRespReMockMvc.perform(put("/api/embargo-resp-res")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(updatedEmbargoRespRe)))
+        restEmbargoRespReMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, updatedEmbargoRespRe.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(updatedEmbargoRespRe))
+            )
             .andExpect(status().isOk());
 
         // Validate the EmbargoRespRe in the database
@@ -334,13 +333,17 @@ public class EmbargoRespReResourceIT {
 
     @Test
     @Transactional
-    public void updateNonExistingEmbargoRespRe() throws Exception {
+    void putNonExistingEmbargoRespRe() throws Exception {
         int databaseSizeBeforeUpdate = embargoRespReRepository.findAll().size();
+        embargoRespRe.setId(count.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restEmbargoRespReMockMvc.perform(put("/api/embargo-resp-res")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(embargoRespRe)))
+        restEmbargoRespReMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, embargoRespRe.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(embargoRespRe))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the EmbargoRespRe in the database
@@ -350,15 +353,167 @@ public class EmbargoRespReResourceIT {
 
     @Test
     @Transactional
-    public void deleteEmbargoRespRe() throws Exception {
+    void putWithIdMismatchEmbargoRespRe() throws Exception {
+        int databaseSizeBeforeUpdate = embargoRespReRepository.findAll().size();
+        embargoRespRe.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restEmbargoRespReMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(embargoRespRe))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the EmbargoRespRe in the database
+        List<EmbargoRespRe> embargoRespReList = embargoRespReRepository.findAll();
+        assertThat(embargoRespReList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void putWithMissingIdPathParamEmbargoRespRe() throws Exception {
+        int databaseSizeBeforeUpdate = embargoRespReRepository.findAll().size();
+        embargoRespRe.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restEmbargoRespReMockMvc
+            .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(embargoRespRe)))
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the EmbargoRespRe in the database
+        List<EmbargoRespRe> embargoRespReList = embargoRespReRepository.findAll();
+        assertThat(embargoRespReList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void partialUpdateEmbargoRespReWithPatch() throws Exception {
         // Initialize the database
-        embargoRespReService.save(embargoRespRe);
+        embargoRespReRepository.saveAndFlush(embargoRespRe);
+
+        int databaseSizeBeforeUpdate = embargoRespReRepository.findAll().size();
+
+        // Update the embargoRespRe using partial update
+        EmbargoRespRe partialUpdatedEmbargoRespRe = new EmbargoRespRe();
+        partialUpdatedEmbargoRespRe.setId(embargoRespRe.getId());
+
+        partialUpdatedEmbargoRespRe.descricao(UPDATED_DESCRICAO);
+
+        restEmbargoRespReMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedEmbargoRespRe.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedEmbargoRespRe))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the EmbargoRespRe in the database
+        List<EmbargoRespRe> embargoRespReList = embargoRespReRepository.findAll();
+        assertThat(embargoRespReList).hasSize(databaseSizeBeforeUpdate);
+        EmbargoRespRe testEmbargoRespRe = embargoRespReList.get(embargoRespReList.size() - 1);
+        assertThat(testEmbargoRespRe.getDescricao()).isEqualTo(UPDATED_DESCRICAO);
+    }
+
+    @Test
+    @Transactional
+    void fullUpdateEmbargoRespReWithPatch() throws Exception {
+        // Initialize the database
+        embargoRespReRepository.saveAndFlush(embargoRespRe);
+
+        int databaseSizeBeforeUpdate = embargoRespReRepository.findAll().size();
+
+        // Update the embargoRespRe using partial update
+        EmbargoRespRe partialUpdatedEmbargoRespRe = new EmbargoRespRe();
+        partialUpdatedEmbargoRespRe.setId(embargoRespRe.getId());
+
+        partialUpdatedEmbargoRespRe.descricao(UPDATED_DESCRICAO);
+
+        restEmbargoRespReMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedEmbargoRespRe.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedEmbargoRespRe))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the EmbargoRespRe in the database
+        List<EmbargoRespRe> embargoRespReList = embargoRespReRepository.findAll();
+        assertThat(embargoRespReList).hasSize(databaseSizeBeforeUpdate);
+        EmbargoRespRe testEmbargoRespRe = embargoRespReList.get(embargoRespReList.size() - 1);
+        assertThat(testEmbargoRespRe.getDescricao()).isEqualTo(UPDATED_DESCRICAO);
+    }
+
+    @Test
+    @Transactional
+    void patchNonExistingEmbargoRespRe() throws Exception {
+        int databaseSizeBeforeUpdate = embargoRespReRepository.findAll().size();
+        embargoRespRe.setId(count.incrementAndGet());
+
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
+        restEmbargoRespReMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, embargoRespRe.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(embargoRespRe))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the EmbargoRespRe in the database
+        List<EmbargoRespRe> embargoRespReList = embargoRespReRepository.findAll();
+        assertThat(embargoRespReList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithIdMismatchEmbargoRespRe() throws Exception {
+        int databaseSizeBeforeUpdate = embargoRespReRepository.findAll().size();
+        embargoRespRe.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restEmbargoRespReMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(embargoRespRe))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the EmbargoRespRe in the database
+        List<EmbargoRespRe> embargoRespReList = embargoRespReRepository.findAll();
+        assertThat(embargoRespReList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithMissingIdPathParamEmbargoRespRe() throws Exception {
+        int databaseSizeBeforeUpdate = embargoRespReRepository.findAll().size();
+        embargoRespRe.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restEmbargoRespReMockMvc
+            .perform(
+                patch(ENTITY_API_URL).contentType("application/merge-patch+json").content(TestUtil.convertObjectToJsonBytes(embargoRespRe))
+            )
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the EmbargoRespRe in the database
+        List<EmbargoRespRe> embargoRespReList = embargoRespReRepository.findAll();
+        assertThat(embargoRespReList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void deleteEmbargoRespRe() throws Exception {
+        // Initialize the database
+        embargoRespReRepository.saveAndFlush(embargoRespRe);
 
         int databaseSizeBeforeDelete = embargoRespReRepository.findAll().size();
 
         // Delete the embargoRespRe
-        restEmbargoRespReMockMvc.perform(delete("/api/embargo-resp-res/{id}", embargoRespRe.getId())
-            .accept(MediaType.APPLICATION_JSON))
+        restEmbargoRespReMockMvc
+            .perform(delete(ENTITY_API_URL_ID, embargoRespRe.getId()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item

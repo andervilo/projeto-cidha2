@@ -1,37 +1,35 @@
 package br.com.cidha.web.rest;
 
-import br.com.cidha.CidhaApp;
-import br.com.cidha.domain.Municipio;
-import br.com.cidha.domain.Processo;
-import br.com.cidha.repository.MunicipioRepository;
-import br.com.cidha.service.MunicipioService;
-import br.com.cidha.service.dto.MunicipioCriteria;
-import br.com.cidha.service.MunicipioQueryService;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
-import javax.persistence.EntityManager;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import br.com.cidha.IntegrationTest;
+import br.com.cidha.domain.Municipio;
+import br.com.cidha.domain.Processo;
+import br.com.cidha.repository.MunicipioRepository;
+import br.com.cidha.service.criteria.MunicipioCriteria;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
+import javax.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * Integration tests for the {@link MunicipioResource} REST controller.
  */
-@SpringBootTest(classes = CidhaApp.class)
+@IntegrationTest
 @AutoConfigureMockMvc
 @WithMockUser
-public class MunicipioResourceIT {
+class MunicipioResourceIT {
 
     private static final Boolean DEFAULT_AMAZONIA_LEGAL = false;
     private static final Boolean UPDATED_AMAZONIA_LEGAL = true;
@@ -46,14 +44,14 @@ public class MunicipioResourceIT {
     private static final String DEFAULT_NOME = "AAAAAAAAAA";
     private static final String UPDATED_NOME = "BBBBBBBBBB";
 
+    private static final String ENTITY_API_URL = "/api/municipios";
+    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+
+    private static Random random = new Random();
+    private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
+
     @Autowired
     private MunicipioRepository municipioRepository;
-
-    @Autowired
-    private MunicipioService municipioService;
-
-    @Autowired
-    private MunicipioQueryService municipioQueryService;
 
     @Autowired
     private EntityManager em;
@@ -77,6 +75,7 @@ public class MunicipioResourceIT {
             .nome(DEFAULT_NOME);
         return municipio;
     }
+
     /**
      * Create an updated entity for this test.
      *
@@ -99,19 +98,18 @@ public class MunicipioResourceIT {
 
     @Test
     @Transactional
-    public void createMunicipio() throws Exception {
+    void createMunicipio() throws Exception {
         int databaseSizeBeforeCreate = municipioRepository.findAll().size();
         // Create the Municipio
-        restMunicipioMockMvc.perform(post("/api/municipios")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(municipio)))
+        restMunicipioMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(municipio)))
             .andExpect(status().isCreated());
 
         // Validate the Municipio in the database
         List<Municipio> municipioList = municipioRepository.findAll();
         assertThat(municipioList).hasSize(databaseSizeBeforeCreate + 1);
         Municipio testMunicipio = municipioList.get(municipioList.size() - 1);
-        assertThat(testMunicipio.isAmazoniaLegal()).isEqualTo(DEFAULT_AMAZONIA_LEGAL);
+        assertThat(testMunicipio.getAmazoniaLegal()).isEqualTo(DEFAULT_AMAZONIA_LEGAL);
         assertThat(testMunicipio.getCodigoIbge()).isEqualTo(DEFAULT_CODIGO_IBGE);
         assertThat(testMunicipio.getEstado()).isEqualTo(DEFAULT_ESTADO);
         assertThat(testMunicipio.getNome()).isEqualTo(DEFAULT_NOME);
@@ -119,16 +117,15 @@ public class MunicipioResourceIT {
 
     @Test
     @Transactional
-    public void createMunicipioWithExistingId() throws Exception {
-        int databaseSizeBeforeCreate = municipioRepository.findAll().size();
-
+    void createMunicipioWithExistingId() throws Exception {
         // Create the Municipio with an existing ID
         municipio.setId(1L);
 
+        int databaseSizeBeforeCreate = municipioRepository.findAll().size();
+
         // An entity with an existing ID cannot be created, so this API call must fail
-        restMunicipioMockMvc.perform(post("/api/municipios")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(municipio)))
+        restMunicipioMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(municipio)))
             .andExpect(status().isBadRequest());
 
         // Validate the Municipio in the database
@@ -136,15 +133,15 @@ public class MunicipioResourceIT {
         assertThat(municipioList).hasSize(databaseSizeBeforeCreate);
     }
 
-
     @Test
     @Transactional
-    public void getAllMunicipios() throws Exception {
+    void getAllMunicipios() throws Exception {
         // Initialize the database
         municipioRepository.saveAndFlush(municipio);
 
         // Get all the municipioList
-        restMunicipioMockMvc.perform(get("/api/municipios?sort=id,desc"))
+        restMunicipioMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(municipio.getId().intValue())))
@@ -153,15 +150,16 @@ public class MunicipioResourceIT {
             .andExpect(jsonPath("$.[*].estado").value(hasItem(DEFAULT_ESTADO)))
             .andExpect(jsonPath("$.[*].nome").value(hasItem(DEFAULT_NOME)));
     }
-    
+
     @Test
     @Transactional
-    public void getMunicipio() throws Exception {
+    void getMunicipio() throws Exception {
         // Initialize the database
         municipioRepository.saveAndFlush(municipio);
 
         // Get the municipio
-        restMunicipioMockMvc.perform(get("/api/municipios/{id}", municipio.getId()))
+        restMunicipioMockMvc
+            .perform(get(ENTITY_API_URL_ID, municipio.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(municipio.getId().intValue()))
@@ -171,10 +169,9 @@ public class MunicipioResourceIT {
             .andExpect(jsonPath("$.nome").value(DEFAULT_NOME));
     }
 
-
     @Test
     @Transactional
-    public void getMunicipiosByIdFiltering() throws Exception {
+    void getMunicipiosByIdFiltering() throws Exception {
         // Initialize the database
         municipioRepository.saveAndFlush(municipio);
 
@@ -190,10 +187,9 @@ public class MunicipioResourceIT {
         defaultMunicipioShouldNotBeFound("id.lessThan=" + id);
     }
 
-
     @Test
     @Transactional
-    public void getAllMunicipiosByAmazoniaLegalIsEqualToSomething() throws Exception {
+    void getAllMunicipiosByAmazoniaLegalIsEqualToSomething() throws Exception {
         // Initialize the database
         municipioRepository.saveAndFlush(municipio);
 
@@ -206,7 +202,7 @@ public class MunicipioResourceIT {
 
     @Test
     @Transactional
-    public void getAllMunicipiosByAmazoniaLegalIsNotEqualToSomething() throws Exception {
+    void getAllMunicipiosByAmazoniaLegalIsNotEqualToSomething() throws Exception {
         // Initialize the database
         municipioRepository.saveAndFlush(municipio);
 
@@ -219,7 +215,7 @@ public class MunicipioResourceIT {
 
     @Test
     @Transactional
-    public void getAllMunicipiosByAmazoniaLegalIsInShouldWork() throws Exception {
+    void getAllMunicipiosByAmazoniaLegalIsInShouldWork() throws Exception {
         // Initialize the database
         municipioRepository.saveAndFlush(municipio);
 
@@ -232,7 +228,7 @@ public class MunicipioResourceIT {
 
     @Test
     @Transactional
-    public void getAllMunicipiosByAmazoniaLegalIsNullOrNotNull() throws Exception {
+    void getAllMunicipiosByAmazoniaLegalIsNullOrNotNull() throws Exception {
         // Initialize the database
         municipioRepository.saveAndFlush(municipio);
 
@@ -245,7 +241,7 @@ public class MunicipioResourceIT {
 
     @Test
     @Transactional
-    public void getAllMunicipiosByCodigoIbgeIsEqualToSomething() throws Exception {
+    void getAllMunicipiosByCodigoIbgeIsEqualToSomething() throws Exception {
         // Initialize the database
         municipioRepository.saveAndFlush(municipio);
 
@@ -258,7 +254,7 @@ public class MunicipioResourceIT {
 
     @Test
     @Transactional
-    public void getAllMunicipiosByCodigoIbgeIsNotEqualToSomething() throws Exception {
+    void getAllMunicipiosByCodigoIbgeIsNotEqualToSomething() throws Exception {
         // Initialize the database
         municipioRepository.saveAndFlush(municipio);
 
@@ -271,7 +267,7 @@ public class MunicipioResourceIT {
 
     @Test
     @Transactional
-    public void getAllMunicipiosByCodigoIbgeIsInShouldWork() throws Exception {
+    void getAllMunicipiosByCodigoIbgeIsInShouldWork() throws Exception {
         // Initialize the database
         municipioRepository.saveAndFlush(municipio);
 
@@ -284,7 +280,7 @@ public class MunicipioResourceIT {
 
     @Test
     @Transactional
-    public void getAllMunicipiosByCodigoIbgeIsNullOrNotNull() throws Exception {
+    void getAllMunicipiosByCodigoIbgeIsNullOrNotNull() throws Exception {
         // Initialize the database
         municipioRepository.saveAndFlush(municipio);
 
@@ -297,7 +293,7 @@ public class MunicipioResourceIT {
 
     @Test
     @Transactional
-    public void getAllMunicipiosByCodigoIbgeIsGreaterThanOrEqualToSomething() throws Exception {
+    void getAllMunicipiosByCodigoIbgeIsGreaterThanOrEqualToSomething() throws Exception {
         // Initialize the database
         municipioRepository.saveAndFlush(municipio);
 
@@ -310,7 +306,7 @@ public class MunicipioResourceIT {
 
     @Test
     @Transactional
-    public void getAllMunicipiosByCodigoIbgeIsLessThanOrEqualToSomething() throws Exception {
+    void getAllMunicipiosByCodigoIbgeIsLessThanOrEqualToSomething() throws Exception {
         // Initialize the database
         municipioRepository.saveAndFlush(municipio);
 
@@ -323,7 +319,7 @@ public class MunicipioResourceIT {
 
     @Test
     @Transactional
-    public void getAllMunicipiosByCodigoIbgeIsLessThanSomething() throws Exception {
+    void getAllMunicipiosByCodigoIbgeIsLessThanSomething() throws Exception {
         // Initialize the database
         municipioRepository.saveAndFlush(municipio);
 
@@ -336,7 +332,7 @@ public class MunicipioResourceIT {
 
     @Test
     @Transactional
-    public void getAllMunicipiosByCodigoIbgeIsGreaterThanSomething() throws Exception {
+    void getAllMunicipiosByCodigoIbgeIsGreaterThanSomething() throws Exception {
         // Initialize the database
         municipioRepository.saveAndFlush(municipio);
 
@@ -347,10 +343,9 @@ public class MunicipioResourceIT {
         defaultMunicipioShouldBeFound("codigoIbge.greaterThan=" + SMALLER_CODIGO_IBGE);
     }
 
-
     @Test
     @Transactional
-    public void getAllMunicipiosByEstadoIsEqualToSomething() throws Exception {
+    void getAllMunicipiosByEstadoIsEqualToSomething() throws Exception {
         // Initialize the database
         municipioRepository.saveAndFlush(municipio);
 
@@ -363,7 +358,7 @@ public class MunicipioResourceIT {
 
     @Test
     @Transactional
-    public void getAllMunicipiosByEstadoIsNotEqualToSomething() throws Exception {
+    void getAllMunicipiosByEstadoIsNotEqualToSomething() throws Exception {
         // Initialize the database
         municipioRepository.saveAndFlush(municipio);
 
@@ -376,7 +371,7 @@ public class MunicipioResourceIT {
 
     @Test
     @Transactional
-    public void getAllMunicipiosByEstadoIsInShouldWork() throws Exception {
+    void getAllMunicipiosByEstadoIsInShouldWork() throws Exception {
         // Initialize the database
         municipioRepository.saveAndFlush(municipio);
 
@@ -389,7 +384,7 @@ public class MunicipioResourceIT {
 
     @Test
     @Transactional
-    public void getAllMunicipiosByEstadoIsNullOrNotNull() throws Exception {
+    void getAllMunicipiosByEstadoIsNullOrNotNull() throws Exception {
         // Initialize the database
         municipioRepository.saveAndFlush(municipio);
 
@@ -399,9 +394,10 @@ public class MunicipioResourceIT {
         // Get all the municipioList where estado is null
         defaultMunicipioShouldNotBeFound("estado.specified=false");
     }
-                @Test
+
+    @Test
     @Transactional
-    public void getAllMunicipiosByEstadoContainsSomething() throws Exception {
+    void getAllMunicipiosByEstadoContainsSomething() throws Exception {
         // Initialize the database
         municipioRepository.saveAndFlush(municipio);
 
@@ -414,7 +410,7 @@ public class MunicipioResourceIT {
 
     @Test
     @Transactional
-    public void getAllMunicipiosByEstadoNotContainsSomething() throws Exception {
+    void getAllMunicipiosByEstadoNotContainsSomething() throws Exception {
         // Initialize the database
         municipioRepository.saveAndFlush(municipio);
 
@@ -425,10 +421,9 @@ public class MunicipioResourceIT {
         defaultMunicipioShouldBeFound("estado.doesNotContain=" + UPDATED_ESTADO);
     }
 
-
     @Test
     @Transactional
-    public void getAllMunicipiosByNomeIsEqualToSomething() throws Exception {
+    void getAllMunicipiosByNomeIsEqualToSomething() throws Exception {
         // Initialize the database
         municipioRepository.saveAndFlush(municipio);
 
@@ -441,7 +436,7 @@ public class MunicipioResourceIT {
 
     @Test
     @Transactional
-    public void getAllMunicipiosByNomeIsNotEqualToSomething() throws Exception {
+    void getAllMunicipiosByNomeIsNotEqualToSomething() throws Exception {
         // Initialize the database
         municipioRepository.saveAndFlush(municipio);
 
@@ -454,7 +449,7 @@ public class MunicipioResourceIT {
 
     @Test
     @Transactional
-    public void getAllMunicipiosByNomeIsInShouldWork() throws Exception {
+    void getAllMunicipiosByNomeIsInShouldWork() throws Exception {
         // Initialize the database
         municipioRepository.saveAndFlush(municipio);
 
@@ -467,7 +462,7 @@ public class MunicipioResourceIT {
 
     @Test
     @Transactional
-    public void getAllMunicipiosByNomeIsNullOrNotNull() throws Exception {
+    void getAllMunicipiosByNomeIsNullOrNotNull() throws Exception {
         // Initialize the database
         municipioRepository.saveAndFlush(municipio);
 
@@ -477,9 +472,10 @@ public class MunicipioResourceIT {
         // Get all the municipioList where nome is null
         defaultMunicipioShouldNotBeFound("nome.specified=false");
     }
-                @Test
+
+    @Test
     @Transactional
-    public void getAllMunicipiosByNomeContainsSomething() throws Exception {
+    void getAllMunicipiosByNomeContainsSomething() throws Exception {
         // Initialize the database
         municipioRepository.saveAndFlush(municipio);
 
@@ -492,7 +488,7 @@ public class MunicipioResourceIT {
 
     @Test
     @Transactional
-    public void getAllMunicipiosByNomeNotContainsSomething() throws Exception {
+    void getAllMunicipiosByNomeNotContainsSomething() throws Exception {
         // Initialize the database
         municipioRepository.saveAndFlush(municipio);
 
@@ -503,10 +499,9 @@ public class MunicipioResourceIT {
         defaultMunicipioShouldBeFound("nome.doesNotContain=" + UPDATED_NOME);
     }
 
-
     @Test
     @Transactional
-    public void getAllMunicipiosByProcessoIsEqualToSomething() throws Exception {
+    void getAllMunicipiosByProcessoIsEqualToSomething() throws Exception {
         // Initialize the database
         municipioRepository.saveAndFlush(municipio);
         Processo processo = ProcessoResourceIT.createEntity(em);
@@ -519,7 +514,7 @@ public class MunicipioResourceIT {
         // Get all the municipioList where processo equals to processoId
         defaultMunicipioShouldBeFound("processoId.equals=" + processoId);
 
-        // Get all the municipioList where processo equals to processoId + 1
+        // Get all the municipioList where processo equals to (processoId + 1)
         defaultMunicipioShouldNotBeFound("processoId.equals=" + (processoId + 1));
     }
 
@@ -527,7 +522,8 @@ public class MunicipioResourceIT {
      * Executes the search, and checks that the default entity is returned.
      */
     private void defaultMunicipioShouldBeFound(String filter) throws Exception {
-        restMunicipioMockMvc.perform(get("/api/municipios?sort=id,desc&" + filter))
+        restMunicipioMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(municipio.getId().intValue())))
@@ -537,7 +533,8 @@ public class MunicipioResourceIT {
             .andExpect(jsonPath("$.[*].nome").value(hasItem(DEFAULT_NOME)));
 
         // Check, that the count call also returns 1
-        restMunicipioMockMvc.perform(get("/api/municipios/count?sort=id,desc&" + filter))
+        restMunicipioMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("1"));
@@ -547,14 +544,16 @@ public class MunicipioResourceIT {
      * Executes the search, and checks that the default entity is not returned.
      */
     private void defaultMunicipioShouldNotBeFound(String filter) throws Exception {
-        restMunicipioMockMvc.perform(get("/api/municipios?sort=id,desc&" + filter))
+        restMunicipioMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$").isEmpty());
 
         // Check, that the count call also returns 0
-        restMunicipioMockMvc.perform(get("/api/municipios/count?sort=id,desc&" + filter))
+        restMunicipioMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("0"));
@@ -562,17 +561,16 @@ public class MunicipioResourceIT {
 
     @Test
     @Transactional
-    public void getNonExistingMunicipio() throws Exception {
+    void getNonExistingMunicipio() throws Exception {
         // Get the municipio
-        restMunicipioMockMvc.perform(get("/api/municipios/{id}", Long.MAX_VALUE))
-            .andExpect(status().isNotFound());
+        restMunicipioMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
     @Test
     @Transactional
-    public void updateMunicipio() throws Exception {
+    void putNewMunicipio() throws Exception {
         // Initialize the database
-        municipioService.save(municipio);
+        municipioRepository.saveAndFlush(municipio);
 
         int databaseSizeBeforeUpdate = municipioRepository.findAll().size();
 
@@ -580,22 +578,21 @@ public class MunicipioResourceIT {
         Municipio updatedMunicipio = municipioRepository.findById(municipio.getId()).get();
         // Disconnect from session so that the updates on updatedMunicipio are not directly saved in db
         em.detach(updatedMunicipio);
-        updatedMunicipio
-            .amazoniaLegal(UPDATED_AMAZONIA_LEGAL)
-            .codigoIbge(UPDATED_CODIGO_IBGE)
-            .estado(UPDATED_ESTADO)
-            .nome(UPDATED_NOME);
+        updatedMunicipio.amazoniaLegal(UPDATED_AMAZONIA_LEGAL).codigoIbge(UPDATED_CODIGO_IBGE).estado(UPDATED_ESTADO).nome(UPDATED_NOME);
 
-        restMunicipioMockMvc.perform(put("/api/municipios")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(updatedMunicipio)))
+        restMunicipioMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, updatedMunicipio.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(updatedMunicipio))
+            )
             .andExpect(status().isOk());
 
         // Validate the Municipio in the database
         List<Municipio> municipioList = municipioRepository.findAll();
         assertThat(municipioList).hasSize(databaseSizeBeforeUpdate);
         Municipio testMunicipio = municipioList.get(municipioList.size() - 1);
-        assertThat(testMunicipio.isAmazoniaLegal()).isEqualTo(UPDATED_AMAZONIA_LEGAL);
+        assertThat(testMunicipio.getAmazoniaLegal()).isEqualTo(UPDATED_AMAZONIA_LEGAL);
         assertThat(testMunicipio.getCodigoIbge()).isEqualTo(UPDATED_CODIGO_IBGE);
         assertThat(testMunicipio.getEstado()).isEqualTo(UPDATED_ESTADO);
         assertThat(testMunicipio.getNome()).isEqualTo(UPDATED_NOME);
@@ -603,13 +600,17 @@ public class MunicipioResourceIT {
 
     @Test
     @Transactional
-    public void updateNonExistingMunicipio() throws Exception {
+    void putNonExistingMunicipio() throws Exception {
         int databaseSizeBeforeUpdate = municipioRepository.findAll().size();
+        municipio.setId(count.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restMunicipioMockMvc.perform(put("/api/municipios")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(municipio)))
+        restMunicipioMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, municipio.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(municipio))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the Municipio in the database
@@ -619,15 +620,177 @@ public class MunicipioResourceIT {
 
     @Test
     @Transactional
-    public void deleteMunicipio() throws Exception {
+    void putWithIdMismatchMunicipio() throws Exception {
+        int databaseSizeBeforeUpdate = municipioRepository.findAll().size();
+        municipio.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restMunicipioMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(municipio))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the Municipio in the database
+        List<Municipio> municipioList = municipioRepository.findAll();
+        assertThat(municipioList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void putWithMissingIdPathParamMunicipio() throws Exception {
+        int databaseSizeBeforeUpdate = municipioRepository.findAll().size();
+        municipio.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restMunicipioMockMvc
+            .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(municipio)))
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the Municipio in the database
+        List<Municipio> municipioList = municipioRepository.findAll();
+        assertThat(municipioList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void partialUpdateMunicipioWithPatch() throws Exception {
         // Initialize the database
-        municipioService.save(municipio);
+        municipioRepository.saveAndFlush(municipio);
+
+        int databaseSizeBeforeUpdate = municipioRepository.findAll().size();
+
+        // Update the municipio using partial update
+        Municipio partialUpdatedMunicipio = new Municipio();
+        partialUpdatedMunicipio.setId(municipio.getId());
+
+        partialUpdatedMunicipio.estado(UPDATED_ESTADO);
+
+        restMunicipioMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedMunicipio.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedMunicipio))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the Municipio in the database
+        List<Municipio> municipioList = municipioRepository.findAll();
+        assertThat(municipioList).hasSize(databaseSizeBeforeUpdate);
+        Municipio testMunicipio = municipioList.get(municipioList.size() - 1);
+        assertThat(testMunicipio.getAmazoniaLegal()).isEqualTo(DEFAULT_AMAZONIA_LEGAL);
+        assertThat(testMunicipio.getCodigoIbge()).isEqualTo(DEFAULT_CODIGO_IBGE);
+        assertThat(testMunicipio.getEstado()).isEqualTo(UPDATED_ESTADO);
+        assertThat(testMunicipio.getNome()).isEqualTo(DEFAULT_NOME);
+    }
+
+    @Test
+    @Transactional
+    void fullUpdateMunicipioWithPatch() throws Exception {
+        // Initialize the database
+        municipioRepository.saveAndFlush(municipio);
+
+        int databaseSizeBeforeUpdate = municipioRepository.findAll().size();
+
+        // Update the municipio using partial update
+        Municipio partialUpdatedMunicipio = new Municipio();
+        partialUpdatedMunicipio.setId(municipio.getId());
+
+        partialUpdatedMunicipio
+            .amazoniaLegal(UPDATED_AMAZONIA_LEGAL)
+            .codigoIbge(UPDATED_CODIGO_IBGE)
+            .estado(UPDATED_ESTADO)
+            .nome(UPDATED_NOME);
+
+        restMunicipioMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedMunicipio.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedMunicipio))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the Municipio in the database
+        List<Municipio> municipioList = municipioRepository.findAll();
+        assertThat(municipioList).hasSize(databaseSizeBeforeUpdate);
+        Municipio testMunicipio = municipioList.get(municipioList.size() - 1);
+        assertThat(testMunicipio.getAmazoniaLegal()).isEqualTo(UPDATED_AMAZONIA_LEGAL);
+        assertThat(testMunicipio.getCodigoIbge()).isEqualTo(UPDATED_CODIGO_IBGE);
+        assertThat(testMunicipio.getEstado()).isEqualTo(UPDATED_ESTADO);
+        assertThat(testMunicipio.getNome()).isEqualTo(UPDATED_NOME);
+    }
+
+    @Test
+    @Transactional
+    void patchNonExistingMunicipio() throws Exception {
+        int databaseSizeBeforeUpdate = municipioRepository.findAll().size();
+        municipio.setId(count.incrementAndGet());
+
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
+        restMunicipioMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, municipio.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(municipio))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the Municipio in the database
+        List<Municipio> municipioList = municipioRepository.findAll();
+        assertThat(municipioList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithIdMismatchMunicipio() throws Exception {
+        int databaseSizeBeforeUpdate = municipioRepository.findAll().size();
+        municipio.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restMunicipioMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(municipio))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the Municipio in the database
+        List<Municipio> municipioList = municipioRepository.findAll();
+        assertThat(municipioList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithMissingIdPathParamMunicipio() throws Exception {
+        int databaseSizeBeforeUpdate = municipioRepository.findAll().size();
+        municipio.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restMunicipioMockMvc
+            .perform(
+                patch(ENTITY_API_URL).contentType("application/merge-patch+json").content(TestUtil.convertObjectToJsonBytes(municipio))
+            )
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the Municipio in the database
+        List<Municipio> municipioList = municipioRepository.findAll();
+        assertThat(municipioList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void deleteMunicipio() throws Exception {
+        // Initialize the database
+        municipioRepository.saveAndFlush(municipio);
 
         int databaseSizeBeforeDelete = municipioRepository.findAll().size();
 
         // Delete the municipio
-        restMunicipioMockMvc.perform(delete("/api/municipios/{id}", municipio.getId())
-            .accept(MediaType.APPLICATION_JSON))
+        restMunicipioMockMvc
+            .perform(delete(ENTITY_API_URL_ID, municipio.getId()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item

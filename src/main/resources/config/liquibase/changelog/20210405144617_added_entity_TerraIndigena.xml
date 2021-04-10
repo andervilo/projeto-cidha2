@@ -3,10 +3,9 @@
     xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
     xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd
                         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
-    
     <!--
         Added the entity TerraIndigena.
     -->
@@ -24,7 +23,7 @@
 
     <changeSet id="20210405144617-1-relations" author="jhipster">
 
-        <createTable tableName="terra_indigena_etnia">
+        <createTable tableName="rel_terra_indigena__etnia">
             <column name="etnia_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
@@ -33,9 +32,9 @@
             </column>
         </createTable>
 
-        <addPrimaryKey columnNames="terra_indigena_id, etnia_id" tableName="terra_indigena_etnia"/>
-        
+        <addPrimaryKey columnNames="terra_indigena_id, etnia_id" tableName="rel_terra_indigena__etnia"/>
     </changeSet>
+
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
 
     <!--
@@ -56,5 +55,4 @@
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>
-
 </databaseChangeLog>

@@ -1,14 +1,16 @@
 package br.com.cidha.web.rest;
 
 import br.com.cidha.domain.EmbargoDeclaracaoAgravo;
-import br.com.cidha.service.EmbargoDeclaracaoAgravoService;
-import br.com.cidha.web.rest.errors.BadRequestAlertException;
-import br.com.cidha.service.dto.EmbargoDeclaracaoAgravoCriteria;
+import br.com.cidha.repository.EmbargoDeclaracaoAgravoRepository;
 import br.com.cidha.service.EmbargoDeclaracaoAgravoQueryService;
-
-import io.github.jhipster.web.util.HeaderUtil;
-import io.github.jhipster.web.util.PaginationUtil;
-import io.github.jhipster.web.util.ResponseUtil;
+import br.com.cidha.service.EmbargoDeclaracaoAgravoService;
+import br.com.cidha.service.criteria.EmbargoDeclaracaoAgravoCriteria;
+import br.com.cidha.web.rest.errors.BadRequestAlertException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,14 +18,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import tech.jhipster.web.util.HeaderUtil;
+import tech.jhipster.web.util.PaginationUtil;
+import tech.jhipster.web.util.ResponseUtil;
 
 /**
  * REST controller for managing {@link br.com.cidha.domain.EmbargoDeclaracaoAgravo}.
@@ -41,10 +41,17 @@ public class EmbargoDeclaracaoAgravoResource {
 
     private final EmbargoDeclaracaoAgravoService embargoDeclaracaoAgravoService;
 
+    private final EmbargoDeclaracaoAgravoRepository embargoDeclaracaoAgravoRepository;
+
     private final EmbargoDeclaracaoAgravoQueryService embargoDeclaracaoAgravoQueryService;
 
-    public EmbargoDeclaracaoAgravoResource(EmbargoDeclaracaoAgravoService embargoDeclaracaoAgravoService, EmbargoDeclaracaoAgravoQueryService embargoDeclaracaoAgravoQueryService) {
+    public EmbargoDeclaracaoAgravoResource(
+        EmbargoDeclaracaoAgravoService embargoDeclaracaoAgravoService,
+        EmbargoDeclaracaoAgravoRepository embargoDeclaracaoAgravoRepository,
+        EmbargoDeclaracaoAgravoQueryService embargoDeclaracaoAgravoQueryService
+    ) {
         this.embargoDeclaracaoAgravoService = embargoDeclaracaoAgravoService;
+        this.embargoDeclaracaoAgravoRepository = embargoDeclaracaoAgravoRepository;
         this.embargoDeclaracaoAgravoQueryService = embargoDeclaracaoAgravoQueryService;
     }
 
@@ -56,36 +63,88 @@ public class EmbargoDeclaracaoAgravoResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/embargo-declaracao-agravos")
-    public ResponseEntity<EmbargoDeclaracaoAgravo> createEmbargoDeclaracaoAgravo(@RequestBody EmbargoDeclaracaoAgravo embargoDeclaracaoAgravo) throws URISyntaxException {
+    public ResponseEntity<EmbargoDeclaracaoAgravo> createEmbargoDeclaracaoAgravo(
+        @RequestBody EmbargoDeclaracaoAgravo embargoDeclaracaoAgravo
+    ) throws URISyntaxException {
         log.debug("REST request to save EmbargoDeclaracaoAgravo : {}", embargoDeclaracaoAgravo);
         if (embargoDeclaracaoAgravo.getId() != null) {
             throw new BadRequestAlertException("A new embargoDeclaracaoAgravo cannot already have an ID", ENTITY_NAME, "idexists");
         }
         EmbargoDeclaracaoAgravo result = embargoDeclaracaoAgravoService.save(embargoDeclaracaoAgravo);
-        return ResponseEntity.created(new URI("/api/embargo-declaracao-agravos/" + result.getId()))
+        return ResponseEntity
+            .created(new URI("/api/embargo-declaracao-agravos/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
 
     /**
-     * {@code PUT  /embargo-declaracao-agravos} : Updates an existing embargoDeclaracaoAgravo.
+     * {@code PUT  /embargo-declaracao-agravos/:id} : Updates an existing embargoDeclaracaoAgravo.
      *
+     * @param id the id of the embargoDeclaracaoAgravo to save.
      * @param embargoDeclaracaoAgravo the embargoDeclaracaoAgravo to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated embargoDeclaracaoAgravo,
      * or with status {@code 400 (Bad Request)} if the embargoDeclaracaoAgravo is not valid,
      * or with status {@code 500 (Internal Server Error)} if the embargoDeclaracaoAgravo couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/embargo-declaracao-agravos")
-    public ResponseEntity<EmbargoDeclaracaoAgravo> updateEmbargoDeclaracaoAgravo(@RequestBody EmbargoDeclaracaoAgravo embargoDeclaracaoAgravo) throws URISyntaxException {
-        log.debug("REST request to update EmbargoDeclaracaoAgravo : {}", embargoDeclaracaoAgravo);
+    @PutMapping("/embargo-declaracao-agravos/{id}")
+    public ResponseEntity<EmbargoDeclaracaoAgravo> updateEmbargoDeclaracaoAgravo(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody EmbargoDeclaracaoAgravo embargoDeclaracaoAgravo
+    ) throws URISyntaxException {
+        log.debug("REST request to update EmbargoDeclaracaoAgravo : {}, {}", id, embargoDeclaracaoAgravo);
         if (embargoDeclaracaoAgravo.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+        if (!Objects.equals(id, embargoDeclaracaoAgravo.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!embargoDeclaracaoAgravoRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
         EmbargoDeclaracaoAgravo result = embargoDeclaracaoAgravoService.save(embargoDeclaracaoAgravo);
-        return ResponseEntity.ok()
+        return ResponseEntity
+            .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, embargoDeclaracaoAgravo.getId().toString()))
             .body(result);
+    }
+
+    /**
+     * {@code PATCH  /embargo-declaracao-agravos/:id} : Partial updates given fields of an existing embargoDeclaracaoAgravo, field will ignore if it is null
+     *
+     * @param id the id of the embargoDeclaracaoAgravo to save.
+     * @param embargoDeclaracaoAgravo the embargoDeclaracaoAgravo to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated embargoDeclaracaoAgravo,
+     * or with status {@code 400 (Bad Request)} if the embargoDeclaracaoAgravo is not valid,
+     * or with status {@code 404 (Not Found)} if the embargoDeclaracaoAgravo is not found,
+     * or with status {@code 500 (Internal Server Error)} if the embargoDeclaracaoAgravo couldn't be updated.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PatchMapping(value = "/embargo-declaracao-agravos/{id}", consumes = "application/merge-patch+json")
+    public ResponseEntity<EmbargoDeclaracaoAgravo> partialUpdateEmbargoDeclaracaoAgravo(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody EmbargoDeclaracaoAgravo embargoDeclaracaoAgravo
+    ) throws URISyntaxException {
+        log.debug("REST request to partial update EmbargoDeclaracaoAgravo partially : {}, {}", id, embargoDeclaracaoAgravo);
+        if (embargoDeclaracaoAgravo.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        if (!Objects.equals(id, embargoDeclaracaoAgravo.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!embargoDeclaracaoAgravoRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
+        Optional<EmbargoDeclaracaoAgravo> result = embargoDeclaracaoAgravoService.partialUpdate(embargoDeclaracaoAgravo);
+
+        return ResponseUtil.wrapOrNotFound(
+            result,
+            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, embargoDeclaracaoAgravo.getId().toString())
+        );
     }
 
     /**
@@ -96,7 +155,10 @@ public class EmbargoDeclaracaoAgravoResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of embargoDeclaracaoAgravos in body.
      */
     @GetMapping("/embargo-declaracao-agravos")
-    public ResponseEntity<List<EmbargoDeclaracaoAgravo>> getAllEmbargoDeclaracaoAgravos(EmbargoDeclaracaoAgravoCriteria criteria, Pageable pageable) {
+    public ResponseEntity<List<EmbargoDeclaracaoAgravo>> getAllEmbargoDeclaracaoAgravos(
+        EmbargoDeclaracaoAgravoCriteria criteria,
+        Pageable pageable
+    ) {
         log.debug("REST request to get EmbargoDeclaracaoAgravos by criteria: {}", criteria);
         Page<EmbargoDeclaracaoAgravo> page = embargoDeclaracaoAgravoQueryService.findByCriteria(criteria, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
@@ -138,6 +200,9 @@ public class EmbargoDeclaracaoAgravoResource {
     public ResponseEntity<Void> deleteEmbargoDeclaracaoAgravo(@PathVariable Long id) {
         log.debug("REST request to delete EmbargoDeclaracaoAgravo : {}", id);
         embargoDeclaracaoAgravoService.delete(id);
-        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
+        return ResponseEntity
+            .noContent()
+            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
+            .build();
     }
 }

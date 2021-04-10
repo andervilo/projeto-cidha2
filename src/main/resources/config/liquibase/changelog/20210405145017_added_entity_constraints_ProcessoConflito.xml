@@ -2,23 +2,22 @@
 <databaseChangeLog
     xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
     <!--
         Added the constraints for entity ProcessoConflito.
     -->
     <changeSet id="20210405145017-2" author="jhipster">
-        
+
         <addForeignKeyConstraint baseColumnNames="processo_conflito_id"
-                                 baseTableName="processo_conflito_direito"
-                                 constraintName="fk_processo_conflito_direito_processo_conflito_id"
+                                 baseTableName="rel_processo_conflito__direito"
+                                 constraintName="fk_rel_processo_conflito__direito__processo_conflito_id"
                                  referencedColumnNames="id"
                                  referencedTableName="processo_conflito"/>
 
         <addForeignKeyConstraint baseColumnNames="direito_id"
-                                 baseTableName="processo_conflito_direito"
-                                 constraintName="fk_processo_conflito_direito_direito_id"
+                                 baseTableName="rel_processo_conflito__direito"
+                                 constraintName="fk_rel_processo_conflito__direito__direito_id"
                                  referencedColumnNames="id"
                                  referencedTableName="direito"/>
-        
     </changeSet>
 </databaseChangeLog>

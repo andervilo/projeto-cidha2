@@ -1,9 +1,11 @@
 package br.com.cidha.service;
 
+import br.com.cidha.domain.*; // for static metamodels
+import br.com.cidha.domain.Recurso;
+import br.com.cidha.repository.RecursoRepository;
+import br.com.cidha.service.criteria.RecursoCriteria;
 import java.util.List;
-
 import javax.persistence.criteria.JoinType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -11,13 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import io.github.jhipster.service.QueryService;
-
-import br.com.cidha.domain.Recurso;
-import br.com.cidha.domain.*; // for static metamodels
-import br.com.cidha.repository.RecursoRepository;
-import br.com.cidha.service.dto.RecursoCriteria;
+import tech.jhipster.service.QueryService;
 
 /**
  * Service for executing complex queries for {@link Recurso} entities in the database.
@@ -86,16 +82,28 @@ public class RecursoQueryService extends QueryService<Recurso> {
                 specification = specification.and(buildRangeSpecification(criteria.getId(), Recurso_.id));
             }
             if (criteria.getTipoRecursoId() != null) {
-                specification = specification.and(buildSpecification(criteria.getTipoRecursoId(),
-                    root -> root.join(Recurso_.tipoRecurso, JoinType.LEFT).get(TipoRecurso_.id)));
+                specification =
+                    specification.and(
+                        buildSpecification(
+                            criteria.getTipoRecursoId(),
+                            root -> root.join(Recurso_.tipoRecurso, JoinType.LEFT).get(TipoRecurso_.id)
+                        )
+                    );
             }
             if (criteria.getOpcaoRecursoId() != null) {
-                specification = specification.and(buildSpecification(criteria.getOpcaoRecursoId(),
-                    root -> root.join(Recurso_.opcaoRecurso, JoinType.LEFT).get(OpcaoRecurso_.id)));
+                specification =
+                    specification.and(
+                        buildSpecification(
+                            criteria.getOpcaoRecursoId(),
+                            root -> root.join(Recurso_.opcaoRecurso, JoinType.LEFT).get(OpcaoRecurso_.id)
+                        )
+                    );
             }
             if (criteria.getProcessoId() != null) {
-                specification = specification.and(buildSpecification(criteria.getProcessoId(),
-                    root -> root.join(Recurso_.processo, JoinType.LEFT).get(Processo_.id)));
+                specification =
+                    specification.and(
+                        buildSpecification(criteria.getProcessoId(), root -> root.join(Recurso_.processo, JoinType.LEFT).get(Processo_.id))
+                    );
             }
         }
         return specification;

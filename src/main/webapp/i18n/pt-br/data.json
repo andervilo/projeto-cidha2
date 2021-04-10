@@ -3,6 +3,7 @@
     "data": {
       "home": {
         "title": "Data",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Data",
         "createOrEditLabel": "Criar ou editar Data",
         "notFound": "Nenhum Data encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Data"
       },
+      "id": "ID",
       "data": "Data",
       "tipoData": "Tipo Data",
       "processo": "Processo"

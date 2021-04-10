@@ -1,48 +1,46 @@
 package br.com.cidha.web.rest;
 
-import br.com.cidha.CidhaApp;
-import br.com.cidha.domain.TipoData;
-import br.com.cidha.repository.TipoDataRepository;
-import br.com.cidha.service.TipoDataService;
-import br.com.cidha.service.dto.TipoDataCriteria;
-import br.com.cidha.service.TipoDataQueryService;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
-import javax.persistence.EntityManager;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import br.com.cidha.IntegrationTest;
+import br.com.cidha.domain.TipoData;
+import br.com.cidha.repository.TipoDataRepository;
+import br.com.cidha.service.criteria.TipoDataCriteria;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
+import javax.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * Integration tests for the {@link TipoDataResource} REST controller.
  */
-@SpringBootTest(classes = CidhaApp.class)
+@IntegrationTest
 @AutoConfigureMockMvc
 @WithMockUser
-public class TipoDataResourceIT {
+class TipoDataResourceIT {
 
     private static final String DEFAULT_DESCRICAO = "AAAAAAAAAA";
     private static final String UPDATED_DESCRICAO = "BBBBBBBBBB";
 
+    private static final String ENTITY_API_URL = "/api/tipo-data";
+    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+
+    private static Random random = new Random();
+    private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
+
     @Autowired
     private TipoDataRepository tipoDataRepository;
-
-    @Autowired
-    private TipoDataService tipoDataService;
-
-    @Autowired
-    private TipoDataQueryService tipoDataQueryService;
 
     @Autowired
     private EntityManager em;
@@ -59,10 +57,10 @@ public class TipoDataResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static TipoData createEntity(EntityManager em) {
-        TipoData tipoData = new TipoData()
-            .descricao(DEFAULT_DESCRICAO);
+        TipoData tipoData = new TipoData().descricao(DEFAULT_DESCRICAO);
         return tipoData;
     }
+
     /**
      * Create an updated entity for this test.
      *
@@ -70,8 +68,7 @@ public class TipoDataResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static TipoData createUpdatedEntity(EntityManager em) {
-        TipoData tipoData = new TipoData()
-            .descricao(UPDATED_DESCRICAO);
+        TipoData tipoData = new TipoData().descricao(UPDATED_DESCRICAO);
         return tipoData;
     }
 
@@ -82,12 +79,11 @@ public class TipoDataResourceIT {
 
     @Test
     @Transactional
-    public void createTipoData() throws Exception {
+    void createTipoData() throws Exception {
         int databaseSizeBeforeCreate = tipoDataRepository.findAll().size();
         // Create the TipoData
-        restTipoDataMockMvc.perform(post("/api/tipo-data")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(tipoData)))
+        restTipoDataMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(tipoData)))
             .andExpect(status().isCreated());
 
         // Validate the TipoData in the database
@@ -99,16 +95,15 @@ public class TipoDataResourceIT {
 
     @Test
     @Transactional
-    public void createTipoDataWithExistingId() throws Exception {
-        int databaseSizeBeforeCreate = tipoDataRepository.findAll().size();
-
+    void createTipoDataWithExistingId() throws Exception {
         // Create the TipoData with an existing ID
         tipoData.setId(1L);
 
+        int databaseSizeBeforeCreate = tipoDataRepository.findAll().size();
+
         // An entity with an existing ID cannot be created, so this API call must fail
-        restTipoDataMockMvc.perform(post("/api/tipo-data")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(tipoData)))
+        restTipoDataMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(tipoData)))
             .andExpect(status().isBadRequest());
 
         // Validate the TipoData in the database
@@ -116,39 +111,39 @@ public class TipoDataResourceIT {
         assertThat(tipoDataList).hasSize(databaseSizeBeforeCreate);
     }
 
-
     @Test
     @Transactional
-    public void getAllTipoData() throws Exception {
+    void getAllTipoData() throws Exception {
         // Initialize the database
         tipoDataRepository.saveAndFlush(tipoData);
 
         // Get all the tipoDataList
-        restTipoDataMockMvc.perform(get("/api/tipo-data?sort=id,desc"))
+        restTipoDataMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(tipoData.getId().intValue())))
             .andExpect(jsonPath("$.[*].descricao").value(hasItem(DEFAULT_DESCRICAO)));
     }
-    
+
     @Test
     @Transactional
-    public void getTipoData() throws Exception {
+    void getTipoData() throws Exception {
         // Initialize the database
         tipoDataRepository.saveAndFlush(tipoData);
 
         // Get the tipoData
-        restTipoDataMockMvc.perform(get("/api/tipo-data/{id}", tipoData.getId()))
+        restTipoDataMockMvc
+            .perform(get(ENTITY_API_URL_ID, tipoData.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(tipoData.getId().intValue()))
             .andExpect(jsonPath("$.descricao").value(DEFAULT_DESCRICAO));
     }
 
-
     @Test
     @Transactional
-    public void getTipoDataByIdFiltering() throws Exception {
+    void getTipoDataByIdFiltering() throws Exception {
         // Initialize the database
         tipoDataRepository.saveAndFlush(tipoData);
 
@@ -164,10 +159,9 @@ public class TipoDataResourceIT {
         defaultTipoDataShouldNotBeFound("id.lessThan=" + id);
     }
 
-
     @Test
     @Transactional
-    public void getAllTipoDataByDescricaoIsEqualToSomething() throws Exception {
+    void getAllTipoDataByDescricaoIsEqualToSomething() throws Exception {
         // Initialize the database
         tipoDataRepository.saveAndFlush(tipoData);
 
@@ -180,7 +174,7 @@ public class TipoDataResourceIT {
 
     @Test
     @Transactional
-    public void getAllTipoDataByDescricaoIsNotEqualToSomething() throws Exception {
+    void getAllTipoDataByDescricaoIsNotEqualToSomething() throws Exception {
         // Initialize the database
         tipoDataRepository.saveAndFlush(tipoData);
 
@@ -193,7 +187,7 @@ public class TipoDataResourceIT {
 
     @Test
     @Transactional
-    public void getAllTipoDataByDescricaoIsInShouldWork() throws Exception {
+    void getAllTipoDataByDescricaoIsInShouldWork() throws Exception {
         // Initialize the database
         tipoDataRepository.saveAndFlush(tipoData);
 
@@ -206,7 +200,7 @@ public class TipoDataResourceIT {
 
     @Test
     @Transactional
-    public void getAllTipoDataByDescricaoIsNullOrNotNull() throws Exception {
+    void getAllTipoDataByDescricaoIsNullOrNotNull() throws Exception {
         // Initialize the database
         tipoDataRepository.saveAndFlush(tipoData);
 
@@ -216,9 +210,10 @@ public class TipoDataResourceIT {
         // Get all the tipoDataList where descricao is null
         defaultTipoDataShouldNotBeFound("descricao.specified=false");
     }
-                @Test
+
+    @Test
     @Transactional
-    public void getAllTipoDataByDescricaoContainsSomething() throws Exception {
+    void getAllTipoDataByDescricaoContainsSomething() throws Exception {
         // Initialize the database
         tipoDataRepository.saveAndFlush(tipoData);
 
@@ -231,7 +226,7 @@ public class TipoDataResourceIT {
 
     @Test
     @Transactional
-    public void getAllTipoDataByDescricaoNotContainsSomething() throws Exception {
+    void getAllTipoDataByDescricaoNotContainsSomething() throws Exception {
         // Initialize the database
         tipoDataRepository.saveAndFlush(tipoData);
 
@@ -246,14 +241,16 @@ public class TipoDataResourceIT {
      * Executes the search, and checks that the default entity is returned.
      */
     private void defaultTipoDataShouldBeFound(String filter) throws Exception {
-        restTipoDataMockMvc.perform(get("/api/tipo-data?sort=id,desc&" + filter))
+        restTipoDataMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(tipoData.getId().intValue())))
             .andExpect(jsonPath("$.[*].descricao").value(hasItem(DEFAULT_DESCRICAO)));
 
         // Check, that the count call also returns 1
-        restTipoDataMockMvc.perform(get("/api/tipo-data/count?sort=id,desc&" + filter))
+        restTipoDataMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("1"));
@@ -263,14 +260,16 @@ public class TipoDataResourceIT {
      * Executes the search, and checks that the default entity is not returned.
      */
     private void defaultTipoDataShouldNotBeFound(String filter) throws Exception {
-        restTipoDataMockMvc.perform(get("/api/tipo-data?sort=id,desc&" + filter))
+        restTipoDataMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$").isEmpty());
 
         // Check, that the count call also returns 0
-        restTipoDataMockMvc.perform(get("/api/tipo-data/count?sort=id,desc&" + filter))
+        restTipoDataMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("0"));
@@ -278,17 +277,16 @@ public class TipoDataResourceIT {
 
     @Test
     @Transactional
-    public void getNonExistingTipoData() throws Exception {
+    void getNonExistingTipoData() throws Exception {
         // Get the tipoData
-        restTipoDataMockMvc.perform(get("/api/tipo-data/{id}", Long.MAX_VALUE))
-            .andExpect(status().isNotFound());
+        restTipoDataMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
     @Test
     @Transactional
-    public void updateTipoData() throws Exception {
+    void putNewTipoData() throws Exception {
         // Initialize the database
-        tipoDataService.save(tipoData);
+        tipoDataRepository.saveAndFlush(tipoData);
 
         int databaseSizeBeforeUpdate = tipoDataRepository.findAll().size();
 
@@ -296,12 +294,14 @@ public class TipoDataResourceIT {
         TipoData updatedTipoData = tipoDataRepository.findById(tipoData.getId()).get();
         // Disconnect from session so that the updates on updatedTipoData are not directly saved in db
         em.detach(updatedTipoData);
-        updatedTipoData
-            .descricao(UPDATED_DESCRICAO);
+        updatedTipoData.descricao(UPDATED_DESCRICAO);
 
-        restTipoDataMockMvc.perform(put("/api/tipo-data")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(updatedTipoData)))
+        restTipoDataMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, updatedTipoData.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(updatedTipoData))
+            )
             .andExpect(status().isOk());
 
         // Validate the TipoData in the database
@@ -313,13 +313,17 @@ public class TipoDataResourceIT {
 
     @Test
     @Transactional
-    public void updateNonExistingTipoData() throws Exception {
+    void putNonExistingTipoData() throws Exception {
         int databaseSizeBeforeUpdate = tipoDataRepository.findAll().size();
+        tipoData.setId(count.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restTipoDataMockMvc.perform(put("/api/tipo-data")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(tipoData)))
+        restTipoDataMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, tipoData.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(tipoData))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the TipoData in the database
@@ -329,15 +333,165 @@ public class TipoDataResourceIT {
 
     @Test
     @Transactional
-    public void deleteTipoData() throws Exception {
+    void putWithIdMismatchTipoData() throws Exception {
+        int databaseSizeBeforeUpdate = tipoDataRepository.findAll().size();
+        tipoData.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restTipoDataMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(tipoData))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the TipoData in the database
+        List<TipoData> tipoDataList = tipoDataRepository.findAll();
+        assertThat(tipoDataList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void putWithMissingIdPathParamTipoData() throws Exception {
+        int databaseSizeBeforeUpdate = tipoDataRepository.findAll().size();
+        tipoData.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restTipoDataMockMvc
+            .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(tipoData)))
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the TipoData in the database
+        List<TipoData> tipoDataList = tipoDataRepository.findAll();
+        assertThat(tipoDataList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void partialUpdateTipoDataWithPatch() throws Exception {
         // Initialize the database
-        tipoDataService.save(tipoData);
+        tipoDataRepository.saveAndFlush(tipoData);
+
+        int databaseSizeBeforeUpdate = tipoDataRepository.findAll().size();
+
+        // Update the tipoData using partial update
+        TipoData partialUpdatedTipoData = new TipoData();
+        partialUpdatedTipoData.setId(tipoData.getId());
+
+        partialUpdatedTipoData.descricao(UPDATED_DESCRICAO);
+
+        restTipoDataMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedTipoData.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedTipoData))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the TipoData in the database
+        List<TipoData> tipoDataList = tipoDataRepository.findAll();
+        assertThat(tipoDataList).hasSize(databaseSizeBeforeUpdate);
+        TipoData testTipoData = tipoDataList.get(tipoDataList.size() - 1);
+        assertThat(testTipoData.getDescricao()).isEqualTo(UPDATED_DESCRICAO);
+    }
+
+    @Test
+    @Transactional
+    void fullUpdateTipoDataWithPatch() throws Exception {
+        // Initialize the database
+        tipoDataRepository.saveAndFlush(tipoData);
+
+        int databaseSizeBeforeUpdate = tipoDataRepository.findAll().size();
+
+        // Update the tipoData using partial update
+        TipoData partialUpdatedTipoData = new TipoData();
+        partialUpdatedTipoData.setId(tipoData.getId());
+
+        partialUpdatedTipoData.descricao(UPDATED_DESCRICAO);
+
+        restTipoDataMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedTipoData.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedTipoData))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the TipoData in the database
+        List<TipoData> tipoDataList = tipoDataRepository.findAll();
+        assertThat(tipoDataList).hasSize(databaseSizeBeforeUpdate);
+        TipoData testTipoData = tipoDataList.get(tipoDataList.size() - 1);
+        assertThat(testTipoData.getDescricao()).isEqualTo(UPDATED_DESCRICAO);
+    }
+
+    @Test
+    @Transactional
+    void patchNonExistingTipoData() throws Exception {
+        int databaseSizeBeforeUpdate = tipoDataRepository.findAll().size();
+        tipoData.setId(count.incrementAndGet());
+
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
+        restTipoDataMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, tipoData.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(tipoData))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the TipoData in the database
+        List<TipoData> tipoDataList = tipoDataRepository.findAll();
+        assertThat(tipoDataList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithIdMismatchTipoData() throws Exception {
+        int databaseSizeBeforeUpdate = tipoDataRepository.findAll().size();
+        tipoData.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restTipoDataMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(tipoData))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the TipoData in the database
+        List<TipoData> tipoDataList = tipoDataRepository.findAll();
+        assertThat(tipoDataList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithMissingIdPathParamTipoData() throws Exception {
+        int databaseSizeBeforeUpdate = tipoDataRepository.findAll().size();
+        tipoData.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restTipoDataMockMvc
+            .perform(patch(ENTITY_API_URL).contentType("application/merge-patch+json").content(TestUtil.convertObjectToJsonBytes(tipoData)))
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the TipoData in the database
+        List<TipoData> tipoDataList = tipoDataRepository.findAll();
+        assertThat(tipoDataList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void deleteTipoData() throws Exception {
+        // Initialize the database
+        tipoDataRepository.saveAndFlush(tipoData);
 
         int databaseSizeBeforeDelete = tipoDataRepository.findAll().size();
 
         // Delete the tipoData
-        restTipoDataMockMvc.perform(delete("/api/tipo-data/{id}", tipoData.getId())
-            .accept(MediaType.APPLICATION_JSON))
+        restTipoDataMockMvc
+            .perform(delete(ENTITY_API_URL_ID, tipoData.getId()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item

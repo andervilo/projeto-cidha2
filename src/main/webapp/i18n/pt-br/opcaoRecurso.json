@@ -3,6 +3,7 @@
     "opcaoRecurso": {
       "home": {
         "title": "Opcao Recursos",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Opcao Recurso",
         "createOrEditLabel": "Criar ou editar Opcao Recurso",
         "notFound": "Nenhum Opcao Recurso encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Opcao Recurso"
       },
+      "id": "ID",
       "descricao": "Descricao"
     }
   }

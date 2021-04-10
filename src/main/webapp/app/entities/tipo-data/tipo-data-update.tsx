@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col, Label } from 'reactstrap';
 import { AvFeedback, AvForm, AvGroup, AvInput, AvField } from 'availity-reactstrap-validation';
-import { Translate, translate, ICrudGetAction, ICrudGetAllAction, ICrudPutAction } from 'react-jhipster';
+import { Translate, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
@@ -15,7 +15,7 @@ import { mapIdList } from 'app/shared/util/entity-utils';
 export interface ITipoDataUpdateProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
 
 export const TipoDataUpdate = (props: ITipoDataUpdateProps) => {
-  const [isNew, setIsNew] = useState(!props.match.params || !props.match.params.id);
+  const [isNew] = useState(!props.match.params || !props.match.params.id);
 
   const { tipoDataEntity, loading, updating } = props;
 
@@ -56,7 +56,7 @@ export const TipoDataUpdate = (props: ITipoDataUpdateProps) => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="cidhaApp.tipoData.home.createOrEditLabel">
+          <h2 id="cidhaApp.tipoData.home.createOrEditLabel" data-cy="TipoDataCreateUpdateHeading">
             <Translate contentKey="cidhaApp.tipoData.home.createOrEditLabel">Create or edit a TipoData</Translate>
           </h2>
         </Col>
@@ -79,7 +79,7 @@ export const TipoDataUpdate = (props: ITipoDataUpdateProps) => {
                 <Label id="descricaoLabel" for="tipo-data-descricao">
                   <Translate contentKey="cidhaApp.tipoData.descricao">Descricao</Translate>
                 </Label>
-                <AvField id="tipo-data-descricao" type="text" name="descricao" />
+                <AvField id="tipo-data-descricao" data-cy="descricao" type="text" name="descricao" />
               </AvGroup>
               <Button tag={Link} id="cancel-save" to="/tipo-data" replace color="info">
                 <FontAwesomeIcon icon="arrow-left" />
@@ -89,7 +89,7 @@ export const TipoDataUpdate = (props: ITipoDataUpdateProps) => {
                 </span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp;
                 <Translate contentKey="entity.action.save">Save</Translate>

@@ -2,12 +2,11 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col } from 'reactstrap';
-import { Translate, ICrudGetAction, byteSize } from 'react-jhipster';
+import { Translate, byteSize } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
 import { getEntity } from './processo-conflito.reducer';
-import { IProcessoConflito } from 'app/shared/model/processo-conflito.model';
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 
 export interface IProcessoConflitoDetailProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
@@ -21,10 +20,16 @@ export const ProcessoConflitoDetail = (props: IProcessoConflitoDetailProps) => {
   return (
     <Row>
       <Col md="8">
-        <h2>
-          <Translate contentKey="cidhaApp.processoConflito.detail.title">ProcessoConflito</Translate> [<b>{processoConflitoEntity.id}</b>]
+        <h2 data-cy="processoConflitoDetailsHeading">
+          <Translate contentKey="cidhaApp.processoConflito.detail.title">ProcessoConflito</Translate>
         </h2>
         <dl className="jh-entity-details">
+          <dt>
+            <span id="id">
+              <Translate contentKey="global.field.id">ID</Translate>
+            </span>
+          </dt>
+          <dd>{processoConflitoEntity.id}</dd>
           <dt>
             <span id="inicioConflitoObservacoes">
               <Translate contentKey="cidhaApp.processoConflito.inicioConflitoObservacoes">Inicio Conflito Observacoes</Translate>
@@ -63,7 +68,7 @@ export const ProcessoConflitoDetail = (props: IProcessoConflitoDetailProps) => {
               : null}
           </dd>
         </dl>
-        <Button tag={Link} to="/processo-conflito" replace color="info">
+        <Button tag={Link} to="/processo-conflito" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" />{' '}
           <span className="d-none d-md-inline">
             <Translate contentKey="entity.action.back">Back</Translate>

@@ -1,15 +1,13 @@
 package br.com.cidha.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Type;
-
-import javax.persistence.*;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.*;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Type;
 
 /**
  * A TerraIndigena.
@@ -33,14 +31,41 @@ public class TerraIndigena implements Serializable {
 
     @ManyToMany
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JoinTable(name = "terra_indigena_etnia",
-               joinColumns = @JoinColumn(name = "terra_indigena_id", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name = "etnia_id", referencedColumnName = "id"))
+    @JoinTable(
+        name = "rel_terra_indigena__etnia",
+        joinColumns = @JoinColumn(name = "terra_indigena_id"),
+        inverseJoinColumns = @JoinColumn(name = "etnia_id")
+    )
+    @JsonIgnoreProperties(value = { "terraIndigenas" }, allowSetters = true)
     private Set<EtniaIndigena> etnias = new HashSet<>();
 
     @ManyToMany(mappedBy = "terraIndigenas")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnore
+    @JsonIgnoreProperties(
+        value = {
+            "concessaoLiminars",
+            "concessaoLiminarCassadas",
+            "embargoRespRes",
+            "embargoDeclaracaoAgravos",
+            "embargoDeclaracaos",
+            "embargoRecursoEspecials",
+            "tipoDecisao",
+            "tipoEmpreendimento",
+            "comarcas",
+            "quilombos",
+            "municipios",
+            "territorios",
+            "atividadeExploracaoIlegals",
+            "unidadeConservacaos",
+            "envolvidosConflitoLitigios",
+            "terraIndigenas",
+            "processoConflitos",
+            "parteInteresssadas",
+            "relators",
+            "problemaJuridicos",
+        },
+        allowSetters = true
+    )
     private Set<Processo> processos = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -52,8 +77,13 @@ public class TerraIndigena implements Serializable {
         this.id = id;
     }
 
+    public TerraIndigena id(Long id) {
+        this.id = id;
+        return this;
+    }
+
     public String getDescricao() {
-        return descricao;
+        return this.descricao;
     }
 
     public TerraIndigena descricao(String descricao) {
@@ -66,11 +96,11 @@ public class TerraIndigena implements Serializable {
     }
 
     public Set<EtniaIndigena> getEtnias() {
-        return etnias;
+        return this.etnias;
     }
 
     public TerraIndigena etnias(Set<EtniaIndigena> etniaIndigenas) {
-        this.etnias = etniaIndigenas;
+        this.setEtnias(etniaIndigenas);
         return this;
     }
 
@@ -91,11 +121,11 @@ public class TerraIndigena implements Serializable {
     }
 
     public Set<Processo> getProcessos() {
-        return processos;
+        return this.processos;
     }
 
     public TerraIndigena processos(Set<Processo> processos) {
-        this.processos = processos;
+        this.setProcessos(processos);
         return this;
     }
 
@@ -112,8 +142,15 @@ public class TerraIndigena implements Serializable {
     }
 
     public void setProcessos(Set<Processo> processos) {
+        if (this.processos != null) {
+            this.processos.forEach(i -> i.removeTerraIndigena(this));
+        }
+        if (processos != null) {
+            processos.forEach(i -> i.addTerraIndigena(this));
+        }
         this.processos = processos;
     }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -129,7 +166,8 @@ public class TerraIndigena implements Serializable {
 
     @Override
     public int hashCode() {
-        return 31;
+        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        return getClass().hashCode();
     }
 
     // prettier-ignore

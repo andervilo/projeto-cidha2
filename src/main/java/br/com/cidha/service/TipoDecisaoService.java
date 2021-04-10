@@ -2,15 +2,13 @@ package br.com.cidha.service;
 
 import br.com.cidha.domain.TipoDecisao;
 import br.com.cidha.repository.TipoDecisaoRepository;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 /**
  * Service Implementation for managing {@link TipoDecisao}.
@@ -39,6 +37,29 @@ public class TipoDecisaoService {
     }
 
     /**
+     * Partially update a tipoDecisao.
+     *
+     * @param tipoDecisao the entity to update partially.
+     * @return the persisted entity.
+     */
+    public Optional<TipoDecisao> partialUpdate(TipoDecisao tipoDecisao) {
+        log.debug("Request to partially update TipoDecisao : {}", tipoDecisao);
+
+        return tipoDecisaoRepository
+            .findById(tipoDecisao.getId())
+            .map(
+                existingTipoDecisao -> {
+                    if (tipoDecisao.getDescricao() != null) {
+                        existingTipoDecisao.setDescricao(tipoDecisao.getDescricao());
+                    }
+
+                    return existingTipoDecisao;
+                }
+            )
+            .map(tipoDecisaoRepository::save);
+    }
+
+    /**
      * Get all the tipoDecisaos.
      *
      * @param pageable the pagination information.
@@ -49,7 +70,6 @@ public class TipoDecisaoService {
         log.debug("Request to get all TipoDecisaos");
         return tipoDecisaoRepository.findAll(pageable);
     }
-
 
     /**
      * Get one tipoDecisao by id.

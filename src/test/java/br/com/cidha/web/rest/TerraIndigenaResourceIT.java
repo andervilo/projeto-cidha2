@@ -1,22 +1,30 @@
 package br.com.cidha.web.rest;
 
-import br.com.cidha.CidhaApp;
-import br.com.cidha.domain.TerraIndigena;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasItem;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import br.com.cidha.IntegrationTest;
 import br.com.cidha.domain.EtniaIndigena;
 import br.com.cidha.domain.Processo;
+import br.com.cidha.domain.TerraIndigena;
 import br.com.cidha.repository.TerraIndigenaRepository;
 import br.com.cidha.service.TerraIndigenaService;
-import br.com.cidha.service.dto.TerraIndigenaCriteria;
-import br.com.cidha.service.TerraIndigenaQueryService;
-
+import br.com.cidha.service.criteria.TerraIndigenaCriteria;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
+import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
@@ -24,27 +32,24 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Base64Utils;
-import javax.persistence.EntityManager;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasItem;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Integration tests for the {@link TerraIndigenaResource} REST controller.
  */
-@SpringBootTest(classes = CidhaApp.class)
+@IntegrationTest
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @WithMockUser
-public class TerraIndigenaResourceIT {
+class TerraIndigenaResourceIT {
 
     private static final String DEFAULT_DESCRICAO = "AAAAAAAAAA";
     private static final String UPDATED_DESCRICAO = "BBBBBBBBBB";
+
+    private static final String ENTITY_API_URL = "/api/terra-indigenas";
+    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+
+    private static Random random = new Random();
+    private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
 
     @Autowired
     private TerraIndigenaRepository terraIndigenaRepository;
@@ -54,12 +59,6 @@ public class TerraIndigenaResourceIT {
 
     @Mock
     private TerraIndigenaService terraIndigenaServiceMock;
-
-    @Autowired
-    private TerraIndigenaService terraIndigenaService;
-
-    @Autowired
-    private TerraIndigenaQueryService terraIndigenaQueryService;
 
     @Autowired
     private EntityManager em;
@@ -76,10 +75,10 @@ public class TerraIndigenaResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static TerraIndigena createEntity(EntityManager em) {
-        TerraIndigena terraIndigena = new TerraIndigena()
-            .descricao(DEFAULT_DESCRICAO);
+        TerraIndigena terraIndigena = new TerraIndigena().descricao(DEFAULT_DESCRICAO);
         return terraIndigena;
     }
+
     /**
      * Create an updated entity for this test.
      *
@@ -87,8 +86,7 @@ public class TerraIndigenaResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static TerraIndigena createUpdatedEntity(EntityManager em) {
-        TerraIndigena terraIndigena = new TerraIndigena()
-            .descricao(UPDATED_DESCRICAO);
+        TerraIndigena terraIndigena = new TerraIndigena().descricao(UPDATED_DESCRICAO);
         return terraIndigena;
     }
 
@@ -99,12 +97,11 @@ public class TerraIndigenaResourceIT {
 
     @Test
     @Transactional
-    public void createTerraIndigena() throws Exception {
+    void createTerraIndigena() throws Exception {
         int databaseSizeBeforeCreate = terraIndigenaRepository.findAll().size();
         // Create the TerraIndigena
-        restTerraIndigenaMockMvc.perform(post("/api/terra-indigenas")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(terraIndigena)))
+        restTerraIndigenaMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(terraIndigena)))
             .andExpect(status().isCreated());
 
         // Validate the TerraIndigena in the database
@@ -116,16 +113,15 @@ public class TerraIndigenaResourceIT {
 
     @Test
     @Transactional
-    public void createTerraIndigenaWithExistingId() throws Exception {
-        int databaseSizeBeforeCreate = terraIndigenaRepository.findAll().size();
-
+    void createTerraIndigenaWithExistingId() throws Exception {
         // Create the TerraIndigena with an existing ID
         terraIndigena.setId(1L);
 
+        int databaseSizeBeforeCreate = terraIndigenaRepository.findAll().size();
+
         // An entity with an existing ID cannot be created, so this API call must fail
-        restTerraIndigenaMockMvc.perform(post("/api/terra-indigenas")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(terraIndigena)))
+        restTerraIndigenaMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(terraIndigena)))
             .andExpect(status().isBadRequest());
 
         // Validate the TerraIndigena in the database
@@ -133,59 +129,57 @@ public class TerraIndigenaResourceIT {
         assertThat(terraIndigenaList).hasSize(databaseSizeBeforeCreate);
     }
 
-
     @Test
     @Transactional
-    public void getAllTerraIndigenas() throws Exception {
+    void getAllTerraIndigenas() throws Exception {
         // Initialize the database
         terraIndigenaRepository.saveAndFlush(terraIndigena);
 
         // Get all the terraIndigenaList
-        restTerraIndigenaMockMvc.perform(get("/api/terra-indigenas?sort=id,desc"))
+        restTerraIndigenaMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(terraIndigena.getId().intValue())))
             .andExpect(jsonPath("$.[*].descricao").value(hasItem(DEFAULT_DESCRICAO.toString())));
     }
-    
-    @SuppressWarnings({"unchecked"})
-    public void getAllTerraIndigenasWithEagerRelationshipsIsEnabled() throws Exception {
+
+    @SuppressWarnings({ "unchecked" })
+    void getAllTerraIndigenasWithEagerRelationshipsIsEnabled() throws Exception {
         when(terraIndigenaServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
 
-        restTerraIndigenaMockMvc.perform(get("/api/terra-indigenas?eagerload=true"))
-            .andExpect(status().isOk());
+        restTerraIndigenaMockMvc.perform(get(ENTITY_API_URL + "?eagerload=true")).andExpect(status().isOk());
 
         verify(terraIndigenaServiceMock, times(1)).findAllWithEagerRelationships(any());
     }
 
-    @SuppressWarnings({"unchecked"})
-    public void getAllTerraIndigenasWithEagerRelationshipsIsNotEnabled() throws Exception {
+    @SuppressWarnings({ "unchecked" })
+    void getAllTerraIndigenasWithEagerRelationshipsIsNotEnabled() throws Exception {
         when(terraIndigenaServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
 
-        restTerraIndigenaMockMvc.perform(get("/api/terra-indigenas?eagerload=true"))
-            .andExpect(status().isOk());
+        restTerraIndigenaMockMvc.perform(get(ENTITY_API_URL + "?eagerload=true")).andExpect(status().isOk());
 
         verify(terraIndigenaServiceMock, times(1)).findAllWithEagerRelationships(any());
     }
 
     @Test
     @Transactional
-    public void getTerraIndigena() throws Exception {
+    void getTerraIndigena() throws Exception {
         // Initialize the database
         terraIndigenaRepository.saveAndFlush(terraIndigena);
 
         // Get the terraIndigena
-        restTerraIndigenaMockMvc.perform(get("/api/terra-indigenas/{id}", terraIndigena.getId()))
+        restTerraIndigenaMockMvc
+            .perform(get(ENTITY_API_URL_ID, terraIndigena.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(terraIndigena.getId().intValue()))
             .andExpect(jsonPath("$.descricao").value(DEFAULT_DESCRICAO.toString()));
     }
 
-
     @Test
     @Transactional
-    public void getTerraIndigenasByIdFiltering() throws Exception {
+    void getTerraIndigenasByIdFiltering() throws Exception {
         // Initialize the database
         terraIndigenaRepository.saveAndFlush(terraIndigena);
 
@@ -201,10 +195,9 @@ public class TerraIndigenaResourceIT {
         defaultTerraIndigenaShouldNotBeFound("id.lessThan=" + id);
     }
 
-
     @Test
     @Transactional
-    public void getAllTerraIndigenasByEtniaIsEqualToSomething() throws Exception {
+    void getAllTerraIndigenasByEtniaIsEqualToSomething() throws Exception {
         // Initialize the database
         terraIndigenaRepository.saveAndFlush(terraIndigena);
         EtniaIndigena etnia = EtniaIndigenaResourceIT.createEntity(em);
@@ -217,14 +210,13 @@ public class TerraIndigenaResourceIT {
         // Get all the terraIndigenaList where etnia equals to etniaId
         defaultTerraIndigenaShouldBeFound("etniaId.equals=" + etniaId);
 
-        // Get all the terraIndigenaList where etnia equals to etniaId + 1
+        // Get all the terraIndigenaList where etnia equals to (etniaId + 1)
         defaultTerraIndigenaShouldNotBeFound("etniaId.equals=" + (etniaId + 1));
     }
 
-
     @Test
     @Transactional
-    public void getAllTerraIndigenasByProcessoIsEqualToSomething() throws Exception {
+    void getAllTerraIndigenasByProcessoIsEqualToSomething() throws Exception {
         // Initialize the database
         terraIndigenaRepository.saveAndFlush(terraIndigena);
         Processo processo = ProcessoResourceIT.createEntity(em);
@@ -237,7 +229,7 @@ public class TerraIndigenaResourceIT {
         // Get all the terraIndigenaList where processo equals to processoId
         defaultTerraIndigenaShouldBeFound("processoId.equals=" + processoId);
 
-        // Get all the terraIndigenaList where processo equals to processoId + 1
+        // Get all the terraIndigenaList where processo equals to (processoId + 1)
         defaultTerraIndigenaShouldNotBeFound("processoId.equals=" + (processoId + 1));
     }
 
@@ -245,14 +237,16 @@ public class TerraIndigenaResourceIT {
      * Executes the search, and checks that the default entity is returned.
      */
     private void defaultTerraIndigenaShouldBeFound(String filter) throws Exception {
-        restTerraIndigenaMockMvc.perform(get("/api/terra-indigenas?sort=id,desc&" + filter))
+        restTerraIndigenaMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(terraIndigena.getId().intValue())))
             .andExpect(jsonPath("$.[*].descricao").value(hasItem(DEFAULT_DESCRICAO.toString())));
 
         // Check, that the count call also returns 1
-        restTerraIndigenaMockMvc.perform(get("/api/terra-indigenas/count?sort=id,desc&" + filter))
+        restTerraIndigenaMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("1"));
@@ -262,14 +256,16 @@ public class TerraIndigenaResourceIT {
      * Executes the search, and checks that the default entity is not returned.
      */
     private void defaultTerraIndigenaShouldNotBeFound(String filter) throws Exception {
-        restTerraIndigenaMockMvc.perform(get("/api/terra-indigenas?sort=id,desc&" + filter))
+        restTerraIndigenaMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$").isEmpty());
 
         // Check, that the count call also returns 0
-        restTerraIndigenaMockMvc.perform(get("/api/terra-indigenas/count?sort=id,desc&" + filter))
+        restTerraIndigenaMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("0"));
@@ -277,17 +273,16 @@ public class TerraIndigenaResourceIT {
 
     @Test
     @Transactional
-    public void getNonExistingTerraIndigena() throws Exception {
+    void getNonExistingTerraIndigena() throws Exception {
         // Get the terraIndigena
-        restTerraIndigenaMockMvc.perform(get("/api/terra-indigenas/{id}", Long.MAX_VALUE))
-            .andExpect(status().isNotFound());
+        restTerraIndigenaMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
     @Test
     @Transactional
-    public void updateTerraIndigena() throws Exception {
+    void putNewTerraIndigena() throws Exception {
         // Initialize the database
-        terraIndigenaService.save(terraIndigena);
+        terraIndigenaRepository.saveAndFlush(terraIndigena);
 
         int databaseSizeBeforeUpdate = terraIndigenaRepository.findAll().size();
 
@@ -295,12 +290,14 @@ public class TerraIndigenaResourceIT {
         TerraIndigena updatedTerraIndigena = terraIndigenaRepository.findById(terraIndigena.getId()).get();
         // Disconnect from session so that the updates on updatedTerraIndigena are not directly saved in db
         em.detach(updatedTerraIndigena);
-        updatedTerraIndigena
-            .descricao(UPDATED_DESCRICAO);
+        updatedTerraIndigena.descricao(UPDATED_DESCRICAO);
 
-        restTerraIndigenaMockMvc.perform(put("/api/terra-indigenas")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(updatedTerraIndigena)))
+        restTerraIndigenaMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, updatedTerraIndigena.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(updatedTerraIndigena))
+            )
             .andExpect(status().isOk());
 
         // Validate the TerraIndigena in the database
@@ -312,13 +309,17 @@ public class TerraIndigenaResourceIT {
 
     @Test
     @Transactional
-    public void updateNonExistingTerraIndigena() throws Exception {
+    void putNonExistingTerraIndigena() throws Exception {
         int databaseSizeBeforeUpdate = terraIndigenaRepository.findAll().size();
+        terraIndigena.setId(count.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restTerraIndigenaMockMvc.perform(put("/api/terra-indigenas")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(terraIndigena)))
+        restTerraIndigenaMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, terraIndigena.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(terraIndigena))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the TerraIndigena in the database
@@ -328,15 +329,167 @@ public class TerraIndigenaResourceIT {
 
     @Test
     @Transactional
-    public void deleteTerraIndigena() throws Exception {
+    void putWithIdMismatchTerraIndigena() throws Exception {
+        int databaseSizeBeforeUpdate = terraIndigenaRepository.findAll().size();
+        terraIndigena.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restTerraIndigenaMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(terraIndigena))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the TerraIndigena in the database
+        List<TerraIndigena> terraIndigenaList = terraIndigenaRepository.findAll();
+        assertThat(terraIndigenaList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void putWithMissingIdPathParamTerraIndigena() throws Exception {
+        int databaseSizeBeforeUpdate = terraIndigenaRepository.findAll().size();
+        terraIndigena.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restTerraIndigenaMockMvc
+            .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(terraIndigena)))
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the TerraIndigena in the database
+        List<TerraIndigena> terraIndigenaList = terraIndigenaRepository.findAll();
+        assertThat(terraIndigenaList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void partialUpdateTerraIndigenaWithPatch() throws Exception {
         // Initialize the database
-        terraIndigenaService.save(terraIndigena);
+        terraIndigenaRepository.saveAndFlush(terraIndigena);
+
+        int databaseSizeBeforeUpdate = terraIndigenaRepository.findAll().size();
+
+        // Update the terraIndigena using partial update
+        TerraIndigena partialUpdatedTerraIndigena = new TerraIndigena();
+        partialUpdatedTerraIndigena.setId(terraIndigena.getId());
+
+        partialUpdatedTerraIndigena.descricao(UPDATED_DESCRICAO);
+
+        restTerraIndigenaMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedTerraIndigena.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedTerraIndigena))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the TerraIndigena in the database
+        List<TerraIndigena> terraIndigenaList = terraIndigenaRepository.findAll();
+        assertThat(terraIndigenaList).hasSize(databaseSizeBeforeUpdate);
+        TerraIndigena testTerraIndigena = terraIndigenaList.get(terraIndigenaList.size() - 1);
+        assertThat(testTerraIndigena.getDescricao()).isEqualTo(UPDATED_DESCRICAO);
+    }
+
+    @Test
+    @Transactional
+    void fullUpdateTerraIndigenaWithPatch() throws Exception {
+        // Initialize the database
+        terraIndigenaRepository.saveAndFlush(terraIndigena);
+
+        int databaseSizeBeforeUpdate = terraIndigenaRepository.findAll().size();
+
+        // Update the terraIndigena using partial update
+        TerraIndigena partialUpdatedTerraIndigena = new TerraIndigena();
+        partialUpdatedTerraIndigena.setId(terraIndigena.getId());
+
+        partialUpdatedTerraIndigena.descricao(UPDATED_DESCRICAO);
+
+        restTerraIndigenaMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedTerraIndigena.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedTerraIndigena))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the TerraIndigena in the database
+        List<TerraIndigena> terraIndigenaList = terraIndigenaRepository.findAll();
+        assertThat(terraIndigenaList).hasSize(databaseSizeBeforeUpdate);
+        TerraIndigena testTerraIndigena = terraIndigenaList.get(terraIndigenaList.size() - 1);
+        assertThat(testTerraIndigena.getDescricao()).isEqualTo(UPDATED_DESCRICAO);
+    }
+
+    @Test
+    @Transactional
+    void patchNonExistingTerraIndigena() throws Exception {
+        int databaseSizeBeforeUpdate = terraIndigenaRepository.findAll().size();
+        terraIndigena.setId(count.incrementAndGet());
+
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
+        restTerraIndigenaMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, terraIndigena.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(terraIndigena))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the TerraIndigena in the database
+        List<TerraIndigena> terraIndigenaList = terraIndigenaRepository.findAll();
+        assertThat(terraIndigenaList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithIdMismatchTerraIndigena() throws Exception {
+        int databaseSizeBeforeUpdate = terraIndigenaRepository.findAll().size();
+        terraIndigena.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restTerraIndigenaMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(terraIndigena))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the TerraIndigena in the database
+        List<TerraIndigena> terraIndigenaList = terraIndigenaRepository.findAll();
+        assertThat(terraIndigenaList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithMissingIdPathParamTerraIndigena() throws Exception {
+        int databaseSizeBeforeUpdate = terraIndigenaRepository.findAll().size();
+        terraIndigena.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restTerraIndigenaMockMvc
+            .perform(
+                patch(ENTITY_API_URL).contentType("application/merge-patch+json").content(TestUtil.convertObjectToJsonBytes(terraIndigena))
+            )
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the TerraIndigena in the database
+        List<TerraIndigena> terraIndigenaList = terraIndigenaRepository.findAll();
+        assertThat(terraIndigenaList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void deleteTerraIndigena() throws Exception {
+        // Initialize the database
+        terraIndigenaRepository.saveAndFlush(terraIndigena);
 
         int databaseSizeBeforeDelete = terraIndigenaRepository.findAll().size();
 
         // Delete the terraIndigena
-        restTerraIndigenaMockMvc.perform(delete("/api/terra-indigenas/{id}", terraIndigena.getId())
-            .accept(MediaType.APPLICATION_JSON))
+        restTerraIndigenaMockMvc
+            .perform(delete(ENTITY_API_URL_ID, terraIndigena.getId()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item

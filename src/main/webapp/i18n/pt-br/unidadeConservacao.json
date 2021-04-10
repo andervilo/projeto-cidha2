@@ -3,6 +3,7 @@
     "unidadeConservacao": {
       "home": {
         "title": "Unidade Conservacaos",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Unidade Conservacao",
         "createOrEditLabel": "Criar ou editar Unidade Conservacao",
         "notFound": "Nenhum Unidade Conservacao encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Unidade Conservacao"
       },
+      "id": "ID",
       "descricao": "Descricao",
       "processo": "Processo"
     }

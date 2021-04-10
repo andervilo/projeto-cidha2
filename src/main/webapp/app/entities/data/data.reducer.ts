@@ -11,6 +11,7 @@ export const ACTION_TYPES = {
   FETCH_DATA: 'data/FETCH_DATA',
   CREATE_DATA: 'data/CREATE_DATA',
   UPDATE_DATA: 'data/UPDATE_DATA',
+  PARTIAL_UPDATE_DATA: 'data/PARTIAL_UPDATE_DATA',
   DELETE_DATA: 'data/DELETE_DATA',
   RESET: 'data/RESET',
 };
@@ -42,6 +43,7 @@ export default (state: DataState = initialState, action): DataState => {
     case REQUEST(ACTION_TYPES.CREATE_DATA):
     case REQUEST(ACTION_TYPES.UPDATE_DATA):
     case REQUEST(ACTION_TYPES.DELETE_DATA):
+    case REQUEST(ACTION_TYPES.PARTIAL_UPDATE_DATA):
       return {
         ...state,
         errorMessage: null,
@@ -52,6 +54,7 @@ export default (state: DataState = initialState, action): DataState => {
     case FAILURE(ACTION_TYPES.FETCH_DATA):
     case FAILURE(ACTION_TYPES.CREATE_DATA):
     case FAILURE(ACTION_TYPES.UPDATE_DATA):
+    case FAILURE(ACTION_TYPES.PARTIAL_UPDATE_DATA):
     case FAILURE(ACTION_TYPES.DELETE_DATA):
       return {
         ...state,
@@ -75,6 +78,7 @@ export default (state: DataState = initialState, action): DataState => {
       };
     case SUCCESS(ACTION_TYPES.CREATE_DATA):
     case SUCCESS(ACTION_TYPES.UPDATE_DATA):
+    case SUCCESS(ACTION_TYPES.PARTIAL_UPDATE_DATA):
       return {
         ...state,
         updating: false,
@@ -129,7 +133,15 @@ export const createEntity: ICrudPutAction<IData> = entity => async dispatch => {
 export const updateEntity: ICrudPutAction<IData> = entity => async dispatch => {
   const result = await dispatch({
     type: ACTION_TYPES.UPDATE_DATA,
-    payload: axios.put(apiUrl, cleanEntity(entity)),
+    payload: axios.put(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
+  });
+  return result;
+};
+
+export const partialUpdate: ICrudPutAction<IData> = entity => async dispatch => {
+  const result = await dispatch({
+    type: ACTION_TYPES.PARTIAL_UPDATE_DATA,
+    payload: axios.patch(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
   });
   return result;
 };

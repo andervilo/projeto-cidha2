@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Col, Row, Table } from 'reactstrap';
-import { Translate, ICrudGetAllAction, TextFormat, getSortState, IPaginationBaseState, JhiPagination, JhiItemCount } from 'react-jhipster';
+import { Translate, TextFormat, getSortState, IPaginationBaseState, JhiPagination, JhiItemCount } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
@@ -16,7 +16,7 @@ export interface IDataProps extends StateProps, DispatchProps, RouteComponentPro
 
 export const Data = (props: IDataProps) => {
   const [paginationState, setPaginationState] = useState(
-    overridePaginationStateWithQueryParams(getSortState(props.location, ITEMS_PER_PAGE), props.location.search)
+    overridePaginationStateWithQueryParams(getSortState(props.location, ITEMS_PER_PAGE, 'id'), props.location.search)
   );
 
   const getAllEntities = () => {
@@ -64,16 +64,26 @@ export const Data = (props: IDataProps) => {
       activePage: currentPage,
     });
 
+  const handleSyncList = () => {
+    sortEntities();
+  };
+
   const { dataList, match, loading, totalItems } = props;
   return (
     <div>
-      <h2 id="data-heading">
+      <h2 id="data-heading" data-cy="DataHeading">
         <Translate contentKey="cidhaApp.data.home.title">Data</Translate>
-        <Link to={`${match.url}/new`} className="btn btn-primary float-right jh-create-entity" id="jh-create-entity">
-          <FontAwesomeIcon icon="plus" />
-          &nbsp;
-          <Translate contentKey="cidhaApp.data.home.createLabel">Create new Data</Translate>
-        </Link>
+        <div className="d-flex justify-content-end">
+          <Button className="mr-2" color="info" onClick={handleSyncList} disabled={loading}>
+            <FontAwesomeIcon icon="sync" spin={loading} />{' '}
+            <Translate contentKey="cidhaApp.data.home.refreshListLabel">Refresh List</Translate>
+          </Button>
+          <Link to={`${match.url}/new`} className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
+            <FontAwesomeIcon icon="plus" />
+            &nbsp;
+            <Translate contentKey="cidhaApp.data.home.createLabel">Create new Data</Translate>
+          </Link>
+        </div>
       </h2>
       <div className="table-responsive">
         {dataList && dataList.length > 0 ? (
@@ -81,7 +91,7 @@ export const Data = (props: IDataProps) => {
             <thead>
               <tr>
                 <th className="hand" onClick={sort('id')}>
-                  <Translate contentKey="global.field.id">ID</Translate> <FontAwesomeIcon icon="sort" />
+                  <Translate contentKey="cidhaApp.data.id">ID</Translate> <FontAwesomeIcon icon="sort" />
                 </th>
                 <th className="hand" onClick={sort('data')}>
                   <Translate contentKey="cidhaApp.data.data">Data</Translate> <FontAwesomeIcon icon="sort" />
@@ -97,7 +107,7 @@ export const Data = (props: IDataProps) => {
             </thead>
             <tbody>
               {dataList.map((data, i) => (
-                <tr key={`entity-${i}`}>
+                <tr key={`entity-${i}`} data-cy="entityTable">
                   <td>
                     <Button tag={Link} to={`${match.url}/${data.id}`} color="link" size="sm">
                       {data.id}
@@ -108,7 +118,7 @@ export const Data = (props: IDataProps) => {
                   <td>{data.processo ? <Link to={`processo/${data.processo.id}`}>{data.processo.oficio}</Link> : ''}</td>
                   <td className="text-right">
                     <div className="btn-group flex-btn-group-container">
-                      <Button tag={Link} to={`${match.url}/${data.id}`} color="info" size="sm">
+                      <Button tag={Link} to={`${match.url}/${data.id}`} color="info" size="sm" data-cy="entityDetailsButton">
                         <FontAwesomeIcon icon="eye" />{' '}
                         <span className="d-none d-md-inline">
                           <Translate contentKey="entity.action.view">View</Translate>
@@ -119,6 +129,7 @@ export const Data = (props: IDataProps) => {
                         to={`${match.url}/${data.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
                         color="primary"
                         size="sm"
+                        data-cy="entityEditButton"
                       >
                         <FontAwesomeIcon icon="pencil-alt" />{' '}
                         <span className="d-none d-md-inline">
@@ -130,6 +141,7 @@ export const Data = (props: IDataProps) => {
                         to={`${match.url}/${data.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
                         color="danger"
                         size="sm"
+                        data-cy="entityDeleteButton"
                       >
                         <FontAwesomeIcon icon="trash" />{' '}
                         <span className="d-none d-md-inline">

@@ -3,6 +3,7 @@
     "processo": {
       "home": {
         "title": "Processos",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Processo",
         "createOrEditLabel": "Criar ou editar Processo",
         "notFound": "Nenhum Processo encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Processo"
       },
+      "id": "ID",
       "oficio": "Oficio",
       "assunto": "Assunto",
       "linkUnico": "Link Unico",

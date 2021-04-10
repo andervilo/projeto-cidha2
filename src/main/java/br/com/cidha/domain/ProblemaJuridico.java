@@ -1,14 +1,13 @@
 package br.com.cidha.domain;
 
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Type;
-
-import javax.persistence.*;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.*;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Type;
 
 /**
  * A ProblemaJuridico.
@@ -35,37 +34,76 @@ public class ProblemaJuridico implements Serializable {
 
     @ManyToMany
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JoinTable(name = "problema_juridico_fundamentacao_doutrinaria",
-               joinColumns = @JoinColumn(name = "problema_juridico_id", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name = "fundamentacao_doutrinaria_id", referencedColumnName = "id"))
+    @JoinTable(
+        name = "rel_problema_juridico__fundamentacao_doutrinaria",
+        joinColumns = @JoinColumn(name = "problema_juridico_id"),
+        inverseJoinColumns = @JoinColumn(name = "fundamentacao_doutrinaria_id")
+    )
+    @JsonIgnoreProperties(value = { "problemaJuridicos" }, allowSetters = true)
     private Set<FundamentacaoDoutrinaria> fundamentacaoDoutrinarias = new HashSet<>();
 
     @ManyToMany
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JoinTable(name = "problema_juridico_jurisprudencia",
-               joinColumns = @JoinColumn(name = "problema_juridico_id", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name = "jurisprudencia_id", referencedColumnName = "id"))
+    @JoinTable(
+        name = "rel_problema_juridico__jurisprudencia",
+        joinColumns = @JoinColumn(name = "problema_juridico_id"),
+        inverseJoinColumns = @JoinColumn(name = "jurisprudencia_id")
+    )
+    @JsonIgnoreProperties(value = { "problemaJuridicos" }, allowSetters = true)
     private Set<Jurisprudencia> jurisprudencias = new HashSet<>();
 
     @ManyToMany
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JoinTable(name = "problema_juridico_fundamentacao_legal",
-               joinColumns = @JoinColumn(name = "problema_juridico_id", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name = "fundamentacao_legal_id", referencedColumnName = "id"))
+    @JoinTable(
+        name = "rel_problema_juridico__fundamentacao_legal",
+        joinColumns = @JoinColumn(name = "problema_juridico_id"),
+        inverseJoinColumns = @JoinColumn(name = "fundamentacao_legal_id")
+    )
+    @JsonIgnoreProperties(value = { "problemaJuridicos" }, allowSetters = true)
     private Set<FundamentacaoLegal> fundamentacaoLegals = new HashSet<>();
 
     @ManyToMany
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JoinTable(name = "problema_juridico_instrumento_internacional",
-               joinColumns = @JoinColumn(name = "problema_juridico_id", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name = "instrumento_internacional_id", referencedColumnName = "id"))
+    @JoinTable(
+        name = "rel_problema_juridico__instrumento_internacional",
+        joinColumns = @JoinColumn(name = "problema_juridico_id"),
+        inverseJoinColumns = @JoinColumn(name = "instrumento_internacional_id")
+    )
+    @JsonIgnoreProperties(value = { "problemaJuridicos" }, allowSetters = true)
     private Set<InstrumentoInternacional> instrumentoInternacionals = new HashSet<>();
 
     @ManyToMany
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JoinTable(name = "problema_juridico_processo",
-               joinColumns = @JoinColumn(name = "problema_juridico_id", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name = "processo_id", referencedColumnName = "id"))
+    @JoinTable(
+        name = "rel_problema_juridico__processo",
+        joinColumns = @JoinColumn(name = "problema_juridico_id"),
+        inverseJoinColumns = @JoinColumn(name = "processo_id")
+    )
+    @JsonIgnoreProperties(
+        value = {
+            "concessaoLiminars",
+            "concessaoLiminarCassadas",
+            "embargoRespRes",
+            "embargoDeclaracaoAgravos",
+            "embargoDeclaracaos",
+            "embargoRecursoEspecials",
+            "tipoDecisao",
+            "tipoEmpreendimento",
+            "comarcas",
+            "quilombos",
+            "municipios",
+            "territorios",
+            "atividadeExploracaoIlegals",
+            "unidadeConservacaos",
+            "envolvidosConflitoLitigios",
+            "terraIndigenas",
+            "processoConflitos",
+            "parteInteresssadas",
+            "relators",
+            "problemaJuridicos",
+        },
+        allowSetters = true
+    )
     private Set<Processo> processos = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -77,8 +115,13 @@ public class ProblemaJuridico implements Serializable {
         this.id = id;
     }
 
+    public ProblemaJuridico id(Long id) {
+        this.id = id;
+        return this;
+    }
+
     public String getProlemaJuridicoRespondido() {
-        return prolemaJuridicoRespondido;
+        return this.prolemaJuridicoRespondido;
     }
 
     public ProblemaJuridico prolemaJuridicoRespondido(String prolemaJuridicoRespondido) {
@@ -91,7 +134,7 @@ public class ProblemaJuridico implements Serializable {
     }
 
     public String getFolhasProblemaJuridico() {
-        return folhasProblemaJuridico;
+        return this.folhasProblemaJuridico;
     }
 
     public ProblemaJuridico folhasProblemaJuridico(String folhasProblemaJuridico) {
@@ -104,11 +147,11 @@ public class ProblemaJuridico implements Serializable {
     }
 
     public Set<FundamentacaoDoutrinaria> getFundamentacaoDoutrinarias() {
-        return fundamentacaoDoutrinarias;
+        return this.fundamentacaoDoutrinarias;
     }
 
     public ProblemaJuridico fundamentacaoDoutrinarias(Set<FundamentacaoDoutrinaria> fundamentacaoDoutrinarias) {
-        this.fundamentacaoDoutrinarias = fundamentacaoDoutrinarias;
+        this.setFundamentacaoDoutrinarias(fundamentacaoDoutrinarias);
         return this;
     }
 
@@ -129,11 +172,11 @@ public class ProblemaJuridico implements Serializable {
     }
 
     public Set<Jurisprudencia> getJurisprudencias() {
-        return jurisprudencias;
+        return this.jurisprudencias;
     }
 
     public ProblemaJuridico jurisprudencias(Set<Jurisprudencia> jurisprudencias) {
-        this.jurisprudencias = jurisprudencias;
+        this.setJurisprudencias(jurisprudencias);
         return this;
     }
 
@@ -154,11 +197,11 @@ public class ProblemaJuridico implements Serializable {
     }
 
     public Set<FundamentacaoLegal> getFundamentacaoLegals() {
-        return fundamentacaoLegals;
+        return this.fundamentacaoLegals;
     }
 
     public ProblemaJuridico fundamentacaoLegals(Set<FundamentacaoLegal> fundamentacaoLegals) {
-        this.fundamentacaoLegals = fundamentacaoLegals;
+        this.setFundamentacaoLegals(fundamentacaoLegals);
         return this;
     }
 
@@ -179,11 +222,11 @@ public class ProblemaJuridico implements Serializable {
     }
 
     public Set<InstrumentoInternacional> getInstrumentoInternacionals() {
-        return instrumentoInternacionals;
+        return this.instrumentoInternacionals;
     }
 
     public ProblemaJuridico instrumentoInternacionals(Set<InstrumentoInternacional> instrumentoInternacionals) {
-        this.instrumentoInternacionals = instrumentoInternacionals;
+        this.setInstrumentoInternacionals(instrumentoInternacionals);
         return this;
     }
 
@@ -204,11 +247,11 @@ public class ProblemaJuridico implements Serializable {
     }
 
     public Set<Processo> getProcessos() {
-        return processos;
+        return this.processos;
     }
 
     public ProblemaJuridico processos(Set<Processo> processos) {
-        this.processos = processos;
+        this.setProcessos(processos);
         return this;
     }
 
@@ -227,6 +270,7 @@ public class ProblemaJuridico implements Serializable {
     public void setProcessos(Set<Processo> processos) {
         this.processos = processos;
     }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -242,7 +286,8 @@ public class ProblemaJuridico implements Serializable {
 
     @Override
     public int hashCode() {
-        return 31;
+        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        return getClass().hashCode();
     }
 
     // prettier-ignore

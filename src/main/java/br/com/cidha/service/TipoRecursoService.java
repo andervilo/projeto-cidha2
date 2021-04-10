@@ -2,15 +2,13 @@ package br.com.cidha.service;
 
 import br.com.cidha.domain.TipoRecurso;
 import br.com.cidha.repository.TipoRecursoRepository;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 /**
  * Service Implementation for managing {@link TipoRecurso}.
@@ -39,6 +37,29 @@ public class TipoRecursoService {
     }
 
     /**
+     * Partially update a tipoRecurso.
+     *
+     * @param tipoRecurso the entity to update partially.
+     * @return the persisted entity.
+     */
+    public Optional<TipoRecurso> partialUpdate(TipoRecurso tipoRecurso) {
+        log.debug("Request to partially update TipoRecurso : {}", tipoRecurso);
+
+        return tipoRecursoRepository
+            .findById(tipoRecurso.getId())
+            .map(
+                existingTipoRecurso -> {
+                    if (tipoRecurso.getDescricao() != null) {
+                        existingTipoRecurso.setDescricao(tipoRecurso.getDescricao());
+                    }
+
+                    return existingTipoRecurso;
+                }
+            )
+            .map(tipoRecursoRepository::save);
+    }
+
+    /**
      * Get all the tipoRecursos.
      *
      * @param pageable the pagination information.
@@ -49,7 +70,6 @@ public class TipoRecursoService {
         log.debug("Request to get all TipoRecursos");
         return tipoRecursoRepository.findAll(pageable);
     }
-
 
     /**
      * Get one tipoRecurso by id.

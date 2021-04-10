@@ -1,9 +1,11 @@
 package br.com.cidha.service;
 
+import br.com.cidha.domain.*; // for static metamodels
+import br.com.cidha.domain.Data;
+import br.com.cidha.repository.DataRepository;
+import br.com.cidha.service.criteria.DataCriteria;
 import java.util.List;
-
 import javax.persistence.criteria.JoinType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -11,13 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import io.github.jhipster.service.QueryService;
-
-import br.com.cidha.domain.Data;
-import br.com.cidha.domain.*; // for static metamodels
-import br.com.cidha.repository.DataRepository;
-import br.com.cidha.service.dto.DataCriteria;
+import tech.jhipster.service.QueryService;
 
 /**
  * Service for executing complex queries for {@link Data} entities in the database.
@@ -89,12 +85,16 @@ public class DataQueryService extends QueryService<Data> {
                 specification = specification.and(buildRangeSpecification(criteria.getData(), Data_.data));
             }
             if (criteria.getTipoDataId() != null) {
-                specification = specification.and(buildSpecification(criteria.getTipoDataId(),
-                    root -> root.join(Data_.tipoData, JoinType.LEFT).get(TipoData_.id)));
+                specification =
+                    specification.and(
+                        buildSpecification(criteria.getTipoDataId(), root -> root.join(Data_.tipoData, JoinType.LEFT).get(TipoData_.id))
+                    );
             }
             if (criteria.getProcessoId() != null) {
-                specification = specification.and(buildSpecification(criteria.getProcessoId(),
-                    root -> root.join(Data_.processo, JoinType.LEFT).get(Processo_.id)));
+                specification =
+                    specification.and(
+                        buildSpecification(criteria.getProcessoId(), root -> root.join(Data_.processo, JoinType.LEFT).get(Processo_.id))
+                    );
             }
         }
         return specification;

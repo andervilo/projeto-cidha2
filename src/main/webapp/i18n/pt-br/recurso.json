@@ -3,6 +3,7 @@
     "recurso": {
       "home": {
         "title": "Recursos",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Recurso",
         "createOrEditLabel": "Criar ou editar Recurso",
         "notFound": "Nenhum Recurso encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Recurso"
       },
+      "id": "ID",
       "observacoes": "Observacoes",
       "tipoRecurso": "Tipo Recurso",
       "opcaoRecurso": "Opcao Recurso",

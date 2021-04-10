@@ -2,10 +2,9 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
-import { Translate, ICrudGetAction, ICrudDeleteAction } from 'react-jhipster';
+import { Translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { IFundamentacaoLegal } from 'app/shared/model/fundamentacao-legal.model';
 import { IRootState } from 'app/shared/reducers';
 import { getEntity, deleteEntity } from './fundamentacao-legal.reducer';
 
@@ -33,7 +32,7 @@ export const FundamentacaoLegalDeleteDialog = (props: IFundamentacaoLegalDeleteD
   const { fundamentacaoLegalEntity } = props;
   return (
     <Modal isOpen toggle={handleClose}>
-      <ModalHeader toggle={handleClose}>
+      <ModalHeader toggle={handleClose} data-cy="fundamentacaoLegalDeleteDialogHeading">
         <Translate contentKey="entity.delete.title">Confirm delete operation</Translate>
       </ModalHeader>
       <ModalBody id="cidhaApp.fundamentacaoLegal.delete.question">
@@ -47,7 +46,7 @@ export const FundamentacaoLegalDeleteDialog = (props: IFundamentacaoLegalDeleteD
           &nbsp;
           <Translate contentKey="entity.action.cancel">Cancel</Translate>
         </Button>
-        <Button id="jhi-confirm-delete-fundamentacaoLegal" color="danger" onClick={confirmDelete}>
+        <Button id="jhi-confirm-delete-fundamentacaoLegal" data-cy="entityConfirmDeleteButton" color="danger" onClick={confirmDelete}>
           <FontAwesomeIcon icon="trash" />
           &nbsp;
           <Translate contentKey="entity.action.delete">Delete</Translate>

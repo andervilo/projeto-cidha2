@@ -11,6 +11,7 @@ export const ACTION_TYPES = {
   FETCH_TERRITORIO: 'territorio/FETCH_TERRITORIO',
   CREATE_TERRITORIO: 'territorio/CREATE_TERRITORIO',
   UPDATE_TERRITORIO: 'territorio/UPDATE_TERRITORIO',
+  PARTIAL_UPDATE_TERRITORIO: 'territorio/PARTIAL_UPDATE_TERRITORIO',
   DELETE_TERRITORIO: 'territorio/DELETE_TERRITORIO',
   RESET: 'territorio/RESET',
 };
@@ -42,6 +43,7 @@ export default (state: TerritorioState = initialState, action): TerritorioState 
     case REQUEST(ACTION_TYPES.CREATE_TERRITORIO):
     case REQUEST(ACTION_TYPES.UPDATE_TERRITORIO):
     case REQUEST(ACTION_TYPES.DELETE_TERRITORIO):
+    case REQUEST(ACTION_TYPES.PARTIAL_UPDATE_TERRITORIO):
       return {
         ...state,
         errorMessage: null,
@@ -52,6 +54,7 @@ export default (state: TerritorioState = initialState, action): TerritorioState 
     case FAILURE(ACTION_TYPES.FETCH_TERRITORIO):
     case FAILURE(ACTION_TYPES.CREATE_TERRITORIO):
     case FAILURE(ACTION_TYPES.UPDATE_TERRITORIO):
+    case FAILURE(ACTION_TYPES.PARTIAL_UPDATE_TERRITORIO):
     case FAILURE(ACTION_TYPES.DELETE_TERRITORIO):
       return {
         ...state,
@@ -75,6 +78,7 @@ export default (state: TerritorioState = initialState, action): TerritorioState 
       };
     case SUCCESS(ACTION_TYPES.CREATE_TERRITORIO):
     case SUCCESS(ACTION_TYPES.UPDATE_TERRITORIO):
+    case SUCCESS(ACTION_TYPES.PARTIAL_UPDATE_TERRITORIO):
       return {
         ...state,
         updating: false,
@@ -129,7 +133,15 @@ export const createEntity: ICrudPutAction<ITerritorio> = entity => async dispatc
 export const updateEntity: ICrudPutAction<ITerritorio> = entity => async dispatch => {
   const result = await dispatch({
     type: ACTION_TYPES.UPDATE_TERRITORIO,
-    payload: axios.put(apiUrl, cleanEntity(entity)),
+    payload: axios.put(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
+  });
+  return result;
+};
+
+export const partialUpdate: ICrudPutAction<ITerritorio> = entity => async dispatch => {
+  const result = await dispatch({
+    type: ACTION_TYPES.PARTIAL_UPDATE_TERRITORIO,
+    payload: axios.patch(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
   });
   return result;
 };

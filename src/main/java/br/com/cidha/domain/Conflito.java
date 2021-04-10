@@ -1,13 +1,11 @@
 package br.com.cidha.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.io.Serializable;
+import javax.persistence.*;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
-
-import javax.persistence.*;
-
-import java.io.Serializable;
 
 /**
  * A Conflito.
@@ -30,7 +28,7 @@ public class Conflito implements Serializable {
     private String descricao;
 
     @ManyToOne
-    @JsonIgnoreProperties(value = "conflitos", allowSetters = true)
+    @JsonIgnoreProperties(value = { "conflitos", "direitos", "processos" }, allowSetters = true)
     private ProcessoConflito processoConflito;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -42,8 +40,13 @@ public class Conflito implements Serializable {
         this.id = id;
     }
 
+    public Conflito id(Long id) {
+        this.id = id;
+        return this;
+    }
+
     public String getDescricao() {
-        return descricao;
+        return this.descricao;
     }
 
     public Conflito descricao(String descricao) {
@@ -56,17 +59,18 @@ public class Conflito implements Serializable {
     }
 
     public ProcessoConflito getProcessoConflito() {
-        return processoConflito;
+        return this.processoConflito;
     }
 
     public Conflito processoConflito(ProcessoConflito processoConflito) {
-        this.processoConflito = processoConflito;
+        this.setProcessoConflito(processoConflito);
         return this;
     }
 
     public void setProcessoConflito(ProcessoConflito processoConflito) {
         this.processoConflito = processoConflito;
     }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -82,7 +86,8 @@ public class Conflito implements Serializable {
 
     @Override
     public int hashCode() {
-        return 31;
+        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        return getClass().hashCode();
     }
 
     // prettier-ignore

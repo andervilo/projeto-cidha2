@@ -1,13 +1,14 @@
 package br.com.cidha.domain;
 
-import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
-import br.com.cidha.web.rest.TestUtil;
 
-public class EnvolvidosConflitoLitigioTest {
+import br.com.cidha.web.rest.TestUtil;
+import org.junit.jupiter.api.Test;
+
+class EnvolvidosConflitoLitigioTest {
 
     @Test
-    public void equalsVerifier() throws Exception {
+    void equalsVerifier() throws Exception {
         TestUtil.equalsVerifier(EnvolvidosConflitoLitigio.class);
         EnvolvidosConflitoLitigio envolvidosConflitoLitigio1 = new EnvolvidosConflitoLitigio();
         envolvidosConflitoLitigio1.setId(1L);

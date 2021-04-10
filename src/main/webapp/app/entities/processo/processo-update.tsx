@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col, Label } from 'reactstrap';
 import { AvFeedback, AvForm, AvGroup, AvInput, AvField } from 'availity-reactstrap-validation';
-import { Translate, translate, ICrudGetAction, ICrudGetAllAction, setFileData, byteSize, ICrudPutAction } from 'react-jhipster';
+import { setFileData, byteSize, Translate, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
@@ -54,10 +54,7 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
   const [idsprocessoConflito, setIdsprocessoConflito] = useState([]);
   const [idsparteInteresssada, setIdsparteInteresssada] = useState([]);
   const [idsrelator, setIdsrelator] = useState([]);
-  const [tipoDecisaoId, setTipoDecisaoId] = useState('0');
-  const [tipoEmpreendimentoId, setTipoEmpreendimentoId] = useState('0');
-  const [problemaJuridicoId, setProblemaJuridicoId] = useState('0');
-  const [isNew, setIsNew] = useState(!props.match.params || !props.match.params.id);
+  const [isNew] = useState(!props.match.params || !props.match.params.id);
 
   const {
     processoEntity,
@@ -138,6 +135,8 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
         processoConflitos: mapIdList(values.processoConflitos),
         parteInteresssadas: mapIdList(values.parteInteresssadas),
         relators: mapIdList(values.relators),
+        tipoDecisao: tipoDecisaos.find(it => it.id.toString() === values.tipoDecisaoId.toString()),
+        tipoEmpreendimento: tipoEmpreendimentos.find(it => it.id.toString() === values.tipoEmpreendimentoId.toString()),
       };
 
       if (isNew) {
@@ -152,7 +151,7 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="cidhaApp.processo.home.createOrEditLabel">
+          <h2 id="cidhaApp.processo.home.createOrEditLabel" data-cy="ProcessoCreateUpdateHeading">
             <Translate contentKey="cidhaApp.processo.home.createOrEditLabel">Create or edit a Processo</Translate>
           </h2>
         </Col>
@@ -175,43 +174,48 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
                 <Label id="oficioLabel" for="processo-oficio">
                   <Translate contentKey="cidhaApp.processo.oficio">Oficio</Translate>
                 </Label>
-                <AvField id="processo-oficio" type="text" name="oficio" />
+                <AvField id="processo-oficio" data-cy="oficio" type="text" name="oficio" />
               </AvGroup>
               <AvGroup>
                 <Label id="assuntoLabel" for="processo-assunto">
                   <Translate contentKey="cidhaApp.processo.assunto">Assunto</Translate>
                 </Label>
-                <AvInput id="processo-assunto" type="textarea" name="assunto" />
+                <AvInput id="processo-assunto" data-cy="assunto" type="textarea" name="assunto" />
               </AvGroup>
               <AvGroup>
                 <Label id="linkUnicoLabel" for="processo-linkUnico">
                   <Translate contentKey="cidhaApp.processo.linkUnico">Link Unico</Translate>
                 </Label>
-                <AvField id="processo-linkUnico" type="text" name="linkUnico" />
+                <AvField id="processo-linkUnico" data-cy="linkUnico" type="text" name="linkUnico" />
               </AvGroup>
               <AvGroup>
                 <Label id="linkTrfLabel" for="processo-linkTrf">
                   <Translate contentKey="cidhaApp.processo.linkTrf">Link Trf</Translate>
                 </Label>
-                <AvField id="processo-linkTrf" type="text" name="linkTrf" />
+                <AvField id="processo-linkTrf" data-cy="linkTrf" type="text" name="linkTrf" />
               </AvGroup>
               <AvGroup>
                 <Label id="subsecaoJudiciariaLabel" for="processo-subsecaoJudiciaria">
                   <Translate contentKey="cidhaApp.processo.subsecaoJudiciaria">Subsecao Judiciaria</Translate>
                 </Label>
-                <AvField id="processo-subsecaoJudiciaria" type="text" name="subsecaoJudiciaria" />
+                <AvField id="processo-subsecaoJudiciaria" data-cy="subsecaoJudiciaria" type="text" name="subsecaoJudiciaria" />
               </AvGroup>
               <AvGroup>
                 <Label id="turmaTrf1Label" for="processo-turmaTrf1">
                   <Translate contentKey="cidhaApp.processo.turmaTrf1">Turma Trf 1</Translate>
                 </Label>
-                <AvField id="processo-turmaTrf1" type="text" name="turmaTrf1" />
+                <AvField id="processo-turmaTrf1" data-cy="turmaTrf1" type="text" name="turmaTrf1" />
               </AvGroup>
               <AvGroup>
                 <Label id="numeroProcessoAdministrativoLabel" for="processo-numeroProcessoAdministrativo">
                   <Translate contentKey="cidhaApp.processo.numeroProcessoAdministrativo">Numero Processo Administrativo</Translate>
                 </Label>
-                <AvField id="processo-numeroProcessoAdministrativo" type="text" name="numeroProcessoAdministrativo" />
+                <AvField
+                  id="processo-numeroProcessoAdministrativo"
+                  data-cy="numeroProcessoAdministrativo"
+                  type="text"
+                  name="numeroProcessoAdministrativo"
+                />
               </AvGroup>
               <AvGroup>
                 <Label id="numeroProcessoJudicialPrimeiraInstanciaLabel" for="processo-numeroProcessoJudicialPrimeiraInstancia">
@@ -219,7 +223,12 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
                     Numero Processo Judicial Primeira Instancia
                   </Translate>
                 </Label>
-                <AvField id="processo-numeroProcessoJudicialPrimeiraInstancia" type="text" name="numeroProcessoJudicialPrimeiraInstancia" />
+                <AvField
+                  id="processo-numeroProcessoJudicialPrimeiraInstancia"
+                  data-cy="numeroProcessoJudicialPrimeiraInstancia"
+                  type="text"
+                  name="numeroProcessoJudicialPrimeiraInstancia"
+                />
               </AvGroup>
               <AvGroup>
                 <Label id="numeroProcessoJudicialPrimeiraInstanciaLinkLabel" for="processo-numeroProcessoJudicialPrimeiraInstanciaLink">
@@ -229,6 +238,7 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
                 </Label>
                 <AvField
                   id="processo-numeroProcessoJudicialPrimeiraInstanciaLink"
+                  data-cy="numeroProcessoJudicialPrimeiraInstanciaLink"
                   type="text"
                   name="numeroProcessoJudicialPrimeiraInstanciaLink"
                 />
@@ -244,13 +254,14 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
                 </Label>
                 <AvInput
                   id="processo-numeroProcessoJudicialPrimeiraInstanciaObservacoes"
+                  data-cy="numeroProcessoJudicialPrimeiraInstanciaObservacoes"
                   type="textarea"
                   name="numeroProcessoJudicialPrimeiraInstanciaObservacoes"
                 />
               </AvGroup>
               <AvGroup check>
                 <Label id="parecerLabel">
-                  <AvInput id="processo-parecer" type="checkbox" className="form-check-input" name="parecer" />
+                  <AvInput id="processo-parecer" data-cy="parecer" type="checkbox" className="form-check-input" name="parecer" />
                   <Translate contentKey="cidhaApp.processo.parecer">Parecer</Translate>
                 </Label>
               </AvGroup>
@@ -258,13 +269,13 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
                 <Label id="apelacaoLabel" for="processo-apelacao">
                   <Translate contentKey="cidhaApp.processo.apelacao">Apelacao</Translate>
                 </Label>
-                <AvField id="processo-apelacao" type="text" name="apelacao" />
+                <AvField id="processo-apelacao" data-cy="apelacao" type="text" name="apelacao" />
               </AvGroup>
               <AvGroup>
                 <Label for="processo-tipoDecisao">
                   <Translate contentKey="cidhaApp.processo.tipoDecisao">Tipo Decisao</Translate>
                 </Label>
-                <AvInput id="processo-tipoDecisao" type="select" className="form-control" name="tipoDecisao.id">
+                <AvInput id="processo-tipoDecisao" data-cy="tipoDecisao" type="select" className="form-control" name="tipoDecisaoId">
                   <option value="" key="0" />
                   {tipoDecisaos
                     ? tipoDecisaos.map(otherEntity => (
@@ -279,7 +290,13 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
                 <Label for="processo-tipoEmpreendimento">
                   <Translate contentKey="cidhaApp.processo.tipoEmpreendimento">Tipo Empreendimento</Translate>
                 </Label>
-                <AvInput id="processo-tipoEmpreendimento" type="select" className="form-control" name="tipoEmpreendimento.id">
+                <AvInput
+                  id="processo-tipoEmpreendimento"
+                  data-cy="tipoEmpreendimento"
+                  type="select"
+                  className="form-control"
+                  name="tipoEmpreendimentoId"
+                >
                   <option value="" key="0" />
                   {tipoEmpreendimentos
                     ? tipoEmpreendimentos.map(otherEntity => (
@@ -296,11 +313,12 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
                 </Label>
                 <AvInput
                   id="processo-comarca"
+                  data-cy="comarca"
                   type="select"
                   multiple
                   className="form-control"
                   name="comarcas"
-                  value={processoEntity.comarcas && processoEntity.comarcas.map(e => e.id)}
+                  value={!isNew && processoEntity.comarcas && processoEntity.comarcas.map(e => e.id)}
                 >
                   <option value="" key="0" />
                   {comarcas
@@ -318,11 +336,12 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
                 </Label>
                 <AvInput
                   id="processo-quilombo"
+                  data-cy="quilombo"
                   type="select"
                   multiple
                   className="form-control"
                   name="quilombos"
-                  value={processoEntity.quilombos && processoEntity.quilombos.map(e => e.id)}
+                  value={!isNew && processoEntity.quilombos && processoEntity.quilombos.map(e => e.id)}
                 >
                   <option value="" key="0" />
                   {quilombos
@@ -340,11 +359,12 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
                 </Label>
                 <AvInput
                   id="processo-municipio"
+                  data-cy="municipio"
                   type="select"
                   multiple
                   className="form-control"
                   name="municipios"
-                  value={processoEntity.municipios && processoEntity.municipios.map(e => e.id)}
+                  value={!isNew && processoEntity.municipios && processoEntity.municipios.map(e => e.id)}
                 >
                   <option value="" key="0" />
                   {municipios
@@ -362,11 +382,12 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
                 </Label>
                 <AvInput
                   id="processo-territorio"
+                  data-cy="territorio"
                   type="select"
                   multiple
                   className="form-control"
                   name="territorios"
-                  value={processoEntity.territorios && processoEntity.territorios.map(e => e.id)}
+                  value={!isNew && processoEntity.territorios && processoEntity.territorios.map(e => e.id)}
                 >
                   <option value="" key="0" />
                   {territorios
@@ -384,11 +405,12 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
                 </Label>
                 <AvInput
                   id="processo-atividadeExploracaoIlegal"
+                  data-cy="atividadeExploracaoIlegal"
                   type="select"
                   multiple
                   className="form-control"
                   name="atividadeExploracaoIlegals"
-                  value={processoEntity.atividadeExploracaoIlegals && processoEntity.atividadeExploracaoIlegals.map(e => e.id)}
+                  value={!isNew && processoEntity.atividadeExploracaoIlegals && processoEntity.atividadeExploracaoIlegals.map(e => e.id)}
                 >
                   <option value="" key="0" />
                   {atividadeExploracaoIlegals
@@ -406,11 +428,12 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
                 </Label>
                 <AvInput
                   id="processo-unidadeConservacao"
+                  data-cy="unidadeConservacao"
                   type="select"
                   multiple
                   className="form-control"
                   name="unidadeConservacaos"
-                  value={processoEntity.unidadeConservacaos && processoEntity.unidadeConservacaos.map(e => e.id)}
+                  value={!isNew && processoEntity.unidadeConservacaos && processoEntity.unidadeConservacaos.map(e => e.id)}
                 >
                   <option value="" key="0" />
                   {unidadeConservacaos
@@ -428,11 +451,12 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
                 </Label>
                 <AvInput
                   id="processo-envolvidosConflitoLitigio"
+                  data-cy="envolvidosConflitoLitigio"
                   type="select"
                   multiple
                   className="form-control"
                   name="envolvidosConflitoLitigios"
-                  value={processoEntity.envolvidosConflitoLitigios && processoEntity.envolvidosConflitoLitigios.map(e => e.id)}
+                  value={!isNew && processoEntity.envolvidosConflitoLitigios && processoEntity.envolvidosConflitoLitigios.map(e => e.id)}
                 >
                   <option value="" key="0" />
                   {envolvidosConflitoLitigios
@@ -450,11 +474,12 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
                 </Label>
                 <AvInput
                   id="processo-terraIndigena"
+                  data-cy="terraIndigena"
                   type="select"
                   multiple
                   className="form-control"
                   name="terraIndigenas"
-                  value={processoEntity.terraIndigenas && processoEntity.terraIndigenas.map(e => e.id)}
+                  value={!isNew && processoEntity.terraIndigenas && processoEntity.terraIndigenas.map(e => e.id)}
                 >
                   <option value="" key="0" />
                   {terraIndigenas
@@ -472,11 +497,12 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
                 </Label>
                 <AvInput
                   id="processo-processoConflito"
+                  data-cy="processoConflito"
                   type="select"
                   multiple
                   className="form-control"
                   name="processoConflitos"
-                  value={processoEntity.processoConflitos && processoEntity.processoConflitos.map(e => e.id)}
+                  value={!isNew && processoEntity.processoConflitos && processoEntity.processoConflitos.map(e => e.id)}
                 >
                   <option value="" key="0" />
                   {processoConflitos
@@ -494,11 +520,12 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
                 </Label>
                 <AvInput
                   id="processo-parteInteresssada"
+                  data-cy="parteInteresssada"
                   type="select"
                   multiple
                   className="form-control"
                   name="parteInteresssadas"
-                  value={processoEntity.parteInteresssadas && processoEntity.parteInteresssadas.map(e => e.id)}
+                  value={!isNew && processoEntity.parteInteresssadas && processoEntity.parteInteresssadas.map(e => e.id)}
                 >
                   <option value="" key="0" />
                   {parteInteresssadas
@@ -516,11 +543,12 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
                 </Label>
                 <AvInput
                   id="processo-relator"
+                  data-cy="relator"
                   type="select"
                   multiple
                   className="form-control"
                   name="relators"
-                  value={processoEntity.relators && processoEntity.relators.map(e => e.id)}
+                  value={!isNew && processoEntity.relators && processoEntity.relators.map(e => e.id)}
                 >
                   <option value="" key="0" />
                   {relators
@@ -540,7 +568,7 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
                 </span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp;
                 <Translate contentKey="entity.action.save">Save</Translate>

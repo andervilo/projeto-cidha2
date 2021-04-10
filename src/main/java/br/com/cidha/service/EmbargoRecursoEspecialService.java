@@ -2,15 +2,13 @@ package br.com.cidha.service;
 
 import br.com.cidha.domain.EmbargoRecursoEspecial;
 import br.com.cidha.repository.EmbargoRecursoEspecialRepository;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 /**
  * Service Implementation for managing {@link EmbargoRecursoEspecial}.
@@ -39,6 +37,29 @@ public class EmbargoRecursoEspecialService {
     }
 
     /**
+     * Partially update a embargoRecursoEspecial.
+     *
+     * @param embargoRecursoEspecial the entity to update partially.
+     * @return the persisted entity.
+     */
+    public Optional<EmbargoRecursoEspecial> partialUpdate(EmbargoRecursoEspecial embargoRecursoEspecial) {
+        log.debug("Request to partially update EmbargoRecursoEspecial : {}", embargoRecursoEspecial);
+
+        return embargoRecursoEspecialRepository
+            .findById(embargoRecursoEspecial.getId())
+            .map(
+                existingEmbargoRecursoEspecial -> {
+                    if (embargoRecursoEspecial.getDescricao() != null) {
+                        existingEmbargoRecursoEspecial.setDescricao(embargoRecursoEspecial.getDescricao());
+                    }
+
+                    return existingEmbargoRecursoEspecial;
+                }
+            )
+            .map(embargoRecursoEspecialRepository::save);
+    }
+
+    /**
      * Get all the embargoRecursoEspecials.
      *
      * @param pageable the pagination information.
@@ -49,7 +70,6 @@ public class EmbargoRecursoEspecialService {
         log.debug("Request to get all EmbargoRecursoEspecials");
         return embargoRecursoEspecialRepository.findAll(pageable);
     }
-
 
     /**
      * Get one embargoRecursoEspecial by id.

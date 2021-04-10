@@ -3,6 +3,7 @@
     "tipoEmpreendimento": {
       "home": {
         "title": "Tipo Empreendimentos",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Tipo Empreendimento",
         "createOrEditLabel": "Criar ou editar Tipo Empreendimento",
         "notFound": "Nenhum Tipo Empreendimento encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Tipo Empreendimento"
       },
+      "id": "ID",
       "descricao": "Descricao"
     }
   }

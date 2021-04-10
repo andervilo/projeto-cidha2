@@ -2,15 +2,13 @@ package br.com.cidha.service;
 
 import br.com.cidha.domain.Jurisprudencia;
 import br.com.cidha.repository.JurisprudenciaRepository;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 /**
  * Service Implementation for managing {@link Jurisprudencia}.
@@ -39,6 +37,35 @@ public class JurisprudenciaService {
     }
 
     /**
+     * Partially update a jurisprudencia.
+     *
+     * @param jurisprudencia the entity to update partially.
+     * @return the persisted entity.
+     */
+    public Optional<Jurisprudencia> partialUpdate(Jurisprudencia jurisprudencia) {
+        log.debug("Request to partially update Jurisprudencia : {}", jurisprudencia);
+
+        return jurisprudenciaRepository
+            .findById(jurisprudencia.getId())
+            .map(
+                existingJurisprudencia -> {
+                    if (jurisprudencia.getJurisprudenciaCitadaDescricao() != null) {
+                        existingJurisprudencia.setJurisprudenciaCitadaDescricao(jurisprudencia.getJurisprudenciaCitadaDescricao());
+                    }
+                    if (jurisprudencia.getFolhasJurisprudenciaCitada() != null) {
+                        existingJurisprudencia.setFolhasJurisprudenciaCitada(jurisprudencia.getFolhasJurisprudenciaCitada());
+                    }
+                    if (jurisprudencia.getJurisprudenciaSugerida() != null) {
+                        existingJurisprudencia.setJurisprudenciaSugerida(jurisprudencia.getJurisprudenciaSugerida());
+                    }
+
+                    return existingJurisprudencia;
+                }
+            )
+            .map(jurisprudenciaRepository::save);
+    }
+
+    /**
      * Get all the jurisprudencias.
      *
      * @param pageable the pagination information.
@@ -49,7 +76,6 @@ public class JurisprudenciaService {
         log.debug("Request to get all Jurisprudencias");
         return jurisprudenciaRepository.findAll(pageable);
     }
-
 
     /**
      * Get one jurisprudencia by id.

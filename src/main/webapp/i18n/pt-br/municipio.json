@@ -3,6 +3,7 @@
     "municipio": {
       "home": {
         "title": "Municipios",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Municipio",
         "createOrEditLabel": "Criar ou editar Municipio",
         "notFound": "Nenhum Municipio encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Municipio"
       },
+      "id": "ID",
       "amazoniaLegal": "Amazonia Legal",
       "codigoIbge": "Codigo Ibge",
       "estado": "Estado",

@@ -1,14 +1,16 @@
 package br.com.cidha.web.rest;
 
 import br.com.cidha.domain.UnidadeConservacao;
-import br.com.cidha.service.UnidadeConservacaoService;
-import br.com.cidha.web.rest.errors.BadRequestAlertException;
-import br.com.cidha.service.dto.UnidadeConservacaoCriteria;
+import br.com.cidha.repository.UnidadeConservacaoRepository;
 import br.com.cidha.service.UnidadeConservacaoQueryService;
-
-import io.github.jhipster.web.util.HeaderUtil;
-import io.github.jhipster.web.util.PaginationUtil;
-import io.github.jhipster.web.util.ResponseUtil;
+import br.com.cidha.service.UnidadeConservacaoService;
+import br.com.cidha.service.criteria.UnidadeConservacaoCriteria;
+import br.com.cidha.web.rest.errors.BadRequestAlertException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,14 +18,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import tech.jhipster.web.util.HeaderUtil;
+import tech.jhipster.web.util.PaginationUtil;
+import tech.jhipster.web.util.ResponseUtil;
 
 /**
  * REST controller for managing {@link br.com.cidha.domain.UnidadeConservacao}.
@@ -41,10 +41,17 @@ public class UnidadeConservacaoResource {
 
     private final UnidadeConservacaoService unidadeConservacaoService;
 
+    private final UnidadeConservacaoRepository unidadeConservacaoRepository;
+
     private final UnidadeConservacaoQueryService unidadeConservacaoQueryService;
 
-    public UnidadeConservacaoResource(UnidadeConservacaoService unidadeConservacaoService, UnidadeConservacaoQueryService unidadeConservacaoQueryService) {
+    public UnidadeConservacaoResource(
+        UnidadeConservacaoService unidadeConservacaoService,
+        UnidadeConservacaoRepository unidadeConservacaoRepository,
+        UnidadeConservacaoQueryService unidadeConservacaoQueryService
+    ) {
         this.unidadeConservacaoService = unidadeConservacaoService;
+        this.unidadeConservacaoRepository = unidadeConservacaoRepository;
         this.unidadeConservacaoQueryService = unidadeConservacaoQueryService;
     }
 
@@ -56,36 +63,87 @@ public class UnidadeConservacaoResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/unidade-conservacaos")
-    public ResponseEntity<UnidadeConservacao> createUnidadeConservacao(@RequestBody UnidadeConservacao unidadeConservacao) throws URISyntaxException {
+    public ResponseEntity<UnidadeConservacao> createUnidadeConservacao(@RequestBody UnidadeConservacao unidadeConservacao)
+        throws URISyntaxException {
         log.debug("REST request to save UnidadeConservacao : {}", unidadeConservacao);
         if (unidadeConservacao.getId() != null) {
             throw new BadRequestAlertException("A new unidadeConservacao cannot already have an ID", ENTITY_NAME, "idexists");
         }
         UnidadeConservacao result = unidadeConservacaoService.save(unidadeConservacao);
-        return ResponseEntity.created(new URI("/api/unidade-conservacaos/" + result.getId()))
+        return ResponseEntity
+            .created(new URI("/api/unidade-conservacaos/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
 
     /**
-     * {@code PUT  /unidade-conservacaos} : Updates an existing unidadeConservacao.
+     * {@code PUT  /unidade-conservacaos/:id} : Updates an existing unidadeConservacao.
      *
+     * @param id the id of the unidadeConservacao to save.
      * @param unidadeConservacao the unidadeConservacao to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated unidadeConservacao,
      * or with status {@code 400 (Bad Request)} if the unidadeConservacao is not valid,
      * or with status {@code 500 (Internal Server Error)} if the unidadeConservacao couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/unidade-conservacaos")
-    public ResponseEntity<UnidadeConservacao> updateUnidadeConservacao(@RequestBody UnidadeConservacao unidadeConservacao) throws URISyntaxException {
-        log.debug("REST request to update UnidadeConservacao : {}", unidadeConservacao);
+    @PutMapping("/unidade-conservacaos/{id}")
+    public ResponseEntity<UnidadeConservacao> updateUnidadeConservacao(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody UnidadeConservacao unidadeConservacao
+    ) throws URISyntaxException {
+        log.debug("REST request to update UnidadeConservacao : {}, {}", id, unidadeConservacao);
         if (unidadeConservacao.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+        if (!Objects.equals(id, unidadeConservacao.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!unidadeConservacaoRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
         UnidadeConservacao result = unidadeConservacaoService.save(unidadeConservacao);
-        return ResponseEntity.ok()
+        return ResponseEntity
+            .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, unidadeConservacao.getId().toString()))
             .body(result);
+    }
+
+    /**
+     * {@code PATCH  /unidade-conservacaos/:id} : Partial updates given fields of an existing unidadeConservacao, field will ignore if it is null
+     *
+     * @param id the id of the unidadeConservacao to save.
+     * @param unidadeConservacao the unidadeConservacao to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated unidadeConservacao,
+     * or with status {@code 400 (Bad Request)} if the unidadeConservacao is not valid,
+     * or with status {@code 404 (Not Found)} if the unidadeConservacao is not found,
+     * or with status {@code 500 (Internal Server Error)} if the unidadeConservacao couldn't be updated.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PatchMapping(value = "/unidade-conservacaos/{id}", consumes = "application/merge-patch+json")
+    public ResponseEntity<UnidadeConservacao> partialUpdateUnidadeConservacao(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody UnidadeConservacao unidadeConservacao
+    ) throws URISyntaxException {
+        log.debug("REST request to partial update UnidadeConservacao partially : {}, {}", id, unidadeConservacao);
+        if (unidadeConservacao.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        if (!Objects.equals(id, unidadeConservacao.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!unidadeConservacaoRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
+        Optional<UnidadeConservacao> result = unidadeConservacaoService.partialUpdate(unidadeConservacao);
+
+        return ResponseUtil.wrapOrNotFound(
+            result,
+            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, unidadeConservacao.getId().toString())
+        );
     }
 
     /**
@@ -138,6 +196,9 @@ public class UnidadeConservacaoResource {
     public ResponseEntity<Void> deleteUnidadeConservacao(@PathVariable Long id) {
         log.debug("REST request to delete UnidadeConservacao : {}", id);
         unidadeConservacaoService.delete(id);
-        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
+        return ResponseEntity
+            .noContent()
+            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
+            .build();
     }
 }

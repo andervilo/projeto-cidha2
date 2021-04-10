@@ -2,12 +2,11 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col } from 'reactstrap';
-import { Translate, ICrudGetAction } from 'react-jhipster';
+import { Translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
 import { getEntity } from './concessao-liminar.reducer';
-import { IConcessaoLiminar } from 'app/shared/model/concessao-liminar.model';
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 
 export interface IConcessaoLiminarDetailProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
@@ -21,10 +20,16 @@ export const ConcessaoLiminarDetail = (props: IConcessaoLiminarDetailProps) => {
   return (
     <Row>
       <Col md="8">
-        <h2>
-          <Translate contentKey="cidhaApp.concessaoLiminar.detail.title">ConcessaoLiminar</Translate> [<b>{concessaoLiminarEntity.id}</b>]
+        <h2 data-cy="concessaoLiminarDetailsHeading">
+          <Translate contentKey="cidhaApp.concessaoLiminar.detail.title">ConcessaoLiminar</Translate>
         </h2>
         <dl className="jh-entity-details">
+          <dt>
+            <span id="id">
+              <Translate contentKey="global.field.id">ID</Translate>
+            </span>
+          </dt>
+          <dd>{concessaoLiminarEntity.id}</dd>
           <dt>
             <span id="descricao">
               <Translate contentKey="cidhaApp.concessaoLiminar.descricao">Descricao</Translate>
@@ -36,7 +41,7 @@ export const ConcessaoLiminarDetail = (props: IConcessaoLiminarDetailProps) => {
           </dt>
           <dd>{concessaoLiminarEntity.processo ? concessaoLiminarEntity.processo.id : ''}</dd>
         </dl>
-        <Button tag={Link} to="/concessao-liminar" replace color="info">
+        <Button tag={Link} to="/concessao-liminar" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" />{' '}
           <span className="d-none d-md-inline">
             <Translate contentKey="entity.action.back">Back</Translate>

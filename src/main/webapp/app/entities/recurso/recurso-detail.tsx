@@ -2,12 +2,11 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col } from 'reactstrap';
-import { Translate, ICrudGetAction, byteSize } from 'react-jhipster';
+import { Translate, byteSize } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
 import { getEntity } from './recurso.reducer';
-import { IRecurso } from 'app/shared/model/recurso.model';
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 
 export interface IRecursoDetailProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
@@ -21,10 +20,16 @@ export const RecursoDetail = (props: IRecursoDetailProps) => {
   return (
     <Row>
       <Col md="8">
-        <h2>
-          <Translate contentKey="cidhaApp.recurso.detail.title">Recurso</Translate> [<b>{recursoEntity.id}</b>]
+        <h2 data-cy="recursoDetailsHeading">
+          <Translate contentKey="cidhaApp.recurso.detail.title">Recurso</Translate>
         </h2>
         <dl className="jh-entity-details">
+          <dt>
+            <span id="id">
+              <Translate contentKey="global.field.id">ID</Translate>
+            </span>
+          </dt>
+          <dd>{recursoEntity.id}</dd>
           <dt>
             <span id="observacoes">
               <Translate contentKey="cidhaApp.recurso.observacoes">Observacoes</Translate>
@@ -44,7 +49,7 @@ export const RecursoDetail = (props: IRecursoDetailProps) => {
           </dt>
           <dd>{recursoEntity.processo ? recursoEntity.processo.oficio : ''}</dd>
         </dl>
-        <Button tag={Link} to="/recurso" replace color="info">
+        <Button tag={Link} to="/recurso" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" />{' '}
           <span className="d-none d-md-inline">
             <Translate contentKey="entity.action.back">Back</Translate>

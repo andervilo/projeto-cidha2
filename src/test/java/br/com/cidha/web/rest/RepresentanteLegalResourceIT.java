@@ -1,50 +1,48 @@
 package br.com.cidha.web.rest;
 
-import br.com.cidha.CidhaApp;
-import br.com.cidha.domain.RepresentanteLegal;
-import br.com.cidha.domain.TipoRepresentante;
-import br.com.cidha.domain.ParteInteresssada;
-import br.com.cidha.repository.RepresentanteLegalRepository;
-import br.com.cidha.service.RepresentanteLegalService;
-import br.com.cidha.service.dto.RepresentanteLegalCriteria;
-import br.com.cidha.service.RepresentanteLegalQueryService;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
-import javax.persistence.EntityManager;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import br.com.cidha.IntegrationTest;
+import br.com.cidha.domain.ParteInteresssada;
+import br.com.cidha.domain.RepresentanteLegal;
+import br.com.cidha.domain.TipoRepresentante;
+import br.com.cidha.repository.RepresentanteLegalRepository;
+import br.com.cidha.service.criteria.RepresentanteLegalCriteria;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
+import javax.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * Integration tests for the {@link RepresentanteLegalResource} REST controller.
  */
-@SpringBootTest(classes = CidhaApp.class)
+@IntegrationTest
 @AutoConfigureMockMvc
 @WithMockUser
-public class RepresentanteLegalResourceIT {
+class RepresentanteLegalResourceIT {
 
     private static final String DEFAULT_NOME = "AAAAAAAAAA";
     private static final String UPDATED_NOME = "BBBBBBBBBB";
 
+    private static final String ENTITY_API_URL = "/api/representante-legals";
+    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+
+    private static Random random = new Random();
+    private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
+
     @Autowired
     private RepresentanteLegalRepository representanteLegalRepository;
-
-    @Autowired
-    private RepresentanteLegalService representanteLegalService;
-
-    @Autowired
-    private RepresentanteLegalQueryService representanteLegalQueryService;
 
     @Autowired
     private EntityManager em;
@@ -61,10 +59,10 @@ public class RepresentanteLegalResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static RepresentanteLegal createEntity(EntityManager em) {
-        RepresentanteLegal representanteLegal = new RepresentanteLegal()
-            .nome(DEFAULT_NOME);
+        RepresentanteLegal representanteLegal = new RepresentanteLegal().nome(DEFAULT_NOME);
         return representanteLegal;
     }
+
     /**
      * Create an updated entity for this test.
      *
@@ -72,8 +70,7 @@ public class RepresentanteLegalResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static RepresentanteLegal createUpdatedEntity(EntityManager em) {
-        RepresentanteLegal representanteLegal = new RepresentanteLegal()
-            .nome(UPDATED_NOME);
+        RepresentanteLegal representanteLegal = new RepresentanteLegal().nome(UPDATED_NOME);
         return representanteLegal;
     }
 
@@ -84,12 +81,13 @@ public class RepresentanteLegalResourceIT {
 
     @Test
     @Transactional
-    public void createRepresentanteLegal() throws Exception {
+    void createRepresentanteLegal() throws Exception {
         int databaseSizeBeforeCreate = representanteLegalRepository.findAll().size();
         // Create the RepresentanteLegal
-        restRepresentanteLegalMockMvc.perform(post("/api/representante-legals")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(representanteLegal)))
+        restRepresentanteLegalMockMvc
+            .perform(
+                post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(representanteLegal))
+            )
             .andExpect(status().isCreated());
 
         // Validate the RepresentanteLegal in the database
@@ -101,16 +99,17 @@ public class RepresentanteLegalResourceIT {
 
     @Test
     @Transactional
-    public void createRepresentanteLegalWithExistingId() throws Exception {
-        int databaseSizeBeforeCreate = representanteLegalRepository.findAll().size();
-
+    void createRepresentanteLegalWithExistingId() throws Exception {
         // Create the RepresentanteLegal with an existing ID
         representanteLegal.setId(1L);
 
+        int databaseSizeBeforeCreate = representanteLegalRepository.findAll().size();
+
         // An entity with an existing ID cannot be created, so this API call must fail
-        restRepresentanteLegalMockMvc.perform(post("/api/representante-legals")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(representanteLegal)))
+        restRepresentanteLegalMockMvc
+            .perform(
+                post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(representanteLegal))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the RepresentanteLegal in the database
@@ -118,39 +117,39 @@ public class RepresentanteLegalResourceIT {
         assertThat(representanteLegalList).hasSize(databaseSizeBeforeCreate);
     }
 
-
     @Test
     @Transactional
-    public void getAllRepresentanteLegals() throws Exception {
+    void getAllRepresentanteLegals() throws Exception {
         // Initialize the database
         representanteLegalRepository.saveAndFlush(representanteLegal);
 
         // Get all the representanteLegalList
-        restRepresentanteLegalMockMvc.perform(get("/api/representante-legals?sort=id,desc"))
+        restRepresentanteLegalMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(representanteLegal.getId().intValue())))
             .andExpect(jsonPath("$.[*].nome").value(hasItem(DEFAULT_NOME)));
     }
-    
+
     @Test
     @Transactional
-    public void getRepresentanteLegal() throws Exception {
+    void getRepresentanteLegal() throws Exception {
         // Initialize the database
         representanteLegalRepository.saveAndFlush(representanteLegal);
 
         // Get the representanteLegal
-        restRepresentanteLegalMockMvc.perform(get("/api/representante-legals/{id}", representanteLegal.getId()))
+        restRepresentanteLegalMockMvc
+            .perform(get(ENTITY_API_URL_ID, representanteLegal.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(representanteLegal.getId().intValue()))
             .andExpect(jsonPath("$.nome").value(DEFAULT_NOME));
     }
 
-
     @Test
     @Transactional
-    public void getRepresentanteLegalsByIdFiltering() throws Exception {
+    void getRepresentanteLegalsByIdFiltering() throws Exception {
         // Initialize the database
         representanteLegalRepository.saveAndFlush(representanteLegal);
 
@@ -166,10 +165,9 @@ public class RepresentanteLegalResourceIT {
         defaultRepresentanteLegalShouldNotBeFound("id.lessThan=" + id);
     }
 
-
     @Test
     @Transactional
-    public void getAllRepresentanteLegalsByNomeIsEqualToSomething() throws Exception {
+    void getAllRepresentanteLegalsByNomeIsEqualToSomething() throws Exception {
         // Initialize the database
         representanteLegalRepository.saveAndFlush(representanteLegal);
 
@@ -182,7 +180,7 @@ public class RepresentanteLegalResourceIT {
 
     @Test
     @Transactional
-    public void getAllRepresentanteLegalsByNomeIsNotEqualToSomething() throws Exception {
+    void getAllRepresentanteLegalsByNomeIsNotEqualToSomething() throws Exception {
         // Initialize the database
         representanteLegalRepository.saveAndFlush(representanteLegal);
 
@@ -195,7 +193,7 @@ public class RepresentanteLegalResourceIT {
 
     @Test
     @Transactional
-    public void getAllRepresentanteLegalsByNomeIsInShouldWork() throws Exception {
+    void getAllRepresentanteLegalsByNomeIsInShouldWork() throws Exception {
         // Initialize the database
         representanteLegalRepository.saveAndFlush(representanteLegal);
 
@@ -208,7 +206,7 @@ public class RepresentanteLegalResourceIT {
 
     @Test
     @Transactional
-    public void getAllRepresentanteLegalsByNomeIsNullOrNotNull() throws Exception {
+    void getAllRepresentanteLegalsByNomeIsNullOrNotNull() throws Exception {
         // Initialize the database
         representanteLegalRepository.saveAndFlush(representanteLegal);
 
@@ -218,9 +216,10 @@ public class RepresentanteLegalResourceIT {
         // Get all the representanteLegalList where nome is null
         defaultRepresentanteLegalShouldNotBeFound("nome.specified=false");
     }
-                @Test
+
+    @Test
     @Transactional
-    public void getAllRepresentanteLegalsByNomeContainsSomething() throws Exception {
+    void getAllRepresentanteLegalsByNomeContainsSomething() throws Exception {
         // Initialize the database
         representanteLegalRepository.saveAndFlush(representanteLegal);
 
@@ -233,7 +232,7 @@ public class RepresentanteLegalResourceIT {
 
     @Test
     @Transactional
-    public void getAllRepresentanteLegalsByNomeNotContainsSomething() throws Exception {
+    void getAllRepresentanteLegalsByNomeNotContainsSomething() throws Exception {
         // Initialize the database
         representanteLegalRepository.saveAndFlush(representanteLegal);
 
@@ -244,10 +243,9 @@ public class RepresentanteLegalResourceIT {
         defaultRepresentanteLegalShouldBeFound("nome.doesNotContain=" + UPDATED_NOME);
     }
 
-
     @Test
     @Transactional
-    public void getAllRepresentanteLegalsByTipoRepresentanteIsEqualToSomething() throws Exception {
+    void getAllRepresentanteLegalsByTipoRepresentanteIsEqualToSomething() throws Exception {
         // Initialize the database
         representanteLegalRepository.saveAndFlush(representanteLegal);
         TipoRepresentante tipoRepresentante = TipoRepresentanteResourceIT.createEntity(em);
@@ -260,14 +258,13 @@ public class RepresentanteLegalResourceIT {
         // Get all the representanteLegalList where tipoRepresentante equals to tipoRepresentanteId
         defaultRepresentanteLegalShouldBeFound("tipoRepresentanteId.equals=" + tipoRepresentanteId);
 
-        // Get all the representanteLegalList where tipoRepresentante equals to tipoRepresentanteId + 1
+        // Get all the representanteLegalList where tipoRepresentante equals to (tipoRepresentanteId + 1)
         defaultRepresentanteLegalShouldNotBeFound("tipoRepresentanteId.equals=" + (tipoRepresentanteId + 1));
     }
 
-
     @Test
     @Transactional
-    public void getAllRepresentanteLegalsByProcessoConflitoIsEqualToSomething() throws Exception {
+    void getAllRepresentanteLegalsByProcessoConflitoIsEqualToSomething() throws Exception {
         // Initialize the database
         representanteLegalRepository.saveAndFlush(representanteLegal);
         ParteInteresssada processoConflito = ParteInteresssadaResourceIT.createEntity(em);
@@ -280,7 +277,7 @@ public class RepresentanteLegalResourceIT {
         // Get all the representanteLegalList where processoConflito equals to processoConflitoId
         defaultRepresentanteLegalShouldBeFound("processoConflitoId.equals=" + processoConflitoId);
 
-        // Get all the representanteLegalList where processoConflito equals to processoConflitoId + 1
+        // Get all the representanteLegalList where processoConflito equals to (processoConflitoId + 1)
         defaultRepresentanteLegalShouldNotBeFound("processoConflitoId.equals=" + (processoConflitoId + 1));
     }
 
@@ -288,14 +285,16 @@ public class RepresentanteLegalResourceIT {
      * Executes the search, and checks that the default entity is returned.
      */
     private void defaultRepresentanteLegalShouldBeFound(String filter) throws Exception {
-        restRepresentanteLegalMockMvc.perform(get("/api/representante-legals?sort=id,desc&" + filter))
+        restRepresentanteLegalMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(representanteLegal.getId().intValue())))
             .andExpect(jsonPath("$.[*].nome").value(hasItem(DEFAULT_NOME)));
 
         // Check, that the count call also returns 1
-        restRepresentanteLegalMockMvc.perform(get("/api/representante-legals/count?sort=id,desc&" + filter))
+        restRepresentanteLegalMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("1"));
@@ -305,14 +304,16 @@ public class RepresentanteLegalResourceIT {
      * Executes the search, and checks that the default entity is not returned.
      */
     private void defaultRepresentanteLegalShouldNotBeFound(String filter) throws Exception {
-        restRepresentanteLegalMockMvc.perform(get("/api/representante-legals?sort=id,desc&" + filter))
+        restRepresentanteLegalMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$").isEmpty());
 
         // Check, that the count call also returns 0
-        restRepresentanteLegalMockMvc.perform(get("/api/representante-legals/count?sort=id,desc&" + filter))
+        restRepresentanteLegalMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("0"));
@@ -320,17 +321,16 @@ public class RepresentanteLegalResourceIT {
 
     @Test
     @Transactional
-    public void getNonExistingRepresentanteLegal() throws Exception {
+    void getNonExistingRepresentanteLegal() throws Exception {
         // Get the representanteLegal
-        restRepresentanteLegalMockMvc.perform(get("/api/representante-legals/{id}", Long.MAX_VALUE))
-            .andExpect(status().isNotFound());
+        restRepresentanteLegalMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
     @Test
     @Transactional
-    public void updateRepresentanteLegal() throws Exception {
+    void putNewRepresentanteLegal() throws Exception {
         // Initialize the database
-        representanteLegalService.save(representanteLegal);
+        representanteLegalRepository.saveAndFlush(representanteLegal);
 
         int databaseSizeBeforeUpdate = representanteLegalRepository.findAll().size();
 
@@ -338,12 +338,14 @@ public class RepresentanteLegalResourceIT {
         RepresentanteLegal updatedRepresentanteLegal = representanteLegalRepository.findById(representanteLegal.getId()).get();
         // Disconnect from session so that the updates on updatedRepresentanteLegal are not directly saved in db
         em.detach(updatedRepresentanteLegal);
-        updatedRepresentanteLegal
-            .nome(UPDATED_NOME);
+        updatedRepresentanteLegal.nome(UPDATED_NOME);
 
-        restRepresentanteLegalMockMvc.perform(put("/api/representante-legals")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(updatedRepresentanteLegal)))
+        restRepresentanteLegalMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, updatedRepresentanteLegal.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(updatedRepresentanteLegal))
+            )
             .andExpect(status().isOk());
 
         // Validate the RepresentanteLegal in the database
@@ -355,13 +357,17 @@ public class RepresentanteLegalResourceIT {
 
     @Test
     @Transactional
-    public void updateNonExistingRepresentanteLegal() throws Exception {
+    void putNonExistingRepresentanteLegal() throws Exception {
         int databaseSizeBeforeUpdate = representanteLegalRepository.findAll().size();
+        representanteLegal.setId(count.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restRepresentanteLegalMockMvc.perform(put("/api/representante-legals")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(representanteLegal)))
+        restRepresentanteLegalMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, representanteLegal.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(representanteLegal))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the RepresentanteLegal in the database
@@ -371,15 +377,169 @@ public class RepresentanteLegalResourceIT {
 
     @Test
     @Transactional
-    public void deleteRepresentanteLegal() throws Exception {
+    void putWithIdMismatchRepresentanteLegal() throws Exception {
+        int databaseSizeBeforeUpdate = representanteLegalRepository.findAll().size();
+        representanteLegal.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restRepresentanteLegalMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(representanteLegal))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the RepresentanteLegal in the database
+        List<RepresentanteLegal> representanteLegalList = representanteLegalRepository.findAll();
+        assertThat(representanteLegalList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void putWithMissingIdPathParamRepresentanteLegal() throws Exception {
+        int databaseSizeBeforeUpdate = representanteLegalRepository.findAll().size();
+        representanteLegal.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restRepresentanteLegalMockMvc
+            .perform(
+                put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(representanteLegal))
+            )
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the RepresentanteLegal in the database
+        List<RepresentanteLegal> representanteLegalList = representanteLegalRepository.findAll();
+        assertThat(representanteLegalList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void partialUpdateRepresentanteLegalWithPatch() throws Exception {
         // Initialize the database
-        representanteLegalService.save(representanteLegal);
+        representanteLegalRepository.saveAndFlush(representanteLegal);
+
+        int databaseSizeBeforeUpdate = representanteLegalRepository.findAll().size();
+
+        // Update the representanteLegal using partial update
+        RepresentanteLegal partialUpdatedRepresentanteLegal = new RepresentanteLegal();
+        partialUpdatedRepresentanteLegal.setId(representanteLegal.getId());
+
+        restRepresentanteLegalMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedRepresentanteLegal.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedRepresentanteLegal))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the RepresentanteLegal in the database
+        List<RepresentanteLegal> representanteLegalList = representanteLegalRepository.findAll();
+        assertThat(representanteLegalList).hasSize(databaseSizeBeforeUpdate);
+        RepresentanteLegal testRepresentanteLegal = representanteLegalList.get(representanteLegalList.size() - 1);
+        assertThat(testRepresentanteLegal.getNome()).isEqualTo(DEFAULT_NOME);
+    }
+
+    @Test
+    @Transactional
+    void fullUpdateRepresentanteLegalWithPatch() throws Exception {
+        // Initialize the database
+        representanteLegalRepository.saveAndFlush(representanteLegal);
+
+        int databaseSizeBeforeUpdate = representanteLegalRepository.findAll().size();
+
+        // Update the representanteLegal using partial update
+        RepresentanteLegal partialUpdatedRepresentanteLegal = new RepresentanteLegal();
+        partialUpdatedRepresentanteLegal.setId(representanteLegal.getId());
+
+        partialUpdatedRepresentanteLegal.nome(UPDATED_NOME);
+
+        restRepresentanteLegalMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedRepresentanteLegal.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedRepresentanteLegal))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the RepresentanteLegal in the database
+        List<RepresentanteLegal> representanteLegalList = representanteLegalRepository.findAll();
+        assertThat(representanteLegalList).hasSize(databaseSizeBeforeUpdate);
+        RepresentanteLegal testRepresentanteLegal = representanteLegalList.get(representanteLegalList.size() - 1);
+        assertThat(testRepresentanteLegal.getNome()).isEqualTo(UPDATED_NOME);
+    }
+
+    @Test
+    @Transactional
+    void patchNonExistingRepresentanteLegal() throws Exception {
+        int databaseSizeBeforeUpdate = representanteLegalRepository.findAll().size();
+        representanteLegal.setId(count.incrementAndGet());
+
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
+        restRepresentanteLegalMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, representanteLegal.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(representanteLegal))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the RepresentanteLegal in the database
+        List<RepresentanteLegal> representanteLegalList = representanteLegalRepository.findAll();
+        assertThat(representanteLegalList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithIdMismatchRepresentanteLegal() throws Exception {
+        int databaseSizeBeforeUpdate = representanteLegalRepository.findAll().size();
+        representanteLegal.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restRepresentanteLegalMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(representanteLegal))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the RepresentanteLegal in the database
+        List<RepresentanteLegal> representanteLegalList = representanteLegalRepository.findAll();
+        assertThat(representanteLegalList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithMissingIdPathParamRepresentanteLegal() throws Exception {
+        int databaseSizeBeforeUpdate = representanteLegalRepository.findAll().size();
+        representanteLegal.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restRepresentanteLegalMockMvc
+            .perform(
+                patch(ENTITY_API_URL)
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(representanteLegal))
+            )
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the RepresentanteLegal in the database
+        List<RepresentanteLegal> representanteLegalList = representanteLegalRepository.findAll();
+        assertThat(representanteLegalList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void deleteRepresentanteLegal() throws Exception {
+        // Initialize the database
+        representanteLegalRepository.saveAndFlush(representanteLegal);
 
         int databaseSizeBeforeDelete = representanteLegalRepository.findAll().size();
 
         // Delete the representanteLegal
-        restRepresentanteLegalMockMvc.perform(delete("/api/representante-legals/{id}", representanteLegal.getId())
-            .accept(MediaType.APPLICATION_JSON))
+        restRepresentanteLegalMockMvc
+            .perform(delete(ENTITY_API_URL_ID, representanteLegal.getId()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item

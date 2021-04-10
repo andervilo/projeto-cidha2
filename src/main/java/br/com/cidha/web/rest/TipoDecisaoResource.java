@@ -1,14 +1,16 @@
 package br.com.cidha.web.rest;
 
 import br.com.cidha.domain.TipoDecisao;
-import br.com.cidha.service.TipoDecisaoService;
-import br.com.cidha.web.rest.errors.BadRequestAlertException;
-import br.com.cidha.service.dto.TipoDecisaoCriteria;
+import br.com.cidha.repository.TipoDecisaoRepository;
 import br.com.cidha.service.TipoDecisaoQueryService;
-
-import io.github.jhipster.web.util.HeaderUtil;
-import io.github.jhipster.web.util.PaginationUtil;
-import io.github.jhipster.web.util.ResponseUtil;
+import br.com.cidha.service.TipoDecisaoService;
+import br.com.cidha.service.criteria.TipoDecisaoCriteria;
+import br.com.cidha.web.rest.errors.BadRequestAlertException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,14 +18,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import tech.jhipster.web.util.HeaderUtil;
+import tech.jhipster.web.util.PaginationUtil;
+import tech.jhipster.web.util.ResponseUtil;
 
 /**
  * REST controller for managing {@link br.com.cidha.domain.TipoDecisao}.
@@ -41,10 +41,17 @@ public class TipoDecisaoResource {
 
     private final TipoDecisaoService tipoDecisaoService;
 
+    private final TipoDecisaoRepository tipoDecisaoRepository;
+
     private final TipoDecisaoQueryService tipoDecisaoQueryService;
 
-    public TipoDecisaoResource(TipoDecisaoService tipoDecisaoService, TipoDecisaoQueryService tipoDecisaoQueryService) {
+    public TipoDecisaoResource(
+        TipoDecisaoService tipoDecisaoService,
+        TipoDecisaoRepository tipoDecisaoRepository,
+        TipoDecisaoQueryService tipoDecisaoQueryService
+    ) {
         this.tipoDecisaoService = tipoDecisaoService;
+        this.tipoDecisaoRepository = tipoDecisaoRepository;
         this.tipoDecisaoQueryService = tipoDecisaoQueryService;
     }
 
@@ -62,30 +69,80 @@ public class TipoDecisaoResource {
             throw new BadRequestAlertException("A new tipoDecisao cannot already have an ID", ENTITY_NAME, "idexists");
         }
         TipoDecisao result = tipoDecisaoService.save(tipoDecisao);
-        return ResponseEntity.created(new URI("/api/tipo-decisaos/" + result.getId()))
+        return ResponseEntity
+            .created(new URI("/api/tipo-decisaos/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
 
     /**
-     * {@code PUT  /tipo-decisaos} : Updates an existing tipoDecisao.
+     * {@code PUT  /tipo-decisaos/:id} : Updates an existing tipoDecisao.
      *
+     * @param id the id of the tipoDecisao to save.
      * @param tipoDecisao the tipoDecisao to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated tipoDecisao,
      * or with status {@code 400 (Bad Request)} if the tipoDecisao is not valid,
      * or with status {@code 500 (Internal Server Error)} if the tipoDecisao couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/tipo-decisaos")
-    public ResponseEntity<TipoDecisao> updateTipoDecisao(@RequestBody TipoDecisao tipoDecisao) throws URISyntaxException {
-        log.debug("REST request to update TipoDecisao : {}", tipoDecisao);
+    @PutMapping("/tipo-decisaos/{id}")
+    public ResponseEntity<TipoDecisao> updateTipoDecisao(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody TipoDecisao tipoDecisao
+    ) throws URISyntaxException {
+        log.debug("REST request to update TipoDecisao : {}, {}", id, tipoDecisao);
         if (tipoDecisao.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+        if (!Objects.equals(id, tipoDecisao.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!tipoDecisaoRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
         TipoDecisao result = tipoDecisaoService.save(tipoDecisao);
-        return ResponseEntity.ok()
+        return ResponseEntity
+            .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, tipoDecisao.getId().toString()))
             .body(result);
+    }
+
+    /**
+     * {@code PATCH  /tipo-decisaos/:id} : Partial updates given fields of an existing tipoDecisao, field will ignore if it is null
+     *
+     * @param id the id of the tipoDecisao to save.
+     * @param tipoDecisao the tipoDecisao to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated tipoDecisao,
+     * or with status {@code 400 (Bad Request)} if the tipoDecisao is not valid,
+     * or with status {@code 404 (Not Found)} if the tipoDecisao is not found,
+     * or with status {@code 500 (Internal Server Error)} if the tipoDecisao couldn't be updated.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PatchMapping(value = "/tipo-decisaos/{id}", consumes = "application/merge-patch+json")
+    public ResponseEntity<TipoDecisao> partialUpdateTipoDecisao(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody TipoDecisao tipoDecisao
+    ) throws URISyntaxException {
+        log.debug("REST request to partial update TipoDecisao partially : {}, {}", id, tipoDecisao);
+        if (tipoDecisao.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        if (!Objects.equals(id, tipoDecisao.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!tipoDecisaoRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
+        Optional<TipoDecisao> result = tipoDecisaoService.partialUpdate(tipoDecisao);
+
+        return ResponseUtil.wrapOrNotFound(
+            result,
+            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, tipoDecisao.getId().toString())
+        );
     }
 
     /**
@@ -138,6 +195,9 @@ public class TipoDecisaoResource {
     public ResponseEntity<Void> deleteTipoDecisao(@PathVariable Long id) {
         log.debug("REST request to delete TipoDecisao : {}", id);
         tipoDecisaoService.delete(id);
-        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
+        return ResponseEntity
+            .noContent()
+            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
+            .build();
     }
 }

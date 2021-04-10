@@ -1,9 +1,11 @@
 package br.com.cidha.service;
 
+import br.com.cidha.domain.*; // for static metamodels
+import br.com.cidha.domain.Conflito;
+import br.com.cidha.repository.ConflitoRepository;
+import br.com.cidha.service.criteria.ConflitoCriteria;
 import java.util.List;
-
 import javax.persistence.criteria.JoinType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -11,13 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import io.github.jhipster.service.QueryService;
-
-import br.com.cidha.domain.Conflito;
-import br.com.cidha.domain.*; // for static metamodels
-import br.com.cidha.repository.ConflitoRepository;
-import br.com.cidha.service.dto.ConflitoCriteria;
+import tech.jhipster.service.QueryService;
 
 /**
  * Service for executing complex queries for {@link Conflito} entities in the database.
@@ -86,8 +82,13 @@ public class ConflitoQueryService extends QueryService<Conflito> {
                 specification = specification.and(buildRangeSpecification(criteria.getId(), Conflito_.id));
             }
             if (criteria.getProcessoConflitoId() != null) {
-                specification = specification.and(buildSpecification(criteria.getProcessoConflitoId(),
-                    root -> root.join(Conflito_.processoConflito, JoinType.LEFT).get(ProcessoConflito_.id)));
+                specification =
+                    specification.and(
+                        buildSpecification(
+                            criteria.getProcessoConflitoId(),
+                            root -> root.join(Conflito_.processoConflito, JoinType.LEFT).get(ProcessoConflito_.id)
+                        )
+                    );
             }
         }
         return specification;

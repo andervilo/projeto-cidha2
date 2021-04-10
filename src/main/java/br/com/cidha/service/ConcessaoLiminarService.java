@@ -2,15 +2,13 @@ package br.com.cidha.service;
 
 import br.com.cidha.domain.ConcessaoLiminar;
 import br.com.cidha.repository.ConcessaoLiminarRepository;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 /**
  * Service Implementation for managing {@link ConcessaoLiminar}.
@@ -39,6 +37,29 @@ public class ConcessaoLiminarService {
     }
 
     /**
+     * Partially update a concessaoLiminar.
+     *
+     * @param concessaoLiminar the entity to update partially.
+     * @return the persisted entity.
+     */
+    public Optional<ConcessaoLiminar> partialUpdate(ConcessaoLiminar concessaoLiminar) {
+        log.debug("Request to partially update ConcessaoLiminar : {}", concessaoLiminar);
+
+        return concessaoLiminarRepository
+            .findById(concessaoLiminar.getId())
+            .map(
+                existingConcessaoLiminar -> {
+                    if (concessaoLiminar.getDescricao() != null) {
+                        existingConcessaoLiminar.setDescricao(concessaoLiminar.getDescricao());
+                    }
+
+                    return existingConcessaoLiminar;
+                }
+            )
+            .map(concessaoLiminarRepository::save);
+    }
+
+    /**
      * Get all the concessaoLiminars.
      *
      * @param pageable the pagination information.
@@ -49,7 +70,6 @@ public class ConcessaoLiminarService {
         log.debug("Request to get all ConcessaoLiminars");
         return concessaoLiminarRepository.findAll(pageable);
     }
-
 
     /**
      * Get one concessaoLiminar by id.

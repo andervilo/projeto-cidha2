@@ -1,9 +1,11 @@
 package br.com.cidha.service;
 
+import br.com.cidha.domain.*; // for static metamodels
+import br.com.cidha.domain.RepresentanteLegal;
+import br.com.cidha.repository.RepresentanteLegalRepository;
+import br.com.cidha.service.criteria.RepresentanteLegalCriteria;
 import java.util.List;
-
 import javax.persistence.criteria.JoinType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -11,13 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import io.github.jhipster.service.QueryService;
-
-import br.com.cidha.domain.RepresentanteLegal;
-import br.com.cidha.domain.*; // for static metamodels
-import br.com.cidha.repository.RepresentanteLegalRepository;
-import br.com.cidha.service.dto.RepresentanteLegalCriteria;
+import tech.jhipster.service.QueryService;
 
 /**
  * Service for executing complex queries for {@link RepresentanteLegal} entities in the database.
@@ -89,12 +85,22 @@ public class RepresentanteLegalQueryService extends QueryService<RepresentanteLe
                 specification = specification.and(buildStringSpecification(criteria.getNome(), RepresentanteLegal_.nome));
             }
             if (criteria.getTipoRepresentanteId() != null) {
-                specification = specification.and(buildSpecification(criteria.getTipoRepresentanteId(),
-                    root -> root.join(RepresentanteLegal_.tipoRepresentante, JoinType.LEFT).get(TipoRepresentante_.id)));
+                specification =
+                    specification.and(
+                        buildSpecification(
+                            criteria.getTipoRepresentanteId(),
+                            root -> root.join(RepresentanteLegal_.tipoRepresentante, JoinType.LEFT).get(TipoRepresentante_.id)
+                        )
+                    );
             }
             if (criteria.getProcessoConflitoId() != null) {
-                specification = specification.and(buildSpecification(criteria.getProcessoConflitoId(),
-                    root -> root.join(RepresentanteLegal_.processoConflitos, JoinType.LEFT).get(ParteInteresssada_.id)));
+                specification =
+                    specification.and(
+                        buildSpecification(
+                            criteria.getProcessoConflitoId(),
+                            root -> root.join(RepresentanteLegal_.processoConflitos, JoinType.LEFT).get(ParteInteresssada_.id)
+                        )
+                    );
             }
         }
         return specification;

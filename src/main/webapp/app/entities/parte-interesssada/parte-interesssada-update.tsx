@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col, Label } from 'reactstrap';
 import { AvFeedback, AvForm, AvGroup, AvInput, AvField } from 'availity-reactstrap-validation';
-import { Translate, translate, ICrudGetAction, ICrudGetAllAction, ICrudPutAction } from 'react-jhipster';
+import { Translate, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
@@ -20,8 +20,7 @@ export interface IParteInteresssadaUpdateProps extends StateProps, DispatchProps
 
 export const ParteInteresssadaUpdate = (props: IParteInteresssadaUpdateProps) => {
   const [idsrepresentanteLegal, setIdsrepresentanteLegal] = useState([]);
-  const [processoId, setProcessoId] = useState('0');
-  const [isNew, setIsNew] = useState(!props.match.params || !props.match.params.id);
+  const [isNew] = useState(!props.match.params || !props.match.params.id);
 
   const { parteInteresssadaEntity, representanteLegals, processos, loading, updating } = props;
 
@@ -66,7 +65,7 @@ export const ParteInteresssadaUpdate = (props: IParteInteresssadaUpdateProps) =>
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="cidhaApp.parteInteresssada.home.createOrEditLabel">
+          <h2 id="cidhaApp.parteInteresssada.home.createOrEditLabel" data-cy="ParteInteresssadaCreateUpdateHeading">
             <Translate contentKey="cidhaApp.parteInteresssada.home.createOrEditLabel">Create or edit a ParteInteresssada</Translate>
           </h2>
         </Col>
@@ -89,13 +88,13 @@ export const ParteInteresssadaUpdate = (props: IParteInteresssadaUpdateProps) =>
                 <Label id="nomeLabel" for="parte-interesssada-nome">
                   <Translate contentKey="cidhaApp.parteInteresssada.nome">Nome</Translate>
                 </Label>
-                <AvField id="parte-interesssada-nome" type="text" name="nome" />
+                <AvField id="parte-interesssada-nome" data-cy="nome" type="text" name="nome" />
               </AvGroup>
               <AvGroup>
                 <Label id="classificacaoLabel" for="parte-interesssada-classificacao">
                   <Translate contentKey="cidhaApp.parteInteresssada.classificacao">Classificacao</Translate>
                 </Label>
-                <AvField id="parte-interesssada-classificacao" type="text" name="classificacao" />
+                <AvField id="parte-interesssada-classificacao" data-cy="classificacao" type="text" name="classificacao" />
               </AvGroup>
               <AvGroup>
                 <Label for="parte-interesssada-representanteLegal">
@@ -103,11 +102,14 @@ export const ParteInteresssadaUpdate = (props: IParteInteresssadaUpdateProps) =>
                 </Label>
                 <AvInput
                   id="parte-interesssada-representanteLegal"
+                  data-cy="representanteLegal"
                   type="select"
                   multiple
                   className="form-control"
                   name="representanteLegals"
-                  value={parteInteresssadaEntity.representanteLegals && parteInteresssadaEntity.representanteLegals.map(e => e.id)}
+                  value={
+                    !isNew && parteInteresssadaEntity.representanteLegals && parteInteresssadaEntity.representanteLegals.map(e => e.id)
+                  }
                 >
                   <option value="" key="0" />
                   {representanteLegals
@@ -127,7 +129,7 @@ export const ParteInteresssadaUpdate = (props: IParteInteresssadaUpdateProps) =>
                 </span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp;
                 <Translate contentKey="entity.action.save">Save</Translate>

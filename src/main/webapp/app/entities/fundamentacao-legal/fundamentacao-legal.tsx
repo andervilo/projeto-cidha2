@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Col, Row, Table } from 'reactstrap';
-import { byteSize, Translate, ICrudGetAllAction, getSortState, IPaginationBaseState, JhiPagination, JhiItemCount } from 'react-jhipster';
+import { byteSize, Translate, getSortState, IPaginationBaseState, JhiPagination, JhiItemCount } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
@@ -16,7 +16,7 @@ export interface IFundamentacaoLegalProps extends StateProps, DispatchProps, Rou
 
 export const FundamentacaoLegal = (props: IFundamentacaoLegalProps) => {
   const [paginationState, setPaginationState] = useState(
-    overridePaginationStateWithQueryParams(getSortState(props.location, ITEMS_PER_PAGE), props.location.search)
+    overridePaginationStateWithQueryParams(getSortState(props.location, ITEMS_PER_PAGE, 'id'), props.location.search)
   );
 
   const getAllEntities = () => {
@@ -64,16 +64,26 @@ export const FundamentacaoLegal = (props: IFundamentacaoLegalProps) => {
       activePage: currentPage,
     });
 
+  const handleSyncList = () => {
+    sortEntities();
+  };
+
   const { fundamentacaoLegalList, match, loading, totalItems } = props;
   return (
     <div>
-      <h2 id="fundamentacao-legal-heading">
+      <h2 id="fundamentacao-legal-heading" data-cy="FundamentacaoLegalHeading">
         <Translate contentKey="cidhaApp.fundamentacaoLegal.home.title">Fundamentacao Legals</Translate>
-        <Link to={`${match.url}/new`} className="btn btn-primary float-right jh-create-entity" id="jh-create-entity">
-          <FontAwesomeIcon icon="plus" />
-          &nbsp;
-          <Translate contentKey="cidhaApp.fundamentacaoLegal.home.createLabel">Create new Fundamentacao Legal</Translate>
-        </Link>
+        <div className="d-flex justify-content-end">
+          <Button className="mr-2" color="info" onClick={handleSyncList} disabled={loading}>
+            <FontAwesomeIcon icon="sync" spin={loading} />{' '}
+            <Translate contentKey="cidhaApp.fundamentacaoLegal.home.refreshListLabel">Refresh List</Translate>
+          </Button>
+          <Link to={`${match.url}/new`} className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
+            <FontAwesomeIcon icon="plus" />
+            &nbsp;
+            <Translate contentKey="cidhaApp.fundamentacaoLegal.home.createLabel">Create new Fundamentacao Legal</Translate>
+          </Link>
+        </div>
       </h2>
       <div className="table-responsive">
         {fundamentacaoLegalList && fundamentacaoLegalList.length > 0 ? (
@@ -81,7 +91,7 @@ export const FundamentacaoLegal = (props: IFundamentacaoLegalProps) => {
             <thead>
               <tr>
                 <th className="hand" onClick={sort('id')}>
-                  <Translate contentKey="global.field.id">ID</Translate> <FontAwesomeIcon icon="sort" />
+                  <Translate contentKey="cidhaApp.fundamentacaoLegal.id">ID</Translate> <FontAwesomeIcon icon="sort" />
                 </th>
                 <th className="hand" onClick={sort('fundamentacaoLegal')}>
                   <Translate contentKey="cidhaApp.fundamentacaoLegal.fundamentacaoLegal">Fundamentacao Legal</Translate>{' '}
@@ -100,7 +110,7 @@ export const FundamentacaoLegal = (props: IFundamentacaoLegalProps) => {
             </thead>
             <tbody>
               {fundamentacaoLegalList.map((fundamentacaoLegal, i) => (
-                <tr key={`entity-${i}`}>
+                <tr key={`entity-${i}`} data-cy="entityTable">
                   <td>
                     <Button tag={Link} to={`${match.url}/${fundamentacaoLegal.id}`} color="link" size="sm">
                       {fundamentacaoLegal.id}
@@ -111,7 +121,7 @@ export const FundamentacaoLegal = (props: IFundamentacaoLegalProps) => {
                   <td>{fundamentacaoLegal.fundamentacaoLegalSugerida}</td>
                   <td className="text-right">
                     <div className="btn-group flex-btn-group-container">
-                      <Button tag={Link} to={`${match.url}/${fundamentacaoLegal.id}`} color="info" size="sm">
+                      <Button tag={Link} to={`${match.url}/${fundamentacaoLegal.id}`} color="info" size="sm" data-cy="entityDetailsButton">
                         <FontAwesomeIcon icon="eye" />{' '}
                         <span className="d-none d-md-inline">
                           <Translate contentKey="entity.action.view">View</Translate>
@@ -122,6 +132,7 @@ export const FundamentacaoLegal = (props: IFundamentacaoLegalProps) => {
                         to={`${match.url}/${fundamentacaoLegal.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
                         color="primary"
                         size="sm"
+                        data-cy="entityEditButton"
                       >
                         <FontAwesomeIcon icon="pencil-alt" />{' '}
                         <span className="d-none d-md-inline">
@@ -133,6 +144,7 @@ export const FundamentacaoLegal = (props: IFundamentacaoLegalProps) => {
                         to={`${match.url}/${fundamentacaoLegal.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
                         color="danger"
                         size="sm"
+                        data-cy="entityDeleteButton"
                       >
                         <FontAwesomeIcon icon="trash" />{' '}
                         <span className="d-none d-md-inline">

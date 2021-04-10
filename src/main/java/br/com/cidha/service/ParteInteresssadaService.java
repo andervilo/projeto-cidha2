@@ -2,15 +2,13 @@ package br.com.cidha.service;
 
 import br.com.cidha.domain.ParteInteresssada;
 import br.com.cidha.repository.ParteInteresssadaRepository;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 /**
  * Service Implementation for managing {@link ParteInteresssada}.
@@ -39,6 +37,32 @@ public class ParteInteresssadaService {
     }
 
     /**
+     * Partially update a parteInteresssada.
+     *
+     * @param parteInteresssada the entity to update partially.
+     * @return the persisted entity.
+     */
+    public Optional<ParteInteresssada> partialUpdate(ParteInteresssada parteInteresssada) {
+        log.debug("Request to partially update ParteInteresssada : {}", parteInteresssada);
+
+        return parteInteresssadaRepository
+            .findById(parteInteresssada.getId())
+            .map(
+                existingParteInteresssada -> {
+                    if (parteInteresssada.getNome() != null) {
+                        existingParteInteresssada.setNome(parteInteresssada.getNome());
+                    }
+                    if (parteInteresssada.getClassificacao() != null) {
+                        existingParteInteresssada.setClassificacao(parteInteresssada.getClassificacao());
+                    }
+
+                    return existingParteInteresssada;
+                }
+            )
+            .map(parteInteresssadaRepository::save);
+    }
+
+    /**
      * Get all the parteInteresssadas.
      *
      * @param pageable the pagination information.
@@ -49,7 +73,6 @@ public class ParteInteresssadaService {
         log.debug("Request to get all ParteInteresssadas");
         return parteInteresssadaRepository.findAll(pageable);
     }
-
 
     /**
      * Get all the parteInteresssadas with eager load of many-to-many relationships.

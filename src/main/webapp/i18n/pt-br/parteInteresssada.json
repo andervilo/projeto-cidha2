@@ -3,6 +3,7 @@
     "parteInteresssada": {
       "home": {
         "title": "Parte Interesssadas",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Parte Interesssada",
         "createOrEditLabel": "Criar ou editar Parte Interesssada",
         "notFound": "Nenhum Parte Interesssada encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Parte Interesssada"
       },
+      "id": "ID",
       "nome": "Nome",
       "classificacao": "Classificacao",
       "representanteLegal": "Representante Legal",

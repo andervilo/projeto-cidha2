@@ -3,6 +3,7 @@
     "fundamentacaoLegal": {
       "home": {
         "title": "Fundamentacao Legals",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Fundamentacao Legal",
         "createOrEditLabel": "Criar ou editar Fundamentacao Legal",
         "notFound": "Nenhum Fundamentacao Legal encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Fundamentacao Legal"
       },
+      "id": "ID",
       "fundamentacaoLegal": "Fundamentacao Legal",
       "folhasFundamentacaoLegal": "Folhas Fundamentacao Legal",
       "fundamentacaoLegalSugerida": "Fundamentacao Legal Sugerida",

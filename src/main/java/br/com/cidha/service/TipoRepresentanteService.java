@@ -2,15 +2,13 @@ package br.com.cidha.service;
 
 import br.com.cidha.domain.TipoRepresentante;
 import br.com.cidha.repository.TipoRepresentanteRepository;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 /**
  * Service Implementation for managing {@link TipoRepresentante}.
@@ -39,6 +37,29 @@ public class TipoRepresentanteService {
     }
 
     /**
+     * Partially update a tipoRepresentante.
+     *
+     * @param tipoRepresentante the entity to update partially.
+     * @return the persisted entity.
+     */
+    public Optional<TipoRepresentante> partialUpdate(TipoRepresentante tipoRepresentante) {
+        log.debug("Request to partially update TipoRepresentante : {}", tipoRepresentante);
+
+        return tipoRepresentanteRepository
+            .findById(tipoRepresentante.getId())
+            .map(
+                existingTipoRepresentante -> {
+                    if (tipoRepresentante.getDescricao() != null) {
+                        existingTipoRepresentante.setDescricao(tipoRepresentante.getDescricao());
+                    }
+
+                    return existingTipoRepresentante;
+                }
+            )
+            .map(tipoRepresentanteRepository::save);
+    }
+
+    /**
      * Get all the tipoRepresentantes.
      *
      * @param pageable the pagination information.
@@ -49,7 +70,6 @@ public class TipoRepresentanteService {
         log.debug("Request to get all TipoRepresentantes");
         return tipoRepresentanteRepository.findAll(pageable);
     }
-
 
     /**
      * Get one tipoRepresentante by id.

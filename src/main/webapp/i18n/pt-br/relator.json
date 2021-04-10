@@ -3,6 +3,7 @@
     "relator": {
       "home": {
         "title": "Relators",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Relator",
         "createOrEditLabel": "Criar ou editar Relator",
         "notFound": "Nenhum Relator encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Relator"
       },
+      "id": "ID",
       "nome": "Nome",
       "processo": "Processo"
     }

@@ -3,6 +3,7 @@
     "concessaoLiminarCassada": {
       "home": {
         "title": "Concessao Liminar Cassadas",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Concessao Liminar Cassada",
         "createOrEditLabel": "Criar ou editar Concessao Liminar Cassada",
         "notFound": "Nenhum Concessao Liminar Cassada encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Concessao Liminar Cassada"
       },
+      "id": "ID",
       "descricao": "Descricao",
       "processo": "Processo"
     }

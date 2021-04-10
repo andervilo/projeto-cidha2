@@ -3,6 +3,7 @@
     "conflito": {
       "home": {
         "title": "Conflitos",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Conflito",
         "createOrEditLabel": "Criar ou editar Conflito",
         "notFound": "Nenhum Conflito encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Conflito"
       },
+      "id": "ID",
       "descricao": "Descricao",
       "processoConflito": "Processo Conflito"
     }

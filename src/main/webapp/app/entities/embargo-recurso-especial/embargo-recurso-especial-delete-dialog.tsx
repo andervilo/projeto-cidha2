@@ -2,10 +2,9 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
-import { Translate, ICrudGetAction, ICrudDeleteAction } from 'react-jhipster';
+import { Translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { IEmbargoRecursoEspecial } from 'app/shared/model/embargo-recurso-especial.model';
 import { IRootState } from 'app/shared/reducers';
 import { getEntity, deleteEntity } from './embargo-recurso-especial.reducer';
 
@@ -33,7 +32,7 @@ export const EmbargoRecursoEspecialDeleteDialog = (props: IEmbargoRecursoEspecia
   const { embargoRecursoEspecialEntity } = props;
   return (
     <Modal isOpen toggle={handleClose}>
-      <ModalHeader toggle={handleClose}>
+      <ModalHeader toggle={handleClose} data-cy="embargoRecursoEspecialDeleteDialogHeading">
         <Translate contentKey="entity.delete.title">Confirm delete operation</Translate>
       </ModalHeader>
       <ModalBody id="cidhaApp.embargoRecursoEspecial.delete.question">
@@ -47,7 +46,7 @@ export const EmbargoRecursoEspecialDeleteDialog = (props: IEmbargoRecursoEspecia
           &nbsp;
           <Translate contentKey="entity.action.cancel">Cancel</Translate>
         </Button>
-        <Button id="jhi-confirm-delete-embargoRecursoEspecial" color="danger" onClick={confirmDelete}>
+        <Button id="jhi-confirm-delete-embargoRecursoEspecial" data-cy="entityConfirmDeleteButton" color="danger" onClick={confirmDelete}>
           <FontAwesomeIcon icon="trash" />
           &nbsp;
           <Translate contentKey="entity.action.delete">Delete</Translate>

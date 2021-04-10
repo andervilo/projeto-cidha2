@@ -2,15 +2,13 @@ package br.com.cidha.service;
 
 import br.com.cidha.domain.ProcessoConflito;
 import br.com.cidha.repository.ProcessoConflitoRepository;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 /**
  * Service Implementation for managing {@link ProcessoConflito}.
@@ -39,6 +37,38 @@ public class ProcessoConflitoService {
     }
 
     /**
+     * Partially update a processoConflito.
+     *
+     * @param processoConflito the entity to update partially.
+     * @return the persisted entity.
+     */
+    public Optional<ProcessoConflito> partialUpdate(ProcessoConflito processoConflito) {
+        log.debug("Request to partially update ProcessoConflito : {}", processoConflito);
+
+        return processoConflitoRepository
+            .findById(processoConflito.getId())
+            .map(
+                existingProcessoConflito -> {
+                    if (processoConflito.getInicioConflitoObservacoes() != null) {
+                        existingProcessoConflito.setInicioConflitoObservacoes(processoConflito.getInicioConflitoObservacoes());
+                    }
+                    if (processoConflito.getHistoricoConlito() != null) {
+                        existingProcessoConflito.setHistoricoConlito(processoConflito.getHistoricoConlito());
+                    }
+                    if (processoConflito.getNomeCasoComuidade() != null) {
+                        existingProcessoConflito.setNomeCasoComuidade(processoConflito.getNomeCasoComuidade());
+                    }
+                    if (processoConflito.getConsultaPrevia() != null) {
+                        existingProcessoConflito.setConsultaPrevia(processoConflito.getConsultaPrevia());
+                    }
+
+                    return existingProcessoConflito;
+                }
+            )
+            .map(processoConflitoRepository::save);
+    }
+
+    /**
      * Get all the processoConflitos.
      *
      * @param pageable the pagination information.
@@ -49,7 +79,6 @@ public class ProcessoConflitoService {
         log.debug("Request to get all ProcessoConflitos");
         return processoConflitoRepository.findAll(pageable);
     }
-
 
     /**
      * Get all the processoConflitos with eager load of many-to-many relationships.

@@ -2,15 +2,13 @@ package br.com.cidha.service;
 
 import br.com.cidha.domain.Conflito;
 import br.com.cidha.repository.ConflitoRepository;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 /**
  * Service Implementation for managing {@link Conflito}.
@@ -39,6 +37,29 @@ public class ConflitoService {
     }
 
     /**
+     * Partially update a conflito.
+     *
+     * @param conflito the entity to update partially.
+     * @return the persisted entity.
+     */
+    public Optional<Conflito> partialUpdate(Conflito conflito) {
+        log.debug("Request to partially update Conflito : {}", conflito);
+
+        return conflitoRepository
+            .findById(conflito.getId())
+            .map(
+                existingConflito -> {
+                    if (conflito.getDescricao() != null) {
+                        existingConflito.setDescricao(conflito.getDescricao());
+                    }
+
+                    return existingConflito;
+                }
+            )
+            .map(conflitoRepository::save);
+    }
+
+    /**
      * Get all the conflitos.
      *
      * @param pageable the pagination information.
@@ -49,7 +70,6 @@ public class ConflitoService {
         log.debug("Request to get all Conflitos");
         return conflitoRepository.findAll(pageable);
     }
-
 
     /**
      * Get one conflito by id.

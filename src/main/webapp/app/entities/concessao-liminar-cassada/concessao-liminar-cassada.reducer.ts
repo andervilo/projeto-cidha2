@@ -11,6 +11,7 @@ export const ACTION_TYPES = {
   FETCH_CONCESSAOLIMINARCASSADA: 'concessaoLiminarCassada/FETCH_CONCESSAOLIMINARCASSADA',
   CREATE_CONCESSAOLIMINARCASSADA: 'concessaoLiminarCassada/CREATE_CONCESSAOLIMINARCASSADA',
   UPDATE_CONCESSAOLIMINARCASSADA: 'concessaoLiminarCassada/UPDATE_CONCESSAOLIMINARCASSADA',
+  PARTIAL_UPDATE_CONCESSAOLIMINARCASSADA: 'concessaoLiminarCassada/PARTIAL_UPDATE_CONCESSAOLIMINARCASSADA',
   DELETE_CONCESSAOLIMINARCASSADA: 'concessaoLiminarCassada/DELETE_CONCESSAOLIMINARCASSADA',
   RESET: 'concessaoLiminarCassada/RESET',
 };
@@ -42,6 +43,7 @@ export default (state: ConcessaoLiminarCassadaState = initialState, action): Con
     case REQUEST(ACTION_TYPES.CREATE_CONCESSAOLIMINARCASSADA):
     case REQUEST(ACTION_TYPES.UPDATE_CONCESSAOLIMINARCASSADA):
     case REQUEST(ACTION_TYPES.DELETE_CONCESSAOLIMINARCASSADA):
+    case REQUEST(ACTION_TYPES.PARTIAL_UPDATE_CONCESSAOLIMINARCASSADA):
       return {
         ...state,
         errorMessage: null,
@@ -52,6 +54,7 @@ export default (state: ConcessaoLiminarCassadaState = initialState, action): Con
     case FAILURE(ACTION_TYPES.FETCH_CONCESSAOLIMINARCASSADA):
     case FAILURE(ACTION_TYPES.CREATE_CONCESSAOLIMINARCASSADA):
     case FAILURE(ACTION_TYPES.UPDATE_CONCESSAOLIMINARCASSADA):
+    case FAILURE(ACTION_TYPES.PARTIAL_UPDATE_CONCESSAOLIMINARCASSADA):
     case FAILURE(ACTION_TYPES.DELETE_CONCESSAOLIMINARCASSADA):
       return {
         ...state,
@@ -75,6 +78,7 @@ export default (state: ConcessaoLiminarCassadaState = initialState, action): Con
       };
     case SUCCESS(ACTION_TYPES.CREATE_CONCESSAOLIMINARCASSADA):
     case SUCCESS(ACTION_TYPES.UPDATE_CONCESSAOLIMINARCASSADA):
+    case SUCCESS(ACTION_TYPES.PARTIAL_UPDATE_CONCESSAOLIMINARCASSADA):
       return {
         ...state,
         updating: false,
@@ -129,7 +133,15 @@ export const createEntity: ICrudPutAction<IConcessaoLiminarCassada> = entity => 
 export const updateEntity: ICrudPutAction<IConcessaoLiminarCassada> = entity => async dispatch => {
   const result = await dispatch({
     type: ACTION_TYPES.UPDATE_CONCESSAOLIMINARCASSADA,
-    payload: axios.put(apiUrl, cleanEntity(entity)),
+    payload: axios.put(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
+  });
+  return result;
+};
+
+export const partialUpdate: ICrudPutAction<IConcessaoLiminarCassada> = entity => async dispatch => {
+  const result = await dispatch({
+    type: ACTION_TYPES.PARTIAL_UPDATE_CONCESSAOLIMINARCASSADA,
+    payload: axios.patch(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
   });
   return result;
 };

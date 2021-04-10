@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col, Label } from 'reactstrap';
 import { AvFeedback, AvForm, AvGroup, AvInput, AvField } from 'availity-reactstrap-validation';
-import { Translate, translate, ICrudGetAction, ICrudGetAllAction, ICrudPutAction } from 'react-jhipster';
+import { Translate, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
@@ -19,9 +19,7 @@ import { mapIdList } from 'app/shared/util/entity-utils';
 export interface IRepresentanteLegalUpdateProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
 
 export const RepresentanteLegalUpdate = (props: IRepresentanteLegalUpdateProps) => {
-  const [tipoRepresentanteId, setTipoRepresentanteId] = useState('0');
-  const [processoConflitoId, setProcessoConflitoId] = useState('0');
-  const [isNew, setIsNew] = useState(!props.match.params || !props.match.params.id);
+  const [isNew] = useState(!props.match.params || !props.match.params.id);
 
   const { representanteLegalEntity, tipoRepresentantes, parteInteresssadas, loading, updating } = props;
 
@@ -51,6 +49,7 @@ export const RepresentanteLegalUpdate = (props: IRepresentanteLegalUpdateProps) 
       const entity = {
         ...representanteLegalEntity,
         ...values,
+        tipoRepresentante: tipoRepresentantes.find(it => it.id.toString() === values.tipoRepresentanteId.toString()),
       };
 
       if (isNew) {
@@ -65,7 +64,7 @@ export const RepresentanteLegalUpdate = (props: IRepresentanteLegalUpdateProps) 
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="cidhaApp.representanteLegal.home.createOrEditLabel">
+          <h2 id="cidhaApp.representanteLegal.home.createOrEditLabel" data-cy="RepresentanteLegalCreateUpdateHeading">
             <Translate contentKey="cidhaApp.representanteLegal.home.createOrEditLabel">Create or edit a RepresentanteLegal</Translate>
           </h2>
         </Col>
@@ -88,13 +87,19 @@ export const RepresentanteLegalUpdate = (props: IRepresentanteLegalUpdateProps) 
                 <Label id="nomeLabel" for="representante-legal-nome">
                   <Translate contentKey="cidhaApp.representanteLegal.nome">Nome</Translate>
                 </Label>
-                <AvField id="representante-legal-nome" type="text" name="nome" />
+                <AvField id="representante-legal-nome" data-cy="nome" type="text" name="nome" />
               </AvGroup>
               <AvGroup>
                 <Label for="representante-legal-tipoRepresentante">
                   <Translate contentKey="cidhaApp.representanteLegal.tipoRepresentante">Tipo Representante</Translate>
                 </Label>
-                <AvInput id="representante-legal-tipoRepresentante" type="select" className="form-control" name="tipoRepresentante.id">
+                <AvInput
+                  id="representante-legal-tipoRepresentante"
+                  data-cy="tipoRepresentante"
+                  type="select"
+                  className="form-control"
+                  name="tipoRepresentanteId"
+                >
                   <option value="" key="0" />
                   {tipoRepresentantes
                     ? tipoRepresentantes.map(otherEntity => (
@@ -113,7 +118,7 @@ export const RepresentanteLegalUpdate = (props: IRepresentanteLegalUpdateProps) 
                 </span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp;
                 <Translate contentKey="entity.action.save">Save</Translate>

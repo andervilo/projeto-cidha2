@@ -1,49 +1,47 @@
 package br.com.cidha.web.rest;
 
-import br.com.cidha.CidhaApp;
-import br.com.cidha.domain.UnidadeConservacao;
-import br.com.cidha.domain.Processo;
-import br.com.cidha.repository.UnidadeConservacaoRepository;
-import br.com.cidha.service.UnidadeConservacaoService;
-import br.com.cidha.service.dto.UnidadeConservacaoCriteria;
-import br.com.cidha.service.UnidadeConservacaoQueryService;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
-import javax.persistence.EntityManager;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import br.com.cidha.IntegrationTest;
+import br.com.cidha.domain.Processo;
+import br.com.cidha.domain.UnidadeConservacao;
+import br.com.cidha.repository.UnidadeConservacaoRepository;
+import br.com.cidha.service.criteria.UnidadeConservacaoCriteria;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
+import javax.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * Integration tests for the {@link UnidadeConservacaoResource} REST controller.
  */
-@SpringBootTest(classes = CidhaApp.class)
+@IntegrationTest
 @AutoConfigureMockMvc
 @WithMockUser
-public class UnidadeConservacaoResourceIT {
+class UnidadeConservacaoResourceIT {
 
     private static final String DEFAULT_DESCRICAO = "AAAAAAAAAA";
     private static final String UPDATED_DESCRICAO = "BBBBBBBBBB";
 
+    private static final String ENTITY_API_URL = "/api/unidade-conservacaos";
+    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+
+    private static Random random = new Random();
+    private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
+
     @Autowired
     private UnidadeConservacaoRepository unidadeConservacaoRepository;
-
-    @Autowired
-    private UnidadeConservacaoService unidadeConservacaoService;
-
-    @Autowired
-    private UnidadeConservacaoQueryService unidadeConservacaoQueryService;
 
     @Autowired
     private EntityManager em;
@@ -60,10 +58,10 @@ public class UnidadeConservacaoResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static UnidadeConservacao createEntity(EntityManager em) {
-        UnidadeConservacao unidadeConservacao = new UnidadeConservacao()
-            .descricao(DEFAULT_DESCRICAO);
+        UnidadeConservacao unidadeConservacao = new UnidadeConservacao().descricao(DEFAULT_DESCRICAO);
         return unidadeConservacao;
     }
+
     /**
      * Create an updated entity for this test.
      *
@@ -71,8 +69,7 @@ public class UnidadeConservacaoResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static UnidadeConservacao createUpdatedEntity(EntityManager em) {
-        UnidadeConservacao unidadeConservacao = new UnidadeConservacao()
-            .descricao(UPDATED_DESCRICAO);
+        UnidadeConservacao unidadeConservacao = new UnidadeConservacao().descricao(UPDATED_DESCRICAO);
         return unidadeConservacao;
     }
 
@@ -83,12 +80,13 @@ public class UnidadeConservacaoResourceIT {
 
     @Test
     @Transactional
-    public void createUnidadeConservacao() throws Exception {
+    void createUnidadeConservacao() throws Exception {
         int databaseSizeBeforeCreate = unidadeConservacaoRepository.findAll().size();
         // Create the UnidadeConservacao
-        restUnidadeConservacaoMockMvc.perform(post("/api/unidade-conservacaos")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(unidadeConservacao)))
+        restUnidadeConservacaoMockMvc
+            .perform(
+                post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(unidadeConservacao))
+            )
             .andExpect(status().isCreated());
 
         // Validate the UnidadeConservacao in the database
@@ -100,16 +98,17 @@ public class UnidadeConservacaoResourceIT {
 
     @Test
     @Transactional
-    public void createUnidadeConservacaoWithExistingId() throws Exception {
-        int databaseSizeBeforeCreate = unidadeConservacaoRepository.findAll().size();
-
+    void createUnidadeConservacaoWithExistingId() throws Exception {
         // Create the UnidadeConservacao with an existing ID
         unidadeConservacao.setId(1L);
 
+        int databaseSizeBeforeCreate = unidadeConservacaoRepository.findAll().size();
+
         // An entity with an existing ID cannot be created, so this API call must fail
-        restUnidadeConservacaoMockMvc.perform(post("/api/unidade-conservacaos")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(unidadeConservacao)))
+        restUnidadeConservacaoMockMvc
+            .perform(
+                post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(unidadeConservacao))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the UnidadeConservacao in the database
@@ -117,39 +116,39 @@ public class UnidadeConservacaoResourceIT {
         assertThat(unidadeConservacaoList).hasSize(databaseSizeBeforeCreate);
     }
 
-
     @Test
     @Transactional
-    public void getAllUnidadeConservacaos() throws Exception {
+    void getAllUnidadeConservacaos() throws Exception {
         // Initialize the database
         unidadeConservacaoRepository.saveAndFlush(unidadeConservacao);
 
         // Get all the unidadeConservacaoList
-        restUnidadeConservacaoMockMvc.perform(get("/api/unidade-conservacaos?sort=id,desc"))
+        restUnidadeConservacaoMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(unidadeConservacao.getId().intValue())))
             .andExpect(jsonPath("$.[*].descricao").value(hasItem(DEFAULT_DESCRICAO)));
     }
-    
+
     @Test
     @Transactional
-    public void getUnidadeConservacao() throws Exception {
+    void getUnidadeConservacao() throws Exception {
         // Initialize the database
         unidadeConservacaoRepository.saveAndFlush(unidadeConservacao);
 
         // Get the unidadeConservacao
-        restUnidadeConservacaoMockMvc.perform(get("/api/unidade-conservacaos/{id}", unidadeConservacao.getId()))
+        restUnidadeConservacaoMockMvc
+            .perform(get(ENTITY_API_URL_ID, unidadeConservacao.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(unidadeConservacao.getId().intValue()))
             .andExpect(jsonPath("$.descricao").value(DEFAULT_DESCRICAO));
     }
 
-
     @Test
     @Transactional
-    public void getUnidadeConservacaosByIdFiltering() throws Exception {
+    void getUnidadeConservacaosByIdFiltering() throws Exception {
         // Initialize the database
         unidadeConservacaoRepository.saveAndFlush(unidadeConservacao);
 
@@ -165,10 +164,9 @@ public class UnidadeConservacaoResourceIT {
         defaultUnidadeConservacaoShouldNotBeFound("id.lessThan=" + id);
     }
 
-
     @Test
     @Transactional
-    public void getAllUnidadeConservacaosByDescricaoIsEqualToSomething() throws Exception {
+    void getAllUnidadeConservacaosByDescricaoIsEqualToSomething() throws Exception {
         // Initialize the database
         unidadeConservacaoRepository.saveAndFlush(unidadeConservacao);
 
@@ -181,7 +179,7 @@ public class UnidadeConservacaoResourceIT {
 
     @Test
     @Transactional
-    public void getAllUnidadeConservacaosByDescricaoIsNotEqualToSomething() throws Exception {
+    void getAllUnidadeConservacaosByDescricaoIsNotEqualToSomething() throws Exception {
         // Initialize the database
         unidadeConservacaoRepository.saveAndFlush(unidadeConservacao);
 
@@ -194,7 +192,7 @@ public class UnidadeConservacaoResourceIT {
 
     @Test
     @Transactional
-    public void getAllUnidadeConservacaosByDescricaoIsInShouldWork() throws Exception {
+    void getAllUnidadeConservacaosByDescricaoIsInShouldWork() throws Exception {
         // Initialize the database
         unidadeConservacaoRepository.saveAndFlush(unidadeConservacao);
 
@@ -207,7 +205,7 @@ public class UnidadeConservacaoResourceIT {
 
     @Test
     @Transactional
-    public void getAllUnidadeConservacaosByDescricaoIsNullOrNotNull() throws Exception {
+    void getAllUnidadeConservacaosByDescricaoIsNullOrNotNull() throws Exception {
         // Initialize the database
         unidadeConservacaoRepository.saveAndFlush(unidadeConservacao);
 
@@ -217,9 +215,10 @@ public class UnidadeConservacaoResourceIT {
         // Get all the unidadeConservacaoList where descricao is null
         defaultUnidadeConservacaoShouldNotBeFound("descricao.specified=false");
     }
-                @Test
+
+    @Test
     @Transactional
-    public void getAllUnidadeConservacaosByDescricaoContainsSomething() throws Exception {
+    void getAllUnidadeConservacaosByDescricaoContainsSomething() throws Exception {
         // Initialize the database
         unidadeConservacaoRepository.saveAndFlush(unidadeConservacao);
 
@@ -232,7 +231,7 @@ public class UnidadeConservacaoResourceIT {
 
     @Test
     @Transactional
-    public void getAllUnidadeConservacaosByDescricaoNotContainsSomething() throws Exception {
+    void getAllUnidadeConservacaosByDescricaoNotContainsSomething() throws Exception {
         // Initialize the database
         unidadeConservacaoRepository.saveAndFlush(unidadeConservacao);
 
@@ -243,10 +242,9 @@ public class UnidadeConservacaoResourceIT {
         defaultUnidadeConservacaoShouldBeFound("descricao.doesNotContain=" + UPDATED_DESCRICAO);
     }
 
-
     @Test
     @Transactional
-    public void getAllUnidadeConservacaosByProcessoIsEqualToSomething() throws Exception {
+    void getAllUnidadeConservacaosByProcessoIsEqualToSomething() throws Exception {
         // Initialize the database
         unidadeConservacaoRepository.saveAndFlush(unidadeConservacao);
         Processo processo = ProcessoResourceIT.createEntity(em);
@@ -259,7 +257,7 @@ public class UnidadeConservacaoResourceIT {
         // Get all the unidadeConservacaoList where processo equals to processoId
         defaultUnidadeConservacaoShouldBeFound("processoId.equals=" + processoId);
 
-        // Get all the unidadeConservacaoList where processo equals to processoId + 1
+        // Get all the unidadeConservacaoList where processo equals to (processoId + 1)
         defaultUnidadeConservacaoShouldNotBeFound("processoId.equals=" + (processoId + 1));
     }
 
@@ -267,14 +265,16 @@ public class UnidadeConservacaoResourceIT {
      * Executes the search, and checks that the default entity is returned.
      */
     private void defaultUnidadeConservacaoShouldBeFound(String filter) throws Exception {
-        restUnidadeConservacaoMockMvc.perform(get("/api/unidade-conservacaos?sort=id,desc&" + filter))
+        restUnidadeConservacaoMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(unidadeConservacao.getId().intValue())))
             .andExpect(jsonPath("$.[*].descricao").value(hasItem(DEFAULT_DESCRICAO)));
 
         // Check, that the count call also returns 1
-        restUnidadeConservacaoMockMvc.perform(get("/api/unidade-conservacaos/count?sort=id,desc&" + filter))
+        restUnidadeConservacaoMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("1"));
@@ -284,14 +284,16 @@ public class UnidadeConservacaoResourceIT {
      * Executes the search, and checks that the default entity is not returned.
      */
     private void defaultUnidadeConservacaoShouldNotBeFound(String filter) throws Exception {
-        restUnidadeConservacaoMockMvc.perform(get("/api/unidade-conservacaos?sort=id,desc&" + filter))
+        restUnidadeConservacaoMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$").isEmpty());
 
         // Check, that the count call also returns 0
-        restUnidadeConservacaoMockMvc.perform(get("/api/unidade-conservacaos/count?sort=id,desc&" + filter))
+        restUnidadeConservacaoMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("0"));
@@ -299,17 +301,16 @@ public class UnidadeConservacaoResourceIT {
 
     @Test
     @Transactional
-    public void getNonExistingUnidadeConservacao() throws Exception {
+    void getNonExistingUnidadeConservacao() throws Exception {
         // Get the unidadeConservacao
-        restUnidadeConservacaoMockMvc.perform(get("/api/unidade-conservacaos/{id}", Long.MAX_VALUE))
-            .andExpect(status().isNotFound());
+        restUnidadeConservacaoMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
     @Test
     @Transactional
-    public void updateUnidadeConservacao() throws Exception {
+    void putNewUnidadeConservacao() throws Exception {
         // Initialize the database
-        unidadeConservacaoService.save(unidadeConservacao);
+        unidadeConservacaoRepository.saveAndFlush(unidadeConservacao);
 
         int databaseSizeBeforeUpdate = unidadeConservacaoRepository.findAll().size();
 
@@ -317,12 +318,14 @@ public class UnidadeConservacaoResourceIT {
         UnidadeConservacao updatedUnidadeConservacao = unidadeConservacaoRepository.findById(unidadeConservacao.getId()).get();
         // Disconnect from session so that the updates on updatedUnidadeConservacao are not directly saved in db
         em.detach(updatedUnidadeConservacao);
-        updatedUnidadeConservacao
-            .descricao(UPDATED_DESCRICAO);
+        updatedUnidadeConservacao.descricao(UPDATED_DESCRICAO);
 
-        restUnidadeConservacaoMockMvc.perform(put("/api/unidade-conservacaos")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(updatedUnidadeConservacao)))
+        restUnidadeConservacaoMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, updatedUnidadeConservacao.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(updatedUnidadeConservacao))
+            )
             .andExpect(status().isOk());
 
         // Validate the UnidadeConservacao in the database
@@ -334,13 +337,17 @@ public class UnidadeConservacaoResourceIT {
 
     @Test
     @Transactional
-    public void updateNonExistingUnidadeConservacao() throws Exception {
+    void putNonExistingUnidadeConservacao() throws Exception {
         int databaseSizeBeforeUpdate = unidadeConservacaoRepository.findAll().size();
+        unidadeConservacao.setId(count.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restUnidadeConservacaoMockMvc.perform(put("/api/unidade-conservacaos")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(unidadeConservacao)))
+        restUnidadeConservacaoMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, unidadeConservacao.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(unidadeConservacao))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the UnidadeConservacao in the database
@@ -350,15 +357,171 @@ public class UnidadeConservacaoResourceIT {
 
     @Test
     @Transactional
-    public void deleteUnidadeConservacao() throws Exception {
+    void putWithIdMismatchUnidadeConservacao() throws Exception {
+        int databaseSizeBeforeUpdate = unidadeConservacaoRepository.findAll().size();
+        unidadeConservacao.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restUnidadeConservacaoMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(unidadeConservacao))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the UnidadeConservacao in the database
+        List<UnidadeConservacao> unidadeConservacaoList = unidadeConservacaoRepository.findAll();
+        assertThat(unidadeConservacaoList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void putWithMissingIdPathParamUnidadeConservacao() throws Exception {
+        int databaseSizeBeforeUpdate = unidadeConservacaoRepository.findAll().size();
+        unidadeConservacao.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restUnidadeConservacaoMockMvc
+            .perform(
+                put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(unidadeConservacao))
+            )
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the UnidadeConservacao in the database
+        List<UnidadeConservacao> unidadeConservacaoList = unidadeConservacaoRepository.findAll();
+        assertThat(unidadeConservacaoList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void partialUpdateUnidadeConservacaoWithPatch() throws Exception {
         // Initialize the database
-        unidadeConservacaoService.save(unidadeConservacao);
+        unidadeConservacaoRepository.saveAndFlush(unidadeConservacao);
+
+        int databaseSizeBeforeUpdate = unidadeConservacaoRepository.findAll().size();
+
+        // Update the unidadeConservacao using partial update
+        UnidadeConservacao partialUpdatedUnidadeConservacao = new UnidadeConservacao();
+        partialUpdatedUnidadeConservacao.setId(unidadeConservacao.getId());
+
+        partialUpdatedUnidadeConservacao.descricao(UPDATED_DESCRICAO);
+
+        restUnidadeConservacaoMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedUnidadeConservacao.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedUnidadeConservacao))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the UnidadeConservacao in the database
+        List<UnidadeConservacao> unidadeConservacaoList = unidadeConservacaoRepository.findAll();
+        assertThat(unidadeConservacaoList).hasSize(databaseSizeBeforeUpdate);
+        UnidadeConservacao testUnidadeConservacao = unidadeConservacaoList.get(unidadeConservacaoList.size() - 1);
+        assertThat(testUnidadeConservacao.getDescricao()).isEqualTo(UPDATED_DESCRICAO);
+    }
+
+    @Test
+    @Transactional
+    void fullUpdateUnidadeConservacaoWithPatch() throws Exception {
+        // Initialize the database
+        unidadeConservacaoRepository.saveAndFlush(unidadeConservacao);
+
+        int databaseSizeBeforeUpdate = unidadeConservacaoRepository.findAll().size();
+
+        // Update the unidadeConservacao using partial update
+        UnidadeConservacao partialUpdatedUnidadeConservacao = new UnidadeConservacao();
+        partialUpdatedUnidadeConservacao.setId(unidadeConservacao.getId());
+
+        partialUpdatedUnidadeConservacao.descricao(UPDATED_DESCRICAO);
+
+        restUnidadeConservacaoMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedUnidadeConservacao.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedUnidadeConservacao))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the UnidadeConservacao in the database
+        List<UnidadeConservacao> unidadeConservacaoList = unidadeConservacaoRepository.findAll();
+        assertThat(unidadeConservacaoList).hasSize(databaseSizeBeforeUpdate);
+        UnidadeConservacao testUnidadeConservacao = unidadeConservacaoList.get(unidadeConservacaoList.size() - 1);
+        assertThat(testUnidadeConservacao.getDescricao()).isEqualTo(UPDATED_DESCRICAO);
+    }
+
+    @Test
+    @Transactional
+    void patchNonExistingUnidadeConservacao() throws Exception {
+        int databaseSizeBeforeUpdate = unidadeConservacaoRepository.findAll().size();
+        unidadeConservacao.setId(count.incrementAndGet());
+
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
+        restUnidadeConservacaoMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, unidadeConservacao.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(unidadeConservacao))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the UnidadeConservacao in the database
+        List<UnidadeConservacao> unidadeConservacaoList = unidadeConservacaoRepository.findAll();
+        assertThat(unidadeConservacaoList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithIdMismatchUnidadeConservacao() throws Exception {
+        int databaseSizeBeforeUpdate = unidadeConservacaoRepository.findAll().size();
+        unidadeConservacao.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restUnidadeConservacaoMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(unidadeConservacao))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the UnidadeConservacao in the database
+        List<UnidadeConservacao> unidadeConservacaoList = unidadeConservacaoRepository.findAll();
+        assertThat(unidadeConservacaoList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithMissingIdPathParamUnidadeConservacao() throws Exception {
+        int databaseSizeBeforeUpdate = unidadeConservacaoRepository.findAll().size();
+        unidadeConservacao.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restUnidadeConservacaoMockMvc
+            .perform(
+                patch(ENTITY_API_URL)
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(unidadeConservacao))
+            )
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the UnidadeConservacao in the database
+        List<UnidadeConservacao> unidadeConservacaoList = unidadeConservacaoRepository.findAll();
+        assertThat(unidadeConservacaoList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void deleteUnidadeConservacao() throws Exception {
+        // Initialize the database
+        unidadeConservacaoRepository.saveAndFlush(unidadeConservacao);
 
         int databaseSizeBeforeDelete = unidadeConservacaoRepository.findAll().size();
 
         // Delete the unidadeConservacao
-        restUnidadeConservacaoMockMvc.perform(delete("/api/unidade-conservacaos/{id}", unidadeConservacao.getId())
-            .accept(MediaType.APPLICATION_JSON))
+        restUnidadeConservacaoMockMvc
+            .perform(delete(ENTITY_API_URL_ID, unidadeConservacao.getId()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item

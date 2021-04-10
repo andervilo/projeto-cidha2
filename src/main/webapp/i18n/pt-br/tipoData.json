@@ -3,6 +3,7 @@
     "tipoData": {
       "home": {
         "title": "Tipo Data",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Tipo Data",
         "createOrEditLabel": "Criar ou editar Tipo Data",
         "notFound": "Nenhum Tipo Data encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Tipo Data"
       },
+      "id": "ID",
       "descricao": "Descricao"
     }
   }

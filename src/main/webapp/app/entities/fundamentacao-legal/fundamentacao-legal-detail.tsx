@@ -2,12 +2,11 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col } from 'reactstrap';
-import { Translate, ICrudGetAction, byteSize } from 'react-jhipster';
+import { Translate, byteSize } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
 import { getEntity } from './fundamentacao-legal.reducer';
-import { IFundamentacaoLegal } from 'app/shared/model/fundamentacao-legal.model';
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 
 export interface IFundamentacaoLegalDetailProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
@@ -21,11 +20,16 @@ export const FundamentacaoLegalDetail = (props: IFundamentacaoLegalDetailProps) 
   return (
     <Row>
       <Col md="8">
-        <h2>
-          <Translate contentKey="cidhaApp.fundamentacaoLegal.detail.title">FundamentacaoLegal</Translate> [
-          <b>{fundamentacaoLegalEntity.id}</b>]
+        <h2 data-cy="fundamentacaoLegalDetailsHeading">
+          <Translate contentKey="cidhaApp.fundamentacaoLegal.detail.title">FundamentacaoLegal</Translate>
         </h2>
         <dl className="jh-entity-details">
+          <dt>
+            <span id="id">
+              <Translate contentKey="global.field.id">ID</Translate>
+            </span>
+          </dt>
+          <dd>{fundamentacaoLegalEntity.id}</dd>
           <dt>
             <span id="fundamentacaoLegal">
               <Translate contentKey="cidhaApp.fundamentacaoLegal.fundamentacaoLegal">Fundamentacao Legal</Translate>
@@ -45,7 +49,7 @@ export const FundamentacaoLegalDetail = (props: IFundamentacaoLegalDetailProps) 
           </dt>
           <dd>{fundamentacaoLegalEntity.fundamentacaoLegalSugerida}</dd>
         </dl>
-        <Button tag={Link} to="/fundamentacao-legal" replace color="info">
+        <Button tag={Link} to="/fundamentacao-legal" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" />{' '}
           <span className="d-none d-md-inline">
             <Translate contentKey="entity.action.back">Back</Translate>

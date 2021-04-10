@@ -11,6 +11,7 @@ export const ACTION_TYPES = {
   FETCH_REPRESENTANTELEGAL: 'representanteLegal/FETCH_REPRESENTANTELEGAL',
   CREATE_REPRESENTANTELEGAL: 'representanteLegal/CREATE_REPRESENTANTELEGAL',
   UPDATE_REPRESENTANTELEGAL: 'representanteLegal/UPDATE_REPRESENTANTELEGAL',
+  PARTIAL_UPDATE_REPRESENTANTELEGAL: 'representanteLegal/PARTIAL_UPDATE_REPRESENTANTELEGAL',
   DELETE_REPRESENTANTELEGAL: 'representanteLegal/DELETE_REPRESENTANTELEGAL',
   RESET: 'representanteLegal/RESET',
 };
@@ -42,6 +43,7 @@ export default (state: RepresentanteLegalState = initialState, action): Represen
     case REQUEST(ACTION_TYPES.CREATE_REPRESENTANTELEGAL):
     case REQUEST(ACTION_TYPES.UPDATE_REPRESENTANTELEGAL):
     case REQUEST(ACTION_TYPES.DELETE_REPRESENTANTELEGAL):
+    case REQUEST(ACTION_TYPES.PARTIAL_UPDATE_REPRESENTANTELEGAL):
       return {
         ...state,
         errorMessage: null,
@@ -52,6 +54,7 @@ export default (state: RepresentanteLegalState = initialState, action): Represen
     case FAILURE(ACTION_TYPES.FETCH_REPRESENTANTELEGAL):
     case FAILURE(ACTION_TYPES.CREATE_REPRESENTANTELEGAL):
     case FAILURE(ACTION_TYPES.UPDATE_REPRESENTANTELEGAL):
+    case FAILURE(ACTION_TYPES.PARTIAL_UPDATE_REPRESENTANTELEGAL):
     case FAILURE(ACTION_TYPES.DELETE_REPRESENTANTELEGAL):
       return {
         ...state,
@@ -75,6 +78,7 @@ export default (state: RepresentanteLegalState = initialState, action): Represen
       };
     case SUCCESS(ACTION_TYPES.CREATE_REPRESENTANTELEGAL):
     case SUCCESS(ACTION_TYPES.UPDATE_REPRESENTANTELEGAL):
+    case SUCCESS(ACTION_TYPES.PARTIAL_UPDATE_REPRESENTANTELEGAL):
       return {
         ...state,
         updating: false,
@@ -129,7 +133,15 @@ export const createEntity: ICrudPutAction<IRepresentanteLegal> = entity => async
 export const updateEntity: ICrudPutAction<IRepresentanteLegal> = entity => async dispatch => {
   const result = await dispatch({
     type: ACTION_TYPES.UPDATE_REPRESENTANTELEGAL,
-    payload: axios.put(apiUrl, cleanEntity(entity)),
+    payload: axios.put(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
+  });
+  return result;
+};
+
+export const partialUpdate: ICrudPutAction<IRepresentanteLegal> = entity => async dispatch => {
+  const result = await dispatch({
+    type: ACTION_TYPES.PARTIAL_UPDATE_REPRESENTANTELEGAL,
+    payload: axios.patch(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
   });
   return result;
 };

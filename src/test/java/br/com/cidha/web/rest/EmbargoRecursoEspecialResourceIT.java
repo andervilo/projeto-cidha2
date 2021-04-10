@@ -1,49 +1,47 @@
 package br.com.cidha.web.rest;
 
-import br.com.cidha.CidhaApp;
-import br.com.cidha.domain.EmbargoRecursoEspecial;
-import br.com.cidha.domain.Processo;
-import br.com.cidha.repository.EmbargoRecursoEspecialRepository;
-import br.com.cidha.service.EmbargoRecursoEspecialService;
-import br.com.cidha.service.dto.EmbargoRecursoEspecialCriteria;
-import br.com.cidha.service.EmbargoRecursoEspecialQueryService;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
-import javax.persistence.EntityManager;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import br.com.cidha.IntegrationTest;
+import br.com.cidha.domain.EmbargoRecursoEspecial;
+import br.com.cidha.domain.Processo;
+import br.com.cidha.repository.EmbargoRecursoEspecialRepository;
+import br.com.cidha.service.criteria.EmbargoRecursoEspecialCriteria;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
+import javax.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * Integration tests for the {@link EmbargoRecursoEspecialResource} REST controller.
  */
-@SpringBootTest(classes = CidhaApp.class)
+@IntegrationTest
 @AutoConfigureMockMvc
 @WithMockUser
-public class EmbargoRecursoEspecialResourceIT {
+class EmbargoRecursoEspecialResourceIT {
 
     private static final String DEFAULT_DESCRICAO = "AAAAAAAAAA";
     private static final String UPDATED_DESCRICAO = "BBBBBBBBBB";
 
+    private static final String ENTITY_API_URL = "/api/embargo-recurso-especials";
+    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+
+    private static Random random = new Random();
+    private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
+
     @Autowired
     private EmbargoRecursoEspecialRepository embargoRecursoEspecialRepository;
-
-    @Autowired
-    private EmbargoRecursoEspecialService embargoRecursoEspecialService;
-
-    @Autowired
-    private EmbargoRecursoEspecialQueryService embargoRecursoEspecialQueryService;
 
     @Autowired
     private EntityManager em;
@@ -60,10 +58,10 @@ public class EmbargoRecursoEspecialResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static EmbargoRecursoEspecial createEntity(EntityManager em) {
-        EmbargoRecursoEspecial embargoRecursoEspecial = new EmbargoRecursoEspecial()
-            .descricao(DEFAULT_DESCRICAO);
+        EmbargoRecursoEspecial embargoRecursoEspecial = new EmbargoRecursoEspecial().descricao(DEFAULT_DESCRICAO);
         return embargoRecursoEspecial;
     }
+
     /**
      * Create an updated entity for this test.
      *
@@ -71,8 +69,7 @@ public class EmbargoRecursoEspecialResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static EmbargoRecursoEspecial createUpdatedEntity(EntityManager em) {
-        EmbargoRecursoEspecial embargoRecursoEspecial = new EmbargoRecursoEspecial()
-            .descricao(UPDATED_DESCRICAO);
+        EmbargoRecursoEspecial embargoRecursoEspecial = new EmbargoRecursoEspecial().descricao(UPDATED_DESCRICAO);
         return embargoRecursoEspecial;
     }
 
@@ -83,12 +80,15 @@ public class EmbargoRecursoEspecialResourceIT {
 
     @Test
     @Transactional
-    public void createEmbargoRecursoEspecial() throws Exception {
+    void createEmbargoRecursoEspecial() throws Exception {
         int databaseSizeBeforeCreate = embargoRecursoEspecialRepository.findAll().size();
         // Create the EmbargoRecursoEspecial
-        restEmbargoRecursoEspecialMockMvc.perform(post("/api/embargo-recurso-especials")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(embargoRecursoEspecial)))
+        restEmbargoRecursoEspecialMockMvc
+            .perform(
+                post(ENTITY_API_URL)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(embargoRecursoEspecial))
+            )
             .andExpect(status().isCreated());
 
         // Validate the EmbargoRecursoEspecial in the database
@@ -100,16 +100,19 @@ public class EmbargoRecursoEspecialResourceIT {
 
     @Test
     @Transactional
-    public void createEmbargoRecursoEspecialWithExistingId() throws Exception {
-        int databaseSizeBeforeCreate = embargoRecursoEspecialRepository.findAll().size();
-
+    void createEmbargoRecursoEspecialWithExistingId() throws Exception {
         // Create the EmbargoRecursoEspecial with an existing ID
         embargoRecursoEspecial.setId(1L);
 
+        int databaseSizeBeforeCreate = embargoRecursoEspecialRepository.findAll().size();
+
         // An entity with an existing ID cannot be created, so this API call must fail
-        restEmbargoRecursoEspecialMockMvc.perform(post("/api/embargo-recurso-especials")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(embargoRecursoEspecial)))
+        restEmbargoRecursoEspecialMockMvc
+            .perform(
+                post(ENTITY_API_URL)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(embargoRecursoEspecial))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the EmbargoRecursoEspecial in the database
@@ -117,39 +120,39 @@ public class EmbargoRecursoEspecialResourceIT {
         assertThat(embargoRecursoEspecialList).hasSize(databaseSizeBeforeCreate);
     }
 
-
     @Test
     @Transactional
-    public void getAllEmbargoRecursoEspecials() throws Exception {
+    void getAllEmbargoRecursoEspecials() throws Exception {
         // Initialize the database
         embargoRecursoEspecialRepository.saveAndFlush(embargoRecursoEspecial);
 
         // Get all the embargoRecursoEspecialList
-        restEmbargoRecursoEspecialMockMvc.perform(get("/api/embargo-recurso-especials?sort=id,desc"))
+        restEmbargoRecursoEspecialMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(embargoRecursoEspecial.getId().intValue())))
             .andExpect(jsonPath("$.[*].descricao").value(hasItem(DEFAULT_DESCRICAO)));
     }
-    
+
     @Test
     @Transactional
-    public void getEmbargoRecursoEspecial() throws Exception {
+    void getEmbargoRecursoEspecial() throws Exception {
         // Initialize the database
         embargoRecursoEspecialRepository.saveAndFlush(embargoRecursoEspecial);
 
         // Get the embargoRecursoEspecial
-        restEmbargoRecursoEspecialMockMvc.perform(get("/api/embargo-recurso-especials/{id}", embargoRecursoEspecial.getId()))
+        restEmbargoRecursoEspecialMockMvc
+            .perform(get(ENTITY_API_URL_ID, embargoRecursoEspecial.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(embargoRecursoEspecial.getId().intValue()))
             .andExpect(jsonPath("$.descricao").value(DEFAULT_DESCRICAO));
     }
 
-
     @Test
     @Transactional
-    public void getEmbargoRecursoEspecialsByIdFiltering() throws Exception {
+    void getEmbargoRecursoEspecialsByIdFiltering() throws Exception {
         // Initialize the database
         embargoRecursoEspecialRepository.saveAndFlush(embargoRecursoEspecial);
 
@@ -165,10 +168,9 @@ public class EmbargoRecursoEspecialResourceIT {
         defaultEmbargoRecursoEspecialShouldNotBeFound("id.lessThan=" + id);
     }
 
-
     @Test
     @Transactional
-    public void getAllEmbargoRecursoEspecialsByDescricaoIsEqualToSomething() throws Exception {
+    void getAllEmbargoRecursoEspecialsByDescricaoIsEqualToSomething() throws Exception {
         // Initialize the database
         embargoRecursoEspecialRepository.saveAndFlush(embargoRecursoEspecial);
 
@@ -181,7 +183,7 @@ public class EmbargoRecursoEspecialResourceIT {
 
     @Test
     @Transactional
-    public void getAllEmbargoRecursoEspecialsByDescricaoIsNotEqualToSomething() throws Exception {
+    void getAllEmbargoRecursoEspecialsByDescricaoIsNotEqualToSomething() throws Exception {
         // Initialize the database
         embargoRecursoEspecialRepository.saveAndFlush(embargoRecursoEspecial);
 
@@ -194,7 +196,7 @@ public class EmbargoRecursoEspecialResourceIT {
 
     @Test
     @Transactional
-    public void getAllEmbargoRecursoEspecialsByDescricaoIsInShouldWork() throws Exception {
+    void getAllEmbargoRecursoEspecialsByDescricaoIsInShouldWork() throws Exception {
         // Initialize the database
         embargoRecursoEspecialRepository.saveAndFlush(embargoRecursoEspecial);
 
@@ -207,7 +209,7 @@ public class EmbargoRecursoEspecialResourceIT {
 
     @Test
     @Transactional
-    public void getAllEmbargoRecursoEspecialsByDescricaoIsNullOrNotNull() throws Exception {
+    void getAllEmbargoRecursoEspecialsByDescricaoIsNullOrNotNull() throws Exception {
         // Initialize the database
         embargoRecursoEspecialRepository.saveAndFlush(embargoRecursoEspecial);
 
@@ -217,9 +219,10 @@ public class EmbargoRecursoEspecialResourceIT {
         // Get all the embargoRecursoEspecialList where descricao is null
         defaultEmbargoRecursoEspecialShouldNotBeFound("descricao.specified=false");
     }
-                @Test
+
+    @Test
     @Transactional
-    public void getAllEmbargoRecursoEspecialsByDescricaoContainsSomething() throws Exception {
+    void getAllEmbargoRecursoEspecialsByDescricaoContainsSomething() throws Exception {
         // Initialize the database
         embargoRecursoEspecialRepository.saveAndFlush(embargoRecursoEspecial);
 
@@ -232,7 +235,7 @@ public class EmbargoRecursoEspecialResourceIT {
 
     @Test
     @Transactional
-    public void getAllEmbargoRecursoEspecialsByDescricaoNotContainsSomething() throws Exception {
+    void getAllEmbargoRecursoEspecialsByDescricaoNotContainsSomething() throws Exception {
         // Initialize the database
         embargoRecursoEspecialRepository.saveAndFlush(embargoRecursoEspecial);
 
@@ -243,10 +246,9 @@ public class EmbargoRecursoEspecialResourceIT {
         defaultEmbargoRecursoEspecialShouldBeFound("descricao.doesNotContain=" + UPDATED_DESCRICAO);
     }
 
-
     @Test
     @Transactional
-    public void getAllEmbargoRecursoEspecialsByProcessoIsEqualToSomething() throws Exception {
+    void getAllEmbargoRecursoEspecialsByProcessoIsEqualToSomething() throws Exception {
         // Initialize the database
         embargoRecursoEspecialRepository.saveAndFlush(embargoRecursoEspecial);
         Processo processo = ProcessoResourceIT.createEntity(em);
@@ -259,7 +261,7 @@ public class EmbargoRecursoEspecialResourceIT {
         // Get all the embargoRecursoEspecialList where processo equals to processoId
         defaultEmbargoRecursoEspecialShouldBeFound("processoId.equals=" + processoId);
 
-        // Get all the embargoRecursoEspecialList where processo equals to processoId + 1
+        // Get all the embargoRecursoEspecialList where processo equals to (processoId + 1)
         defaultEmbargoRecursoEspecialShouldNotBeFound("processoId.equals=" + (processoId + 1));
     }
 
@@ -267,14 +269,16 @@ public class EmbargoRecursoEspecialResourceIT {
      * Executes the search, and checks that the default entity is returned.
      */
     private void defaultEmbargoRecursoEspecialShouldBeFound(String filter) throws Exception {
-        restEmbargoRecursoEspecialMockMvc.perform(get("/api/embargo-recurso-especials?sort=id,desc&" + filter))
+        restEmbargoRecursoEspecialMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(embargoRecursoEspecial.getId().intValue())))
             .andExpect(jsonPath("$.[*].descricao").value(hasItem(DEFAULT_DESCRICAO)));
 
         // Check, that the count call also returns 1
-        restEmbargoRecursoEspecialMockMvc.perform(get("/api/embargo-recurso-especials/count?sort=id,desc&" + filter))
+        restEmbargoRecursoEspecialMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("1"));
@@ -284,14 +288,16 @@ public class EmbargoRecursoEspecialResourceIT {
      * Executes the search, and checks that the default entity is not returned.
      */
     private void defaultEmbargoRecursoEspecialShouldNotBeFound(String filter) throws Exception {
-        restEmbargoRecursoEspecialMockMvc.perform(get("/api/embargo-recurso-especials?sort=id,desc&" + filter))
+        restEmbargoRecursoEspecialMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$").isEmpty());
 
         // Check, that the count call also returns 0
-        restEmbargoRecursoEspecialMockMvc.perform(get("/api/embargo-recurso-especials/count?sort=id,desc&" + filter))
+        restEmbargoRecursoEspecialMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("0"));
@@ -299,30 +305,33 @@ public class EmbargoRecursoEspecialResourceIT {
 
     @Test
     @Transactional
-    public void getNonExistingEmbargoRecursoEspecial() throws Exception {
+    void getNonExistingEmbargoRecursoEspecial() throws Exception {
         // Get the embargoRecursoEspecial
-        restEmbargoRecursoEspecialMockMvc.perform(get("/api/embargo-recurso-especials/{id}", Long.MAX_VALUE))
-            .andExpect(status().isNotFound());
+        restEmbargoRecursoEspecialMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
     @Test
     @Transactional
-    public void updateEmbargoRecursoEspecial() throws Exception {
+    void putNewEmbargoRecursoEspecial() throws Exception {
         // Initialize the database
-        embargoRecursoEspecialService.save(embargoRecursoEspecial);
+        embargoRecursoEspecialRepository.saveAndFlush(embargoRecursoEspecial);
 
         int databaseSizeBeforeUpdate = embargoRecursoEspecialRepository.findAll().size();
 
         // Update the embargoRecursoEspecial
-        EmbargoRecursoEspecial updatedEmbargoRecursoEspecial = embargoRecursoEspecialRepository.findById(embargoRecursoEspecial.getId()).get();
+        EmbargoRecursoEspecial updatedEmbargoRecursoEspecial = embargoRecursoEspecialRepository
+            .findById(embargoRecursoEspecial.getId())
+            .get();
         // Disconnect from session so that the updates on updatedEmbargoRecursoEspecial are not directly saved in db
         em.detach(updatedEmbargoRecursoEspecial);
-        updatedEmbargoRecursoEspecial
-            .descricao(UPDATED_DESCRICAO);
+        updatedEmbargoRecursoEspecial.descricao(UPDATED_DESCRICAO);
 
-        restEmbargoRecursoEspecialMockMvc.perform(put("/api/embargo-recurso-especials")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(updatedEmbargoRecursoEspecial)))
+        restEmbargoRecursoEspecialMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, updatedEmbargoRecursoEspecial.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(updatedEmbargoRecursoEspecial))
+            )
             .andExpect(status().isOk());
 
         // Validate the EmbargoRecursoEspecial in the database
@@ -334,13 +343,17 @@ public class EmbargoRecursoEspecialResourceIT {
 
     @Test
     @Transactional
-    public void updateNonExistingEmbargoRecursoEspecial() throws Exception {
+    void putNonExistingEmbargoRecursoEspecial() throws Exception {
         int databaseSizeBeforeUpdate = embargoRecursoEspecialRepository.findAll().size();
+        embargoRecursoEspecial.setId(count.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restEmbargoRecursoEspecialMockMvc.perform(put("/api/embargo-recurso-especials")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(embargoRecursoEspecial)))
+        restEmbargoRecursoEspecialMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, embargoRecursoEspecial.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(embargoRecursoEspecial))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the EmbargoRecursoEspecial in the database
@@ -350,15 +363,171 @@ public class EmbargoRecursoEspecialResourceIT {
 
     @Test
     @Transactional
-    public void deleteEmbargoRecursoEspecial() throws Exception {
+    void putWithIdMismatchEmbargoRecursoEspecial() throws Exception {
+        int databaseSizeBeforeUpdate = embargoRecursoEspecialRepository.findAll().size();
+        embargoRecursoEspecial.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restEmbargoRecursoEspecialMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(embargoRecursoEspecial))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the EmbargoRecursoEspecial in the database
+        List<EmbargoRecursoEspecial> embargoRecursoEspecialList = embargoRecursoEspecialRepository.findAll();
+        assertThat(embargoRecursoEspecialList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void putWithMissingIdPathParamEmbargoRecursoEspecial() throws Exception {
+        int databaseSizeBeforeUpdate = embargoRecursoEspecialRepository.findAll().size();
+        embargoRecursoEspecial.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restEmbargoRecursoEspecialMockMvc
+            .perform(
+                put(ENTITY_API_URL)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(embargoRecursoEspecial))
+            )
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the EmbargoRecursoEspecial in the database
+        List<EmbargoRecursoEspecial> embargoRecursoEspecialList = embargoRecursoEspecialRepository.findAll();
+        assertThat(embargoRecursoEspecialList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void partialUpdateEmbargoRecursoEspecialWithPatch() throws Exception {
         // Initialize the database
-        embargoRecursoEspecialService.save(embargoRecursoEspecial);
+        embargoRecursoEspecialRepository.saveAndFlush(embargoRecursoEspecial);
+
+        int databaseSizeBeforeUpdate = embargoRecursoEspecialRepository.findAll().size();
+
+        // Update the embargoRecursoEspecial using partial update
+        EmbargoRecursoEspecial partialUpdatedEmbargoRecursoEspecial = new EmbargoRecursoEspecial();
+        partialUpdatedEmbargoRecursoEspecial.setId(embargoRecursoEspecial.getId());
+
+        restEmbargoRecursoEspecialMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedEmbargoRecursoEspecial.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedEmbargoRecursoEspecial))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the EmbargoRecursoEspecial in the database
+        List<EmbargoRecursoEspecial> embargoRecursoEspecialList = embargoRecursoEspecialRepository.findAll();
+        assertThat(embargoRecursoEspecialList).hasSize(databaseSizeBeforeUpdate);
+        EmbargoRecursoEspecial testEmbargoRecursoEspecial = embargoRecursoEspecialList.get(embargoRecursoEspecialList.size() - 1);
+        assertThat(testEmbargoRecursoEspecial.getDescricao()).isEqualTo(DEFAULT_DESCRICAO);
+    }
+
+    @Test
+    @Transactional
+    void fullUpdateEmbargoRecursoEspecialWithPatch() throws Exception {
+        // Initialize the database
+        embargoRecursoEspecialRepository.saveAndFlush(embargoRecursoEspecial);
+
+        int databaseSizeBeforeUpdate = embargoRecursoEspecialRepository.findAll().size();
+
+        // Update the embargoRecursoEspecial using partial update
+        EmbargoRecursoEspecial partialUpdatedEmbargoRecursoEspecial = new EmbargoRecursoEspecial();
+        partialUpdatedEmbargoRecursoEspecial.setId(embargoRecursoEspecial.getId());
+
+        partialUpdatedEmbargoRecursoEspecial.descricao(UPDATED_DESCRICAO);
+
+        restEmbargoRecursoEspecialMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedEmbargoRecursoEspecial.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedEmbargoRecursoEspecial))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the EmbargoRecursoEspecial in the database
+        List<EmbargoRecursoEspecial> embargoRecursoEspecialList = embargoRecursoEspecialRepository.findAll();
+        assertThat(embargoRecursoEspecialList).hasSize(databaseSizeBeforeUpdate);
+        EmbargoRecursoEspecial testEmbargoRecursoEspecial = embargoRecursoEspecialList.get(embargoRecursoEspecialList.size() - 1);
+        assertThat(testEmbargoRecursoEspecial.getDescricao()).isEqualTo(UPDATED_DESCRICAO);
+    }
+
+    @Test
+    @Transactional
+    void patchNonExistingEmbargoRecursoEspecial() throws Exception {
+        int databaseSizeBeforeUpdate = embargoRecursoEspecialRepository.findAll().size();
+        embargoRecursoEspecial.setId(count.incrementAndGet());
+
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
+        restEmbargoRecursoEspecialMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, embargoRecursoEspecial.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(embargoRecursoEspecial))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the EmbargoRecursoEspecial in the database
+        List<EmbargoRecursoEspecial> embargoRecursoEspecialList = embargoRecursoEspecialRepository.findAll();
+        assertThat(embargoRecursoEspecialList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithIdMismatchEmbargoRecursoEspecial() throws Exception {
+        int databaseSizeBeforeUpdate = embargoRecursoEspecialRepository.findAll().size();
+        embargoRecursoEspecial.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restEmbargoRecursoEspecialMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(embargoRecursoEspecial))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the EmbargoRecursoEspecial in the database
+        List<EmbargoRecursoEspecial> embargoRecursoEspecialList = embargoRecursoEspecialRepository.findAll();
+        assertThat(embargoRecursoEspecialList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithMissingIdPathParamEmbargoRecursoEspecial() throws Exception {
+        int databaseSizeBeforeUpdate = embargoRecursoEspecialRepository.findAll().size();
+        embargoRecursoEspecial.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restEmbargoRecursoEspecialMockMvc
+            .perform(
+                patch(ENTITY_API_URL)
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(embargoRecursoEspecial))
+            )
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the EmbargoRecursoEspecial in the database
+        List<EmbargoRecursoEspecial> embargoRecursoEspecialList = embargoRecursoEspecialRepository.findAll();
+        assertThat(embargoRecursoEspecialList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void deleteEmbargoRecursoEspecial() throws Exception {
+        // Initialize the database
+        embargoRecursoEspecialRepository.saveAndFlush(embargoRecursoEspecial);
 
         int databaseSizeBeforeDelete = embargoRecursoEspecialRepository.findAll().size();
 
         // Delete the embargoRecursoEspecial
-        restEmbargoRecursoEspecialMockMvc.perform(delete("/api/embargo-recurso-especials/{id}", embargoRecursoEspecial.getId())
-            .accept(MediaType.APPLICATION_JSON))
+        restEmbargoRecursoEspecialMockMvc
+            .perform(delete(ENTITY_API_URL_ID, embargoRecursoEspecial.getId()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item

@@ -1,14 +1,16 @@
 package br.com.cidha.web.rest;
 
 import br.com.cidha.domain.EmbargoRespRe;
-import br.com.cidha.service.EmbargoRespReService;
-import br.com.cidha.web.rest.errors.BadRequestAlertException;
-import br.com.cidha.service.dto.EmbargoRespReCriteria;
+import br.com.cidha.repository.EmbargoRespReRepository;
 import br.com.cidha.service.EmbargoRespReQueryService;
-
-import io.github.jhipster.web.util.HeaderUtil;
-import io.github.jhipster.web.util.PaginationUtil;
-import io.github.jhipster.web.util.ResponseUtil;
+import br.com.cidha.service.EmbargoRespReService;
+import br.com.cidha.service.criteria.EmbargoRespReCriteria;
+import br.com.cidha.web.rest.errors.BadRequestAlertException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,14 +18,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import tech.jhipster.web.util.HeaderUtil;
+import tech.jhipster.web.util.PaginationUtil;
+import tech.jhipster.web.util.ResponseUtil;
 
 /**
  * REST controller for managing {@link br.com.cidha.domain.EmbargoRespRe}.
@@ -41,10 +41,17 @@ public class EmbargoRespReResource {
 
     private final EmbargoRespReService embargoRespReService;
 
+    private final EmbargoRespReRepository embargoRespReRepository;
+
     private final EmbargoRespReQueryService embargoRespReQueryService;
 
-    public EmbargoRespReResource(EmbargoRespReService embargoRespReService, EmbargoRespReQueryService embargoRespReQueryService) {
+    public EmbargoRespReResource(
+        EmbargoRespReService embargoRespReService,
+        EmbargoRespReRepository embargoRespReRepository,
+        EmbargoRespReQueryService embargoRespReQueryService
+    ) {
         this.embargoRespReService = embargoRespReService;
+        this.embargoRespReRepository = embargoRespReRepository;
         this.embargoRespReQueryService = embargoRespReQueryService;
     }
 
@@ -62,30 +69,80 @@ public class EmbargoRespReResource {
             throw new BadRequestAlertException("A new embargoRespRe cannot already have an ID", ENTITY_NAME, "idexists");
         }
         EmbargoRespRe result = embargoRespReService.save(embargoRespRe);
-        return ResponseEntity.created(new URI("/api/embargo-resp-res/" + result.getId()))
+        return ResponseEntity
+            .created(new URI("/api/embargo-resp-res/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
 
     /**
-     * {@code PUT  /embargo-resp-res} : Updates an existing embargoRespRe.
+     * {@code PUT  /embargo-resp-res/:id} : Updates an existing embargoRespRe.
      *
+     * @param id the id of the embargoRespRe to save.
      * @param embargoRespRe the embargoRespRe to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated embargoRespRe,
      * or with status {@code 400 (Bad Request)} if the embargoRespRe is not valid,
      * or with status {@code 500 (Internal Server Error)} if the embargoRespRe couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/embargo-resp-res")
-    public ResponseEntity<EmbargoRespRe> updateEmbargoRespRe(@RequestBody EmbargoRespRe embargoRespRe) throws URISyntaxException {
-        log.debug("REST request to update EmbargoRespRe : {}", embargoRespRe);
+    @PutMapping("/embargo-resp-res/{id}")
+    public ResponseEntity<EmbargoRespRe> updateEmbargoRespRe(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody EmbargoRespRe embargoRespRe
+    ) throws URISyntaxException {
+        log.debug("REST request to update EmbargoRespRe : {}, {}", id, embargoRespRe);
         if (embargoRespRe.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+        if (!Objects.equals(id, embargoRespRe.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!embargoRespReRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
         EmbargoRespRe result = embargoRespReService.save(embargoRespRe);
-        return ResponseEntity.ok()
+        return ResponseEntity
+            .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, embargoRespRe.getId().toString()))
             .body(result);
+    }
+
+    /**
+     * {@code PATCH  /embargo-resp-res/:id} : Partial updates given fields of an existing embargoRespRe, field will ignore if it is null
+     *
+     * @param id the id of the embargoRespRe to save.
+     * @param embargoRespRe the embargoRespRe to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated embargoRespRe,
+     * or with status {@code 400 (Bad Request)} if the embargoRespRe is not valid,
+     * or with status {@code 404 (Not Found)} if the embargoRespRe is not found,
+     * or with status {@code 500 (Internal Server Error)} if the embargoRespRe couldn't be updated.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PatchMapping(value = "/embargo-resp-res/{id}", consumes = "application/merge-patch+json")
+    public ResponseEntity<EmbargoRespRe> partialUpdateEmbargoRespRe(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody EmbargoRespRe embargoRespRe
+    ) throws URISyntaxException {
+        log.debug("REST request to partial update EmbargoRespRe partially : {}, {}", id, embargoRespRe);
+        if (embargoRespRe.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        if (!Objects.equals(id, embargoRespRe.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!embargoRespReRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
+        Optional<EmbargoRespRe> result = embargoRespReService.partialUpdate(embargoRespRe);
+
+        return ResponseUtil.wrapOrNotFound(
+            result,
+            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, embargoRespRe.getId().toString())
+        );
     }
 
     /**
@@ -138,6 +195,9 @@ public class EmbargoRespReResource {
     public ResponseEntity<Void> deleteEmbargoRespRe(@PathVariable Long id) {
         log.debug("REST request to delete EmbargoRespRe : {}", id);
         embargoRespReService.delete(id);
-        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
+        return ResponseEntity
+            .noContent()
+            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
+            .build();
     }
 }

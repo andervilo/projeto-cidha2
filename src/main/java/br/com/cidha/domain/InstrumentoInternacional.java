@@ -1,15 +1,13 @@
 package br.com.cidha.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Type;
-
-import javax.persistence.*;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.*;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Type;
 
 /**
  * A InstrumentoInternacional.
@@ -41,7 +39,10 @@ public class InstrumentoInternacional implements Serializable {
 
     @ManyToMany(mappedBy = "instrumentoInternacionals")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnore
+    @JsonIgnoreProperties(
+        value = { "fundamentacaoDoutrinarias", "jurisprudencias", "fundamentacaoLegals", "instrumentoInternacionals", "processos" },
+        allowSetters = true
+    )
     private Set<ProblemaJuridico> problemaJuridicos = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -53,8 +54,13 @@ public class InstrumentoInternacional implements Serializable {
         this.id = id;
     }
 
+    public InstrumentoInternacional id(Long id) {
+        this.id = id;
+        return this;
+    }
+
     public String getInstrumentoInternacionalCitadoDescricao() {
-        return instrumentoInternacionalCitadoDescricao;
+        return this.instrumentoInternacionalCitadoDescricao;
     }
 
     public InstrumentoInternacional instrumentoInternacionalCitadoDescricao(String instrumentoInternacionalCitadoDescricao) {
@@ -67,7 +73,7 @@ public class InstrumentoInternacional implements Serializable {
     }
 
     public String getFolhasInstrumentoInternacional() {
-        return folhasInstrumentoInternacional;
+        return this.folhasInstrumentoInternacional;
     }
 
     public InstrumentoInternacional folhasInstrumentoInternacional(String folhasInstrumentoInternacional) {
@@ -80,7 +86,7 @@ public class InstrumentoInternacional implements Serializable {
     }
 
     public String getInstrumentoInternacionalSugerido() {
-        return instrumentoInternacionalSugerido;
+        return this.instrumentoInternacionalSugerido;
     }
 
     public InstrumentoInternacional instrumentoInternacionalSugerido(String instrumentoInternacionalSugerido) {
@@ -93,11 +99,11 @@ public class InstrumentoInternacional implements Serializable {
     }
 
     public Set<ProblemaJuridico> getProblemaJuridicos() {
-        return problemaJuridicos;
+        return this.problemaJuridicos;
     }
 
     public InstrumentoInternacional problemaJuridicos(Set<ProblemaJuridico> problemaJuridicos) {
-        this.problemaJuridicos = problemaJuridicos;
+        this.setProblemaJuridicos(problemaJuridicos);
         return this;
     }
 
@@ -114,8 +120,15 @@ public class InstrumentoInternacional implements Serializable {
     }
 
     public void setProblemaJuridicos(Set<ProblemaJuridico> problemaJuridicos) {
+        if (this.problemaJuridicos != null) {
+            this.problemaJuridicos.forEach(i -> i.removeInstrumentoInternacional(this));
+        }
+        if (problemaJuridicos != null) {
+            problemaJuridicos.forEach(i -> i.addInstrumentoInternacional(this));
+        }
         this.problemaJuridicos = problemaJuridicos;
     }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -131,7 +144,8 @@ public class InstrumentoInternacional implements Serializable {
 
     @Override
     public int hashCode() {
-        return 31;
+        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        return getClass().hashCode();
     }
 
     // prettier-ignore

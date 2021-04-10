@@ -2,15 +2,13 @@ package br.com.cidha.service;
 
 import br.com.cidha.domain.Direito;
 import br.com.cidha.repository.DireitoRepository;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 /**
  * Service Implementation for managing {@link Direito}.
@@ -39,6 +37,29 @@ public class DireitoService {
     }
 
     /**
+     * Partially update a direito.
+     *
+     * @param direito the entity to update partially.
+     * @return the persisted entity.
+     */
+    public Optional<Direito> partialUpdate(Direito direito) {
+        log.debug("Request to partially update Direito : {}", direito);
+
+        return direitoRepository
+            .findById(direito.getId())
+            .map(
+                existingDireito -> {
+                    if (direito.getDescricao() != null) {
+                        existingDireito.setDescricao(direito.getDescricao());
+                    }
+
+                    return existingDireito;
+                }
+            )
+            .map(direitoRepository::save);
+    }
+
+    /**
      * Get all the direitos.
      *
      * @param pageable the pagination information.
@@ -49,7 +70,6 @@ public class DireitoService {
         log.debug("Request to get all Direitos");
         return direitoRepository.findAll(pageable);
     }
-
 
     /**
      * Get one direito by id.

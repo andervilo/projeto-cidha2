@@ -11,6 +11,7 @@ export const ACTION_TYPES = {
   FETCH_EMBARGODECLARACAOAGRAVO: 'embargoDeclaracaoAgravo/FETCH_EMBARGODECLARACAOAGRAVO',
   CREATE_EMBARGODECLARACAOAGRAVO: 'embargoDeclaracaoAgravo/CREATE_EMBARGODECLARACAOAGRAVO',
   UPDATE_EMBARGODECLARACAOAGRAVO: 'embargoDeclaracaoAgravo/UPDATE_EMBARGODECLARACAOAGRAVO',
+  PARTIAL_UPDATE_EMBARGODECLARACAOAGRAVO: 'embargoDeclaracaoAgravo/PARTIAL_UPDATE_EMBARGODECLARACAOAGRAVO',
   DELETE_EMBARGODECLARACAOAGRAVO: 'embargoDeclaracaoAgravo/DELETE_EMBARGODECLARACAOAGRAVO',
   RESET: 'embargoDeclaracaoAgravo/RESET',
 };
@@ -42,6 +43,7 @@ export default (state: EmbargoDeclaracaoAgravoState = initialState, action): Emb
     case REQUEST(ACTION_TYPES.CREATE_EMBARGODECLARACAOAGRAVO):
     case REQUEST(ACTION_TYPES.UPDATE_EMBARGODECLARACAOAGRAVO):
     case REQUEST(ACTION_TYPES.DELETE_EMBARGODECLARACAOAGRAVO):
+    case REQUEST(ACTION_TYPES.PARTIAL_UPDATE_EMBARGODECLARACAOAGRAVO):
       return {
         ...state,
         errorMessage: null,
@@ -52,6 +54,7 @@ export default (state: EmbargoDeclaracaoAgravoState = initialState, action): Emb
     case FAILURE(ACTION_TYPES.FETCH_EMBARGODECLARACAOAGRAVO):
     case FAILURE(ACTION_TYPES.CREATE_EMBARGODECLARACAOAGRAVO):
     case FAILURE(ACTION_TYPES.UPDATE_EMBARGODECLARACAOAGRAVO):
+    case FAILURE(ACTION_TYPES.PARTIAL_UPDATE_EMBARGODECLARACAOAGRAVO):
     case FAILURE(ACTION_TYPES.DELETE_EMBARGODECLARACAOAGRAVO):
       return {
         ...state,
@@ -75,6 +78,7 @@ export default (state: EmbargoDeclaracaoAgravoState = initialState, action): Emb
       };
     case SUCCESS(ACTION_TYPES.CREATE_EMBARGODECLARACAOAGRAVO):
     case SUCCESS(ACTION_TYPES.UPDATE_EMBARGODECLARACAOAGRAVO):
+    case SUCCESS(ACTION_TYPES.PARTIAL_UPDATE_EMBARGODECLARACAOAGRAVO):
       return {
         ...state,
         updating: false,
@@ -129,7 +133,15 @@ export const createEntity: ICrudPutAction<IEmbargoDeclaracaoAgravo> = entity => 
 export const updateEntity: ICrudPutAction<IEmbargoDeclaracaoAgravo> = entity => async dispatch => {
   const result = await dispatch({
     type: ACTION_TYPES.UPDATE_EMBARGODECLARACAOAGRAVO,
-    payload: axios.put(apiUrl, cleanEntity(entity)),
+    payload: axios.put(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
+  });
+  return result;
+};
+
+export const partialUpdate: ICrudPutAction<IEmbargoDeclaracaoAgravo> = entity => async dispatch => {
+  const result = await dispatch({
+    type: ACTION_TYPES.PARTIAL_UPDATE_EMBARGODECLARACAOAGRAVO,
+    payload: axios.patch(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
   });
   return result;
 };

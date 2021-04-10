@@ -2,15 +2,13 @@ package br.com.cidha.service;
 
 import br.com.cidha.domain.EnvolvidosConflitoLitigio;
 import br.com.cidha.repository.EnvolvidosConflitoLitigioRepository;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 /**
  * Service Implementation for managing {@link EnvolvidosConflitoLitigio}.
@@ -39,6 +37,35 @@ public class EnvolvidosConflitoLitigioService {
     }
 
     /**
+     * Partially update a envolvidosConflitoLitigio.
+     *
+     * @param envolvidosConflitoLitigio the entity to update partially.
+     * @return the persisted entity.
+     */
+    public Optional<EnvolvidosConflitoLitigio> partialUpdate(EnvolvidosConflitoLitigio envolvidosConflitoLitigio) {
+        log.debug("Request to partially update EnvolvidosConflitoLitigio : {}", envolvidosConflitoLitigio);
+
+        return envolvidosConflitoLitigioRepository
+            .findById(envolvidosConflitoLitigio.getId())
+            .map(
+                existingEnvolvidosConflitoLitigio -> {
+                    if (envolvidosConflitoLitigio.getNumeroIndividuos() != null) {
+                        existingEnvolvidosConflitoLitigio.setNumeroIndividuos(envolvidosConflitoLitigio.getNumeroIndividuos());
+                    }
+                    if (envolvidosConflitoLitigio.getFonteInformacaoQtde() != null) {
+                        existingEnvolvidosConflitoLitigio.setFonteInformacaoQtde(envolvidosConflitoLitigio.getFonteInformacaoQtde());
+                    }
+                    if (envolvidosConflitoLitigio.getObservacoes() != null) {
+                        existingEnvolvidosConflitoLitigio.setObservacoes(envolvidosConflitoLitigio.getObservacoes());
+                    }
+
+                    return existingEnvolvidosConflitoLitigio;
+                }
+            )
+            .map(envolvidosConflitoLitigioRepository::save);
+    }
+
+    /**
      * Get all the envolvidosConflitoLitigios.
      *
      * @param pageable the pagination information.
@@ -49,7 +76,6 @@ public class EnvolvidosConflitoLitigioService {
         log.debug("Request to get all EnvolvidosConflitoLitigios");
         return envolvidosConflitoLitigioRepository.findAll(pageable);
     }
-
 
     /**
      * Get one envolvidosConflitoLitigio by id.

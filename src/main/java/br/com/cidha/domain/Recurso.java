@@ -1,13 +1,11 @@
 package br.com.cidha.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.io.Serializable;
+import javax.persistence.*;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
-
-import javax.persistence.*;
-
-import java.io.Serializable;
 
 /**
  * A Recurso.
@@ -38,7 +36,31 @@ public class Recurso implements Serializable {
     private OpcaoRecurso opcaoRecurso;
 
     @ManyToOne
-    @JsonIgnoreProperties(value = "recursos", allowSetters = true)
+    @JsonIgnoreProperties(
+        value = {
+            "concessaoLiminars",
+            "concessaoLiminarCassadas",
+            "embargoRespRes",
+            "embargoDeclaracaoAgravos",
+            "embargoDeclaracaos",
+            "embargoRecursoEspecials",
+            "tipoDecisao",
+            "tipoEmpreendimento",
+            "comarcas",
+            "quilombos",
+            "municipios",
+            "territorios",
+            "atividadeExploracaoIlegals",
+            "unidadeConservacaos",
+            "envolvidosConflitoLitigios",
+            "terraIndigenas",
+            "processoConflitos",
+            "parteInteresssadas",
+            "relators",
+            "problemaJuridicos",
+        },
+        allowSetters = true
+    )
     private Processo processo;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -50,8 +72,13 @@ public class Recurso implements Serializable {
         this.id = id;
     }
 
+    public Recurso id(Long id) {
+        this.id = id;
+        return this;
+    }
+
     public String getObservacoes() {
-        return observacoes;
+        return this.observacoes;
     }
 
     public Recurso observacoes(String observacoes) {
@@ -64,11 +91,11 @@ public class Recurso implements Serializable {
     }
 
     public TipoRecurso getTipoRecurso() {
-        return tipoRecurso;
+        return this.tipoRecurso;
     }
 
     public Recurso tipoRecurso(TipoRecurso tipoRecurso) {
-        this.tipoRecurso = tipoRecurso;
+        this.setTipoRecurso(tipoRecurso);
         return this;
     }
 
@@ -77,11 +104,11 @@ public class Recurso implements Serializable {
     }
 
     public OpcaoRecurso getOpcaoRecurso() {
-        return opcaoRecurso;
+        return this.opcaoRecurso;
     }
 
     public Recurso opcaoRecurso(OpcaoRecurso opcaoRecurso) {
-        this.opcaoRecurso = opcaoRecurso;
+        this.setOpcaoRecurso(opcaoRecurso);
         return this;
     }
 
@@ -90,17 +117,18 @@ public class Recurso implements Serializable {
     }
 
     public Processo getProcesso() {
-        return processo;
+        return this.processo;
     }
 
     public Recurso processo(Processo processo) {
-        this.processo = processo;
+        this.setProcesso(processo);
         return this;
     }
 
     public void setProcesso(Processo processo) {
         this.processo = processo;
     }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -116,7 +144,8 @@ public class Recurso implements Serializable {
 
     @Override
     public int hashCode() {
-        return 31;
+        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        return getClass().hashCode();
     }
 
     // prettier-ignore

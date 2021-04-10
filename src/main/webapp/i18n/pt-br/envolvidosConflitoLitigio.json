@@ -3,6 +3,7 @@
     "envolvidosConflitoLitigio": {
       "home": {
         "title": "Envolvidos Conflito Litigios",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Envolvidos Conflito Litigio",
         "createOrEditLabel": "Criar ou editar Envolvidos Conflito Litigio",
         "notFound": "Nenhum Envolvidos Conflito Litigio encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Envolvidos Conflito Litigio"
       },
+      "id": "ID",
       "numeroIndividuos": "Numero Individuos",
       "fonteInformacaoQtde": "Fonte Informacao Qtde",
       "observacoes": "Observacoes",

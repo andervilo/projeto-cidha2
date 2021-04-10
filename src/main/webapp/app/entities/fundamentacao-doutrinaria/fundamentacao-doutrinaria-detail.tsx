@@ -2,12 +2,11 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col } from 'reactstrap';
-import { Translate, ICrudGetAction, byteSize } from 'react-jhipster';
+import { Translate, byteSize } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
 import { getEntity } from './fundamentacao-doutrinaria.reducer';
-import { IFundamentacaoDoutrinaria } from 'app/shared/model/fundamentacao-doutrinaria.model';
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 
 export interface IFundamentacaoDoutrinariaDetailProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
@@ -21,11 +20,16 @@ export const FundamentacaoDoutrinariaDetail = (props: IFundamentacaoDoutrinariaD
   return (
     <Row>
       <Col md="8">
-        <h2>
-          <Translate contentKey="cidhaApp.fundamentacaoDoutrinaria.detail.title">FundamentacaoDoutrinaria</Translate> [
-          <b>{fundamentacaoDoutrinariaEntity.id}</b>]
+        <h2 data-cy="fundamentacaoDoutrinariaDetailsHeading">
+          <Translate contentKey="cidhaApp.fundamentacaoDoutrinaria.detail.title">FundamentacaoDoutrinaria</Translate>
         </h2>
         <dl className="jh-entity-details">
+          <dt>
+            <span id="id">
+              <Translate contentKey="global.field.id">ID</Translate>
+            </span>
+          </dt>
+          <dd>{fundamentacaoDoutrinariaEntity.id}</dd>
           <dt>
             <span id="fundamentacaoDoutrinariaCitada">
               <Translate contentKey="cidhaApp.fundamentacaoDoutrinaria.fundamentacaoDoutrinariaCitada">
@@ -51,7 +55,7 @@ export const FundamentacaoDoutrinariaDetail = (props: IFundamentacaoDoutrinariaD
           </dt>
           <dd>{fundamentacaoDoutrinariaEntity.fundamentacaoDoutrinariaSugerida}</dd>
         </dl>
-        <Button tag={Link} to="/fundamentacao-doutrinaria" replace color="info">
+        <Button tag={Link} to="/fundamentacao-doutrinaria" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" />{' '}
           <span className="d-none d-md-inline">
             <Translate contentKey="entity.action.back">Back</Translate>

@@ -1,9 +1,11 @@
 package br.com.cidha.service;
 
+import br.com.cidha.domain.*; // for static metamodels
+import br.com.cidha.domain.Jurisprudencia;
+import br.com.cidha.repository.JurisprudenciaRepository;
+import br.com.cidha.service.criteria.JurisprudenciaCriteria;
 import java.util.List;
-
 import javax.persistence.criteria.JoinType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -11,13 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import io.github.jhipster.service.QueryService;
-
-import br.com.cidha.domain.Jurisprudencia;
-import br.com.cidha.domain.*; // for static metamodels
-import br.com.cidha.repository.JurisprudenciaRepository;
-import br.com.cidha.service.dto.JurisprudenciaCriteria;
+import tech.jhipster.service.QueryService;
 
 /**
  * Service for executing complex queries for {@link Jurisprudencia} entities in the database.
@@ -86,11 +82,19 @@ public class JurisprudenciaQueryService extends QueryService<Jurisprudencia> {
                 specification = specification.and(buildRangeSpecification(criteria.getId(), Jurisprudencia_.id));
             }
             if (criteria.getFolhasJurisprudenciaCitada() != null) {
-                specification = specification.and(buildStringSpecification(criteria.getFolhasJurisprudenciaCitada(), Jurisprudencia_.folhasJurisprudenciaCitada));
+                specification =
+                    specification.and(
+                        buildStringSpecification(criteria.getFolhasJurisprudenciaCitada(), Jurisprudencia_.folhasJurisprudenciaCitada)
+                    );
             }
             if (criteria.getProblemaJuridicoId() != null) {
-                specification = specification.and(buildSpecification(criteria.getProblemaJuridicoId(),
-                    root -> root.join(Jurisprudencia_.problemaJuridicos, JoinType.LEFT).get(ProblemaJuridico_.id)));
+                specification =
+                    specification.and(
+                        buildSpecification(
+                            criteria.getProblemaJuridicoId(),
+                            root -> root.join(Jurisprudencia_.problemaJuridicos, JoinType.LEFT).get(ProblemaJuridico_.id)
+                        )
+                    );
             }
         }
         return specification;

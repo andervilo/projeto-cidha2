@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col, Label } from 'reactstrap';
 import { AvFeedback, AvForm, AvGroup, AvInput, AvField } from 'availity-reactstrap-validation';
-import { Translate, translate, ICrudGetAction, ICrudGetAllAction, setFileData, byteSize, ICrudPutAction } from 'react-jhipster';
+import { setFileData, byteSize, Translate, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
@@ -17,8 +17,7 @@ import { mapIdList } from 'app/shared/util/entity-utils';
 export interface IFundamentacaoLegalUpdateProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
 
 export const FundamentacaoLegalUpdate = (props: IFundamentacaoLegalUpdateProps) => {
-  const [problemaJuridicoId, setProblemaJuridicoId] = useState('0');
-  const [isNew, setIsNew] = useState(!props.match.params || !props.match.params.id);
+  const [isNew] = useState(!props.match.params || !props.match.params.id);
 
   const { fundamentacaoLegalEntity, problemaJuridicos, loading, updating } = props;
 
@@ -71,7 +70,7 @@ export const FundamentacaoLegalUpdate = (props: IFundamentacaoLegalUpdateProps) 
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="cidhaApp.fundamentacaoLegal.home.createOrEditLabel">
+          <h2 id="cidhaApp.fundamentacaoLegal.home.createOrEditLabel" data-cy="FundamentacaoLegalCreateUpdateHeading">
             <Translate contentKey="cidhaApp.fundamentacaoLegal.home.createOrEditLabel">Create or edit a FundamentacaoLegal</Translate>
           </h2>
         </Col>
@@ -94,19 +93,34 @@ export const FundamentacaoLegalUpdate = (props: IFundamentacaoLegalUpdateProps) 
                 <Label id="fundamentacaoLegalLabel" for="fundamentacao-legal-fundamentacaoLegal">
                   <Translate contentKey="cidhaApp.fundamentacaoLegal.fundamentacaoLegal">Fundamentacao Legal</Translate>
                 </Label>
-                <AvInput id="fundamentacao-legal-fundamentacaoLegal" type="textarea" name="fundamentacaoLegal" />
+                <AvInput
+                  id="fundamentacao-legal-fundamentacaoLegal"
+                  data-cy="fundamentacaoLegal"
+                  type="textarea"
+                  name="fundamentacaoLegal"
+                />
               </AvGroup>
               <AvGroup>
                 <Label id="folhasFundamentacaoLegalLabel" for="fundamentacao-legal-folhasFundamentacaoLegal">
                   <Translate contentKey="cidhaApp.fundamentacaoLegal.folhasFundamentacaoLegal">Folhas Fundamentacao Legal</Translate>
                 </Label>
-                <AvField id="fundamentacao-legal-folhasFundamentacaoLegal" type="text" name="folhasFundamentacaoLegal" />
+                <AvField
+                  id="fundamentacao-legal-folhasFundamentacaoLegal"
+                  data-cy="folhasFundamentacaoLegal"
+                  type="text"
+                  name="folhasFundamentacaoLegal"
+                />
               </AvGroup>
               <AvGroup>
                 <Label id="fundamentacaoLegalSugeridaLabel" for="fundamentacao-legal-fundamentacaoLegalSugerida">
                   <Translate contentKey="cidhaApp.fundamentacaoLegal.fundamentacaoLegalSugerida">Fundamentacao Legal Sugerida</Translate>
                 </Label>
-                <AvInput id="fundamentacao-legal-fundamentacaoLegalSugerida" type="textarea" name="fundamentacaoLegalSugerida" />
+                <AvInput
+                  id="fundamentacao-legal-fundamentacaoLegalSugerida"
+                  data-cy="fundamentacaoLegalSugerida"
+                  type="textarea"
+                  name="fundamentacaoLegalSugerida"
+                />
               </AvGroup>
               <Button tag={Link} id="cancel-save" to="/fundamentacao-legal" replace color="info">
                 <FontAwesomeIcon icon="arrow-left" />
@@ -116,7 +130,7 @@ export const FundamentacaoLegalUpdate = (props: IFundamentacaoLegalUpdateProps) 
                 </span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp;
                 <Translate contentKey="entity.action.save">Save</Translate>

@@ -3,6 +3,7 @@
     "atividadeExploracaoIlegal": {
       "home": {
         "title": "Atividade Exploracao Ilegals",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Atividade Exploracao Ilegal",
         "createOrEditLabel": "Criar ou editar Atividade Exploracao Ilegal",
         "notFound": "Nenhum Atividade Exploracao Ilegal encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Atividade Exploracao Ilegal"
       },
+      "id": "ID",
       "descricao": "Descricao",
       "processo": "Processo"
     }

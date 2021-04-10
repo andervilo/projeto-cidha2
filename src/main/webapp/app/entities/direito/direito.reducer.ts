@@ -11,6 +11,7 @@ export const ACTION_TYPES = {
   FETCH_DIREITO: 'direito/FETCH_DIREITO',
   CREATE_DIREITO: 'direito/CREATE_DIREITO',
   UPDATE_DIREITO: 'direito/UPDATE_DIREITO',
+  PARTIAL_UPDATE_DIREITO: 'direito/PARTIAL_UPDATE_DIREITO',
   DELETE_DIREITO: 'direito/DELETE_DIREITO',
   SET_BLOB: 'direito/SET_BLOB',
   RESET: 'direito/RESET',
@@ -43,6 +44,7 @@ export default (state: DireitoState = initialState, action): DireitoState => {
     case REQUEST(ACTION_TYPES.CREATE_DIREITO):
     case REQUEST(ACTION_TYPES.UPDATE_DIREITO):
     case REQUEST(ACTION_TYPES.DELETE_DIREITO):
+    case REQUEST(ACTION_TYPES.PARTIAL_UPDATE_DIREITO):
       return {
         ...state,
         errorMessage: null,
@@ -53,6 +55,7 @@ export default (state: DireitoState = initialState, action): DireitoState => {
     case FAILURE(ACTION_TYPES.FETCH_DIREITO):
     case FAILURE(ACTION_TYPES.CREATE_DIREITO):
     case FAILURE(ACTION_TYPES.UPDATE_DIREITO):
+    case FAILURE(ACTION_TYPES.PARTIAL_UPDATE_DIREITO):
     case FAILURE(ACTION_TYPES.DELETE_DIREITO):
       return {
         ...state,
@@ -76,6 +79,7 @@ export default (state: DireitoState = initialState, action): DireitoState => {
       };
     case SUCCESS(ACTION_TYPES.CREATE_DIREITO):
     case SUCCESS(ACTION_TYPES.UPDATE_DIREITO):
+    case SUCCESS(ACTION_TYPES.PARTIAL_UPDATE_DIREITO):
       return {
         ...state,
         updating: false,
@@ -141,7 +145,15 @@ export const createEntity: ICrudPutAction<IDireito> = entity => async dispatch =
 export const updateEntity: ICrudPutAction<IDireito> = entity => async dispatch => {
   const result = await dispatch({
     type: ACTION_TYPES.UPDATE_DIREITO,
-    payload: axios.put(apiUrl, cleanEntity(entity)),
+    payload: axios.put(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
+  });
+  return result;
+};
+
+export const partialUpdate: ICrudPutAction<IDireito> = entity => async dispatch => {
+  const result = await dispatch({
+    type: ACTION_TYPES.PARTIAL_UPDATE_DIREITO,
+    payload: axios.patch(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
   });
   return result;
 };

@@ -2,23 +2,22 @@
 <databaseChangeLog
     xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
     <!--
         Added the constraints for entity ParteInteresssada.
     -->
     <changeSet id="20210405145317-2" author="jhipster">
-        
+
         <addForeignKeyConstraint baseColumnNames="parte_interesssada_id"
-                                 baseTableName="parte_interesssada_representante_legal"
-                                 constraintName="parte_interesssada_representan_parte_interesssada_id"
+                                 baseTableName="rel_parte_interesssada__representante_legal"
+                                 constraintName="fk_rel_parte_interesssada__repr__parte_interesssada_67_id"
                                  referencedColumnNames="id"
                                  referencedTableName="parte_interesssada"/>
 
         <addForeignKeyConstraint baseColumnNames="representante_legal_id"
-                                 baseTableName="parte_interesssada_representante_legal"
-                                 constraintName="parte_interesssada_representan_representante_legal_id"
+                                 baseTableName="rel_parte_interesssada__representante_legal"
+                                 constraintName="fk_rel_parte_interesssada__repr__representante_legal_0a_id"
                                  referencedColumnNames="id"
                                  referencedTableName="representante_legal"/>
-        
     </changeSet>
 </databaseChangeLog>

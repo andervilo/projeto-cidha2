@@ -4,10 +4,10 @@ import { IProcesso } from 'app/shared/model/processo.model';
 
 export interface IRecurso {
   id?: number;
-  observacoes?: any;
-  tipoRecurso?: ITipoRecurso;
-  opcaoRecurso?: IOpcaoRecurso;
-  processo?: IProcesso;
+  observacoes?: string | null;
+  tipoRecurso?: ITipoRecurso | null;
+  opcaoRecurso?: IOpcaoRecurso | null;
+  processo?: IProcesso | null;
 }
 
 export const defaultValue: Readonly<IRecurso> = {};

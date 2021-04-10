@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col, Label } from 'reactstrap';
 import { AvFeedback, AvForm, AvGroup, AvInput, AvField } from 'availity-reactstrap-validation';
-import { Translate, translate, ICrudGetAction, ICrudGetAllAction, ICrudPutAction } from 'react-jhipster';
+import { Translate, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
@@ -17,8 +17,7 @@ import { mapIdList } from 'app/shared/util/entity-utils';
 export interface IRelatorUpdateProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
 
 export const RelatorUpdate = (props: IRelatorUpdateProps) => {
-  const [processoId, setProcessoId] = useState('0');
-  const [isNew, setIsNew] = useState(!props.match.params || !props.match.params.id);
+  const [isNew] = useState(!props.match.params || !props.match.params.id);
 
   const { relatorEntity, processos, loading, updating } = props;
 
@@ -61,7 +60,7 @@ export const RelatorUpdate = (props: IRelatorUpdateProps) => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="cidhaApp.relator.home.createOrEditLabel">
+          <h2 id="cidhaApp.relator.home.createOrEditLabel" data-cy="RelatorCreateUpdateHeading">
             <Translate contentKey="cidhaApp.relator.home.createOrEditLabel">Create or edit a Relator</Translate>
           </h2>
         </Col>
@@ -84,7 +83,7 @@ export const RelatorUpdate = (props: IRelatorUpdateProps) => {
                 <Label id="nomeLabel" for="relator-nome">
                   <Translate contentKey="cidhaApp.relator.nome">Nome</Translate>
                 </Label>
-                <AvField id="relator-nome" type="text" name="nome" />
+                <AvField id="relator-nome" data-cy="nome" type="text" name="nome" />
               </AvGroup>
               <Button tag={Link} id="cancel-save" to="/relator" replace color="info">
                 <FontAwesomeIcon icon="arrow-left" />
@@ -94,7 +93,7 @@ export const RelatorUpdate = (props: IRelatorUpdateProps) => {
                 </span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp;
                 <Translate contentKey="entity.action.save">Save</Translate>

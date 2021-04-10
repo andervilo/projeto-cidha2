@@ -1,48 +1,46 @@
 package br.com.cidha.web.rest;
 
-import br.com.cidha.CidhaApp;
-import br.com.cidha.domain.TipoEmpreendimento;
-import br.com.cidha.repository.TipoEmpreendimentoRepository;
-import br.com.cidha.service.TipoEmpreendimentoService;
-import br.com.cidha.service.dto.TipoEmpreendimentoCriteria;
-import br.com.cidha.service.TipoEmpreendimentoQueryService;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
-import javax.persistence.EntityManager;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import br.com.cidha.IntegrationTest;
+import br.com.cidha.domain.TipoEmpreendimento;
+import br.com.cidha.repository.TipoEmpreendimentoRepository;
+import br.com.cidha.service.criteria.TipoEmpreendimentoCriteria;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
+import javax.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * Integration tests for the {@link TipoEmpreendimentoResource} REST controller.
  */
-@SpringBootTest(classes = CidhaApp.class)
+@IntegrationTest
 @AutoConfigureMockMvc
 @WithMockUser
-public class TipoEmpreendimentoResourceIT {
+class TipoEmpreendimentoResourceIT {
 
     private static final String DEFAULT_DESCRICAO = "AAAAAAAAAA";
     private static final String UPDATED_DESCRICAO = "BBBBBBBBBB";
 
+    private static final String ENTITY_API_URL = "/api/tipo-empreendimentos";
+    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+
+    private static Random random = new Random();
+    private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
+
     @Autowired
     private TipoEmpreendimentoRepository tipoEmpreendimentoRepository;
-
-    @Autowired
-    private TipoEmpreendimentoService tipoEmpreendimentoService;
-
-    @Autowired
-    private TipoEmpreendimentoQueryService tipoEmpreendimentoQueryService;
 
     @Autowired
     private EntityManager em;
@@ -59,10 +57,10 @@ public class TipoEmpreendimentoResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static TipoEmpreendimento createEntity(EntityManager em) {
-        TipoEmpreendimento tipoEmpreendimento = new TipoEmpreendimento()
-            .descricao(DEFAULT_DESCRICAO);
+        TipoEmpreendimento tipoEmpreendimento = new TipoEmpreendimento().descricao(DEFAULT_DESCRICAO);
         return tipoEmpreendimento;
     }
+
     /**
      * Create an updated entity for this test.
      *
@@ -70,8 +68,7 @@ public class TipoEmpreendimentoResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static TipoEmpreendimento createUpdatedEntity(EntityManager em) {
-        TipoEmpreendimento tipoEmpreendimento = new TipoEmpreendimento()
-            .descricao(UPDATED_DESCRICAO);
+        TipoEmpreendimento tipoEmpreendimento = new TipoEmpreendimento().descricao(UPDATED_DESCRICAO);
         return tipoEmpreendimento;
     }
 
@@ -82,12 +79,13 @@ public class TipoEmpreendimentoResourceIT {
 
     @Test
     @Transactional
-    public void createTipoEmpreendimento() throws Exception {
+    void createTipoEmpreendimento() throws Exception {
         int databaseSizeBeforeCreate = tipoEmpreendimentoRepository.findAll().size();
         // Create the TipoEmpreendimento
-        restTipoEmpreendimentoMockMvc.perform(post("/api/tipo-empreendimentos")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(tipoEmpreendimento)))
+        restTipoEmpreendimentoMockMvc
+            .perform(
+                post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(tipoEmpreendimento))
+            )
             .andExpect(status().isCreated());
 
         // Validate the TipoEmpreendimento in the database
@@ -99,16 +97,17 @@ public class TipoEmpreendimentoResourceIT {
 
     @Test
     @Transactional
-    public void createTipoEmpreendimentoWithExistingId() throws Exception {
-        int databaseSizeBeforeCreate = tipoEmpreendimentoRepository.findAll().size();
-
+    void createTipoEmpreendimentoWithExistingId() throws Exception {
         // Create the TipoEmpreendimento with an existing ID
         tipoEmpreendimento.setId(1L);
 
+        int databaseSizeBeforeCreate = tipoEmpreendimentoRepository.findAll().size();
+
         // An entity with an existing ID cannot be created, so this API call must fail
-        restTipoEmpreendimentoMockMvc.perform(post("/api/tipo-empreendimentos")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(tipoEmpreendimento)))
+        restTipoEmpreendimentoMockMvc
+            .perform(
+                post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(tipoEmpreendimento))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the TipoEmpreendimento in the database
@@ -116,39 +115,39 @@ public class TipoEmpreendimentoResourceIT {
         assertThat(tipoEmpreendimentoList).hasSize(databaseSizeBeforeCreate);
     }
 
-
     @Test
     @Transactional
-    public void getAllTipoEmpreendimentos() throws Exception {
+    void getAllTipoEmpreendimentos() throws Exception {
         // Initialize the database
         tipoEmpreendimentoRepository.saveAndFlush(tipoEmpreendimento);
 
         // Get all the tipoEmpreendimentoList
-        restTipoEmpreendimentoMockMvc.perform(get("/api/tipo-empreendimentos?sort=id,desc"))
+        restTipoEmpreendimentoMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(tipoEmpreendimento.getId().intValue())))
             .andExpect(jsonPath("$.[*].descricao").value(hasItem(DEFAULT_DESCRICAO)));
     }
-    
+
     @Test
     @Transactional
-    public void getTipoEmpreendimento() throws Exception {
+    void getTipoEmpreendimento() throws Exception {
         // Initialize the database
         tipoEmpreendimentoRepository.saveAndFlush(tipoEmpreendimento);
 
         // Get the tipoEmpreendimento
-        restTipoEmpreendimentoMockMvc.perform(get("/api/tipo-empreendimentos/{id}", tipoEmpreendimento.getId()))
+        restTipoEmpreendimentoMockMvc
+            .perform(get(ENTITY_API_URL_ID, tipoEmpreendimento.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(tipoEmpreendimento.getId().intValue()))
             .andExpect(jsonPath("$.descricao").value(DEFAULT_DESCRICAO));
     }
 
-
     @Test
     @Transactional
-    public void getTipoEmpreendimentosByIdFiltering() throws Exception {
+    void getTipoEmpreendimentosByIdFiltering() throws Exception {
         // Initialize the database
         tipoEmpreendimentoRepository.saveAndFlush(tipoEmpreendimento);
 
@@ -164,10 +163,9 @@ public class TipoEmpreendimentoResourceIT {
         defaultTipoEmpreendimentoShouldNotBeFound("id.lessThan=" + id);
     }
 
-
     @Test
     @Transactional
-    public void getAllTipoEmpreendimentosByDescricaoIsEqualToSomething() throws Exception {
+    void getAllTipoEmpreendimentosByDescricaoIsEqualToSomething() throws Exception {
         // Initialize the database
         tipoEmpreendimentoRepository.saveAndFlush(tipoEmpreendimento);
 
@@ -180,7 +178,7 @@ public class TipoEmpreendimentoResourceIT {
 
     @Test
     @Transactional
-    public void getAllTipoEmpreendimentosByDescricaoIsNotEqualToSomething() throws Exception {
+    void getAllTipoEmpreendimentosByDescricaoIsNotEqualToSomething() throws Exception {
         // Initialize the database
         tipoEmpreendimentoRepository.saveAndFlush(tipoEmpreendimento);
 
@@ -193,7 +191,7 @@ public class TipoEmpreendimentoResourceIT {
 
     @Test
     @Transactional
-    public void getAllTipoEmpreendimentosByDescricaoIsInShouldWork() throws Exception {
+    void getAllTipoEmpreendimentosByDescricaoIsInShouldWork() throws Exception {
         // Initialize the database
         tipoEmpreendimentoRepository.saveAndFlush(tipoEmpreendimento);
 
@@ -206,7 +204,7 @@ public class TipoEmpreendimentoResourceIT {
 
     @Test
     @Transactional
-    public void getAllTipoEmpreendimentosByDescricaoIsNullOrNotNull() throws Exception {
+    void getAllTipoEmpreendimentosByDescricaoIsNullOrNotNull() throws Exception {
         // Initialize the database
         tipoEmpreendimentoRepository.saveAndFlush(tipoEmpreendimento);
 
@@ -216,9 +214,10 @@ public class TipoEmpreendimentoResourceIT {
         // Get all the tipoEmpreendimentoList where descricao is null
         defaultTipoEmpreendimentoShouldNotBeFound("descricao.specified=false");
     }
-                @Test
+
+    @Test
     @Transactional
-    public void getAllTipoEmpreendimentosByDescricaoContainsSomething() throws Exception {
+    void getAllTipoEmpreendimentosByDescricaoContainsSomething() throws Exception {
         // Initialize the database
         tipoEmpreendimentoRepository.saveAndFlush(tipoEmpreendimento);
 
@@ -231,7 +230,7 @@ public class TipoEmpreendimentoResourceIT {
 
     @Test
     @Transactional
-    public void getAllTipoEmpreendimentosByDescricaoNotContainsSomething() throws Exception {
+    void getAllTipoEmpreendimentosByDescricaoNotContainsSomething() throws Exception {
         // Initialize the database
         tipoEmpreendimentoRepository.saveAndFlush(tipoEmpreendimento);
 
@@ -246,14 +245,16 @@ public class TipoEmpreendimentoResourceIT {
      * Executes the search, and checks that the default entity is returned.
      */
     private void defaultTipoEmpreendimentoShouldBeFound(String filter) throws Exception {
-        restTipoEmpreendimentoMockMvc.perform(get("/api/tipo-empreendimentos?sort=id,desc&" + filter))
+        restTipoEmpreendimentoMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(tipoEmpreendimento.getId().intValue())))
             .andExpect(jsonPath("$.[*].descricao").value(hasItem(DEFAULT_DESCRICAO)));
 
         // Check, that the count call also returns 1
-        restTipoEmpreendimentoMockMvc.perform(get("/api/tipo-empreendimentos/count?sort=id,desc&" + filter))
+        restTipoEmpreendimentoMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("1"));
@@ -263,14 +264,16 @@ public class TipoEmpreendimentoResourceIT {
      * Executes the search, and checks that the default entity is not returned.
      */
     private void defaultTipoEmpreendimentoShouldNotBeFound(String filter) throws Exception {
-        restTipoEmpreendimentoMockMvc.perform(get("/api/tipo-empreendimentos?sort=id,desc&" + filter))
+        restTipoEmpreendimentoMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$").isEmpty());
 
         // Check, that the count call also returns 0
-        restTipoEmpreendimentoMockMvc.perform(get("/api/tipo-empreendimentos/count?sort=id,desc&" + filter))
+        restTipoEmpreendimentoMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("0"));
@@ -278,17 +281,16 @@ public class TipoEmpreendimentoResourceIT {
 
     @Test
     @Transactional
-    public void getNonExistingTipoEmpreendimento() throws Exception {
+    void getNonExistingTipoEmpreendimento() throws Exception {
         // Get the tipoEmpreendimento
-        restTipoEmpreendimentoMockMvc.perform(get("/api/tipo-empreendimentos/{id}", Long.MAX_VALUE))
-            .andExpect(status().isNotFound());
+        restTipoEmpreendimentoMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
     @Test
     @Transactional
-    public void updateTipoEmpreendimento() throws Exception {
+    void putNewTipoEmpreendimento() throws Exception {
         // Initialize the database
-        tipoEmpreendimentoService.save(tipoEmpreendimento);
+        tipoEmpreendimentoRepository.saveAndFlush(tipoEmpreendimento);
 
         int databaseSizeBeforeUpdate = tipoEmpreendimentoRepository.findAll().size();
 
@@ -296,12 +298,14 @@ public class TipoEmpreendimentoResourceIT {
         TipoEmpreendimento updatedTipoEmpreendimento = tipoEmpreendimentoRepository.findById(tipoEmpreendimento.getId()).get();
         // Disconnect from session so that the updates on updatedTipoEmpreendimento are not directly saved in db
         em.detach(updatedTipoEmpreendimento);
-        updatedTipoEmpreendimento
-            .descricao(UPDATED_DESCRICAO);
+        updatedTipoEmpreendimento.descricao(UPDATED_DESCRICAO);
 
-        restTipoEmpreendimentoMockMvc.perform(put("/api/tipo-empreendimentos")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(updatedTipoEmpreendimento)))
+        restTipoEmpreendimentoMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, updatedTipoEmpreendimento.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(updatedTipoEmpreendimento))
+            )
             .andExpect(status().isOk());
 
         // Validate the TipoEmpreendimento in the database
@@ -313,13 +317,17 @@ public class TipoEmpreendimentoResourceIT {
 
     @Test
     @Transactional
-    public void updateNonExistingTipoEmpreendimento() throws Exception {
+    void putNonExistingTipoEmpreendimento() throws Exception {
         int databaseSizeBeforeUpdate = tipoEmpreendimentoRepository.findAll().size();
+        tipoEmpreendimento.setId(count.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restTipoEmpreendimentoMockMvc.perform(put("/api/tipo-empreendimentos")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(tipoEmpreendimento)))
+        restTipoEmpreendimentoMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, tipoEmpreendimento.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(tipoEmpreendimento))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the TipoEmpreendimento in the database
@@ -329,15 +337,169 @@ public class TipoEmpreendimentoResourceIT {
 
     @Test
     @Transactional
-    public void deleteTipoEmpreendimento() throws Exception {
+    void putWithIdMismatchTipoEmpreendimento() throws Exception {
+        int databaseSizeBeforeUpdate = tipoEmpreendimentoRepository.findAll().size();
+        tipoEmpreendimento.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restTipoEmpreendimentoMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(tipoEmpreendimento))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the TipoEmpreendimento in the database
+        List<TipoEmpreendimento> tipoEmpreendimentoList = tipoEmpreendimentoRepository.findAll();
+        assertThat(tipoEmpreendimentoList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void putWithMissingIdPathParamTipoEmpreendimento() throws Exception {
+        int databaseSizeBeforeUpdate = tipoEmpreendimentoRepository.findAll().size();
+        tipoEmpreendimento.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restTipoEmpreendimentoMockMvc
+            .perform(
+                put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(tipoEmpreendimento))
+            )
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the TipoEmpreendimento in the database
+        List<TipoEmpreendimento> tipoEmpreendimentoList = tipoEmpreendimentoRepository.findAll();
+        assertThat(tipoEmpreendimentoList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void partialUpdateTipoEmpreendimentoWithPatch() throws Exception {
         // Initialize the database
-        tipoEmpreendimentoService.save(tipoEmpreendimento);
+        tipoEmpreendimentoRepository.saveAndFlush(tipoEmpreendimento);
+
+        int databaseSizeBeforeUpdate = tipoEmpreendimentoRepository.findAll().size();
+
+        // Update the tipoEmpreendimento using partial update
+        TipoEmpreendimento partialUpdatedTipoEmpreendimento = new TipoEmpreendimento();
+        partialUpdatedTipoEmpreendimento.setId(tipoEmpreendimento.getId());
+
+        restTipoEmpreendimentoMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedTipoEmpreendimento.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedTipoEmpreendimento))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the TipoEmpreendimento in the database
+        List<TipoEmpreendimento> tipoEmpreendimentoList = tipoEmpreendimentoRepository.findAll();
+        assertThat(tipoEmpreendimentoList).hasSize(databaseSizeBeforeUpdate);
+        TipoEmpreendimento testTipoEmpreendimento = tipoEmpreendimentoList.get(tipoEmpreendimentoList.size() - 1);
+        assertThat(testTipoEmpreendimento.getDescricao()).isEqualTo(DEFAULT_DESCRICAO);
+    }
+
+    @Test
+    @Transactional
+    void fullUpdateTipoEmpreendimentoWithPatch() throws Exception {
+        // Initialize the database
+        tipoEmpreendimentoRepository.saveAndFlush(tipoEmpreendimento);
+
+        int databaseSizeBeforeUpdate = tipoEmpreendimentoRepository.findAll().size();
+
+        // Update the tipoEmpreendimento using partial update
+        TipoEmpreendimento partialUpdatedTipoEmpreendimento = new TipoEmpreendimento();
+        partialUpdatedTipoEmpreendimento.setId(tipoEmpreendimento.getId());
+
+        partialUpdatedTipoEmpreendimento.descricao(UPDATED_DESCRICAO);
+
+        restTipoEmpreendimentoMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedTipoEmpreendimento.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedTipoEmpreendimento))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the TipoEmpreendimento in the database
+        List<TipoEmpreendimento> tipoEmpreendimentoList = tipoEmpreendimentoRepository.findAll();
+        assertThat(tipoEmpreendimentoList).hasSize(databaseSizeBeforeUpdate);
+        TipoEmpreendimento testTipoEmpreendimento = tipoEmpreendimentoList.get(tipoEmpreendimentoList.size() - 1);
+        assertThat(testTipoEmpreendimento.getDescricao()).isEqualTo(UPDATED_DESCRICAO);
+    }
+
+    @Test
+    @Transactional
+    void patchNonExistingTipoEmpreendimento() throws Exception {
+        int databaseSizeBeforeUpdate = tipoEmpreendimentoRepository.findAll().size();
+        tipoEmpreendimento.setId(count.incrementAndGet());
+
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
+        restTipoEmpreendimentoMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, tipoEmpreendimento.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(tipoEmpreendimento))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the TipoEmpreendimento in the database
+        List<TipoEmpreendimento> tipoEmpreendimentoList = tipoEmpreendimentoRepository.findAll();
+        assertThat(tipoEmpreendimentoList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithIdMismatchTipoEmpreendimento() throws Exception {
+        int databaseSizeBeforeUpdate = tipoEmpreendimentoRepository.findAll().size();
+        tipoEmpreendimento.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restTipoEmpreendimentoMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(tipoEmpreendimento))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the TipoEmpreendimento in the database
+        List<TipoEmpreendimento> tipoEmpreendimentoList = tipoEmpreendimentoRepository.findAll();
+        assertThat(tipoEmpreendimentoList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithMissingIdPathParamTipoEmpreendimento() throws Exception {
+        int databaseSizeBeforeUpdate = tipoEmpreendimentoRepository.findAll().size();
+        tipoEmpreendimento.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restTipoEmpreendimentoMockMvc
+            .perform(
+                patch(ENTITY_API_URL)
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(tipoEmpreendimento))
+            )
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the TipoEmpreendimento in the database
+        List<TipoEmpreendimento> tipoEmpreendimentoList = tipoEmpreendimentoRepository.findAll();
+        assertThat(tipoEmpreendimentoList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void deleteTipoEmpreendimento() throws Exception {
+        // Initialize the database
+        tipoEmpreendimentoRepository.saveAndFlush(tipoEmpreendimento);
 
         int databaseSizeBeforeDelete = tipoEmpreendimentoRepository.findAll().size();
 
         // Delete the tipoEmpreendimento
-        restTipoEmpreendimentoMockMvc.perform(delete("/api/tipo-empreendimentos/{id}", tipoEmpreendimento.getId())
-            .accept(MediaType.APPLICATION_JSON))
+        restTipoEmpreendimentoMockMvc
+            .perform(delete(ENTITY_API_URL_ID, tipoEmpreendimento.getId()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item

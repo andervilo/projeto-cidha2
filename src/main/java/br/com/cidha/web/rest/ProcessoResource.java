@@ -1,14 +1,16 @@
 package br.com.cidha.web.rest;
 
 import br.com.cidha.domain.Processo;
-import br.com.cidha.service.ProcessoService;
-import br.com.cidha.web.rest.errors.BadRequestAlertException;
-import br.com.cidha.service.dto.ProcessoCriteria;
+import br.com.cidha.repository.ProcessoRepository;
 import br.com.cidha.service.ProcessoQueryService;
-
-import io.github.jhipster.web.util.HeaderUtil;
-import io.github.jhipster.web.util.PaginationUtil;
-import io.github.jhipster.web.util.ResponseUtil;
+import br.com.cidha.service.ProcessoService;
+import br.com.cidha.service.criteria.ProcessoCriteria;
+import br.com.cidha.web.rest.errors.BadRequestAlertException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,14 +18,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import tech.jhipster.web.util.HeaderUtil;
+import tech.jhipster.web.util.PaginationUtil;
+import tech.jhipster.web.util.ResponseUtil;
 
 /**
  * REST controller for managing {@link br.com.cidha.domain.Processo}.
@@ -41,10 +41,17 @@ public class ProcessoResource {
 
     private final ProcessoService processoService;
 
+    private final ProcessoRepository processoRepository;
+
     private final ProcessoQueryService processoQueryService;
 
-    public ProcessoResource(ProcessoService processoService, ProcessoQueryService processoQueryService) {
+    public ProcessoResource(
+        ProcessoService processoService,
+        ProcessoRepository processoRepository,
+        ProcessoQueryService processoQueryService
+    ) {
         this.processoService = processoService;
+        this.processoRepository = processoRepository;
         this.processoQueryService = processoQueryService;
     }
 
@@ -62,30 +69,80 @@ public class ProcessoResource {
             throw new BadRequestAlertException("A new processo cannot already have an ID", ENTITY_NAME, "idexists");
         }
         Processo result = processoService.save(processo);
-        return ResponseEntity.created(new URI("/api/processos/" + result.getId()))
+        return ResponseEntity
+            .created(new URI("/api/processos/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
 
     /**
-     * {@code PUT  /processos} : Updates an existing processo.
+     * {@code PUT  /processos/:id} : Updates an existing processo.
      *
+     * @param id the id of the processo to save.
      * @param processo the processo to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated processo,
      * or with status {@code 400 (Bad Request)} if the processo is not valid,
      * or with status {@code 500 (Internal Server Error)} if the processo couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/processos")
-    public ResponseEntity<Processo> updateProcesso(@RequestBody Processo processo) throws URISyntaxException {
-        log.debug("REST request to update Processo : {}", processo);
+    @PutMapping("/processos/{id}")
+    public ResponseEntity<Processo> updateProcesso(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody Processo processo
+    ) throws URISyntaxException {
+        log.debug("REST request to update Processo : {}, {}", id, processo);
         if (processo.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+        if (!Objects.equals(id, processo.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!processoRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
         Processo result = processoService.save(processo);
-        return ResponseEntity.ok()
+        return ResponseEntity
+            .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, processo.getId().toString()))
             .body(result);
+    }
+
+    /**
+     * {@code PATCH  /processos/:id} : Partial updates given fields of an existing processo, field will ignore if it is null
+     *
+     * @param id the id of the processo to save.
+     * @param processo the processo to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated processo,
+     * or with status {@code 400 (Bad Request)} if the processo is not valid,
+     * or with status {@code 404 (Not Found)} if the processo is not found,
+     * or with status {@code 500 (Internal Server Error)} if the processo couldn't be updated.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PatchMapping(value = "/processos/{id}", consumes = "application/merge-patch+json")
+    public ResponseEntity<Processo> partialUpdateProcesso(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody Processo processo
+    ) throws URISyntaxException {
+        log.debug("REST request to partial update Processo partially : {}, {}", id, processo);
+        if (processo.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        if (!Objects.equals(id, processo.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!processoRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
+        Optional<Processo> result = processoService.partialUpdate(processo);
+
+        return ResponseUtil.wrapOrNotFound(
+            result,
+            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, processo.getId().toString())
+        );
     }
 
     /**
@@ -138,6 +195,9 @@ public class ProcessoResource {
     public ResponseEntity<Void> deleteProcesso(@PathVariable Long id) {
         log.debug("REST request to delete Processo : {}", id);
         processoService.delete(id);
-        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
+        return ResponseEntity
+            .noContent()
+            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
+            .build();
     }
 }

@@ -11,6 +11,7 @@ export const ACTION_TYPES = {
   FETCH_TIPOREPRESENTANTE: 'tipoRepresentante/FETCH_TIPOREPRESENTANTE',
   CREATE_TIPOREPRESENTANTE: 'tipoRepresentante/CREATE_TIPOREPRESENTANTE',
   UPDATE_TIPOREPRESENTANTE: 'tipoRepresentante/UPDATE_TIPOREPRESENTANTE',
+  PARTIAL_UPDATE_TIPOREPRESENTANTE: 'tipoRepresentante/PARTIAL_UPDATE_TIPOREPRESENTANTE',
   DELETE_TIPOREPRESENTANTE: 'tipoRepresentante/DELETE_TIPOREPRESENTANTE',
   RESET: 'tipoRepresentante/RESET',
 };
@@ -42,6 +43,7 @@ export default (state: TipoRepresentanteState = initialState, action): TipoRepre
     case REQUEST(ACTION_TYPES.CREATE_TIPOREPRESENTANTE):
     case REQUEST(ACTION_TYPES.UPDATE_TIPOREPRESENTANTE):
     case REQUEST(ACTION_TYPES.DELETE_TIPOREPRESENTANTE):
+    case REQUEST(ACTION_TYPES.PARTIAL_UPDATE_TIPOREPRESENTANTE):
       return {
         ...state,
         errorMessage: null,
@@ -52,6 +54,7 @@ export default (state: TipoRepresentanteState = initialState, action): TipoRepre
     case FAILURE(ACTION_TYPES.FETCH_TIPOREPRESENTANTE):
     case FAILURE(ACTION_TYPES.CREATE_TIPOREPRESENTANTE):
     case FAILURE(ACTION_TYPES.UPDATE_TIPOREPRESENTANTE):
+    case FAILURE(ACTION_TYPES.PARTIAL_UPDATE_TIPOREPRESENTANTE):
     case FAILURE(ACTION_TYPES.DELETE_TIPOREPRESENTANTE):
       return {
         ...state,
@@ -75,6 +78,7 @@ export default (state: TipoRepresentanteState = initialState, action): TipoRepre
       };
     case SUCCESS(ACTION_TYPES.CREATE_TIPOREPRESENTANTE):
     case SUCCESS(ACTION_TYPES.UPDATE_TIPOREPRESENTANTE):
+    case SUCCESS(ACTION_TYPES.PARTIAL_UPDATE_TIPOREPRESENTANTE):
       return {
         ...state,
         updating: false,
@@ -129,7 +133,15 @@ export const createEntity: ICrudPutAction<ITipoRepresentante> = entity => async 
 export const updateEntity: ICrudPutAction<ITipoRepresentante> = entity => async dispatch => {
   const result = await dispatch({
     type: ACTION_TYPES.UPDATE_TIPOREPRESENTANTE,
-    payload: axios.put(apiUrl, cleanEntity(entity)),
+    payload: axios.put(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
+  });
+  return result;
+};
+
+export const partialUpdate: ICrudPutAction<ITipoRepresentante> = entity => async dispatch => {
+  const result = await dispatch({
+    type: ACTION_TYPES.PARTIAL_UPDATE_TIPOREPRESENTANTE,
+    payload: axios.patch(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
   });
   return result;
 };

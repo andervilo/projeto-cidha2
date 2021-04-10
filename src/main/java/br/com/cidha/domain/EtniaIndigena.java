@@ -1,14 +1,12 @@
 package br.com.cidha.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
-import javax.persistence.*;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.*;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /**
  * A EtniaIndigena.
@@ -30,7 +28,7 @@ public class EtniaIndigena implements Serializable {
 
     @ManyToMany(mappedBy = "etnias")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnore
+    @JsonIgnoreProperties(value = { "etnias", "processos" }, allowSetters = true)
     private Set<TerraIndigena> terraIndigenas = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -42,8 +40,13 @@ public class EtniaIndigena implements Serializable {
         this.id = id;
     }
 
+    public EtniaIndigena id(Long id) {
+        this.id = id;
+        return this;
+    }
+
     public String getNome() {
-        return nome;
+        return this.nome;
     }
 
     public EtniaIndigena nome(String nome) {
@@ -56,11 +59,11 @@ public class EtniaIndigena implements Serializable {
     }
 
     public Set<TerraIndigena> getTerraIndigenas() {
-        return terraIndigenas;
+        return this.terraIndigenas;
     }
 
     public EtniaIndigena terraIndigenas(Set<TerraIndigena> terraIndigenas) {
-        this.terraIndigenas = terraIndigenas;
+        this.setTerraIndigenas(terraIndigenas);
         return this;
     }
 
@@ -77,8 +80,15 @@ public class EtniaIndigena implements Serializable {
     }
 
     public void setTerraIndigenas(Set<TerraIndigena> terraIndigenas) {
+        if (this.terraIndigenas != null) {
+            this.terraIndigenas.forEach(i -> i.removeEtnia(this));
+        }
+        if (terraIndigenas != null) {
+            terraIndigenas.forEach(i -> i.addEtnia(this));
+        }
         this.terraIndigenas = terraIndigenas;
     }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -94,7 +104,8 @@ public class EtniaIndigena implements Serializable {
 
     @Override
     public int hashCode() {
-        return 31;
+        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        return getClass().hashCode();
     }
 
     // prettier-ignore

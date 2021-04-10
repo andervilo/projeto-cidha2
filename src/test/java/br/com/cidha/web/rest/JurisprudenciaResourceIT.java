@@ -1,38 +1,36 @@
 package br.com.cidha.web.rest;
 
-import br.com.cidha.CidhaApp;
-import br.com.cidha.domain.Jurisprudencia;
-import br.com.cidha.domain.ProblemaJuridico;
-import br.com.cidha.repository.JurisprudenciaRepository;
-import br.com.cidha.service.JurisprudenciaService;
-import br.com.cidha.service.dto.JurisprudenciaCriteria;
-import br.com.cidha.service.JurisprudenciaQueryService;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Base64Utils;
-import javax.persistence.EntityManager;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import br.com.cidha.IntegrationTest;
+import br.com.cidha.domain.Jurisprudencia;
+import br.com.cidha.domain.ProblemaJuridico;
+import br.com.cidha.repository.JurisprudenciaRepository;
+import br.com.cidha.service.criteria.JurisprudenciaCriteria;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
+import javax.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Base64Utils;
+
 /**
  * Integration tests for the {@link JurisprudenciaResource} REST controller.
  */
-@SpringBootTest(classes = CidhaApp.class)
+@IntegrationTest
 @AutoConfigureMockMvc
 @WithMockUser
-public class JurisprudenciaResourceIT {
+class JurisprudenciaResourceIT {
 
     private static final String DEFAULT_JURISPRUDENCIA_CITADA_DESCRICAO = "AAAAAAAAAA";
     private static final String UPDATED_JURISPRUDENCIA_CITADA_DESCRICAO = "BBBBBBBBBB";
@@ -43,14 +41,14 @@ public class JurisprudenciaResourceIT {
     private static final String DEFAULT_JURISPRUDENCIA_SUGERIDA = "AAAAAAAAAA";
     private static final String UPDATED_JURISPRUDENCIA_SUGERIDA = "BBBBBBBBBB";
 
+    private static final String ENTITY_API_URL = "/api/jurisprudencias";
+    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+
+    private static Random random = new Random();
+    private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
+
     @Autowired
     private JurisprudenciaRepository jurisprudenciaRepository;
-
-    @Autowired
-    private JurisprudenciaService jurisprudenciaService;
-
-    @Autowired
-    private JurisprudenciaQueryService jurisprudenciaQueryService;
 
     @Autowired
     private EntityManager em;
@@ -73,6 +71,7 @@ public class JurisprudenciaResourceIT {
             .jurisprudenciaSugerida(DEFAULT_JURISPRUDENCIA_SUGERIDA);
         return jurisprudencia;
     }
+
     /**
      * Create an updated entity for this test.
      *
@@ -94,12 +93,13 @@ public class JurisprudenciaResourceIT {
 
     @Test
     @Transactional
-    public void createJurisprudencia() throws Exception {
+    void createJurisprudencia() throws Exception {
         int databaseSizeBeforeCreate = jurisprudenciaRepository.findAll().size();
         // Create the Jurisprudencia
-        restJurisprudenciaMockMvc.perform(post("/api/jurisprudencias")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(jurisprudencia)))
+        restJurisprudenciaMockMvc
+            .perform(
+                post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(jurisprudencia))
+            )
             .andExpect(status().isCreated());
 
         // Validate the Jurisprudencia in the database
@@ -113,16 +113,17 @@ public class JurisprudenciaResourceIT {
 
     @Test
     @Transactional
-    public void createJurisprudenciaWithExistingId() throws Exception {
-        int databaseSizeBeforeCreate = jurisprudenciaRepository.findAll().size();
-
+    void createJurisprudenciaWithExistingId() throws Exception {
         // Create the Jurisprudencia with an existing ID
         jurisprudencia.setId(1L);
 
+        int databaseSizeBeforeCreate = jurisprudenciaRepository.findAll().size();
+
         // An entity with an existing ID cannot be created, so this API call must fail
-        restJurisprudenciaMockMvc.perform(post("/api/jurisprudencias")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(jurisprudencia)))
+        restJurisprudenciaMockMvc
+            .perform(
+                post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(jurisprudencia))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the Jurisprudencia in the database
@@ -130,15 +131,15 @@ public class JurisprudenciaResourceIT {
         assertThat(jurisprudenciaList).hasSize(databaseSizeBeforeCreate);
     }
 
-
     @Test
     @Transactional
-    public void getAllJurisprudencias() throws Exception {
+    void getAllJurisprudencias() throws Exception {
         // Initialize the database
         jurisprudenciaRepository.saveAndFlush(jurisprudencia);
 
         // Get all the jurisprudenciaList
-        restJurisprudenciaMockMvc.perform(get("/api/jurisprudencias?sort=id,desc"))
+        restJurisprudenciaMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(jurisprudencia.getId().intValue())))
@@ -146,15 +147,16 @@ public class JurisprudenciaResourceIT {
             .andExpect(jsonPath("$.[*].folhasJurisprudenciaCitada").value(hasItem(DEFAULT_FOLHAS_JURISPRUDENCIA_CITADA)))
             .andExpect(jsonPath("$.[*].jurisprudenciaSugerida").value(hasItem(DEFAULT_JURISPRUDENCIA_SUGERIDA.toString())));
     }
-    
+
     @Test
     @Transactional
-    public void getJurisprudencia() throws Exception {
+    void getJurisprudencia() throws Exception {
         // Initialize the database
         jurisprudenciaRepository.saveAndFlush(jurisprudencia);
 
         // Get the jurisprudencia
-        restJurisprudenciaMockMvc.perform(get("/api/jurisprudencias/{id}", jurisprudencia.getId()))
+        restJurisprudenciaMockMvc
+            .perform(get(ENTITY_API_URL_ID, jurisprudencia.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(jurisprudencia.getId().intValue()))
@@ -163,10 +165,9 @@ public class JurisprudenciaResourceIT {
             .andExpect(jsonPath("$.jurisprudenciaSugerida").value(DEFAULT_JURISPRUDENCIA_SUGERIDA.toString()));
     }
 
-
     @Test
     @Transactional
-    public void getJurisprudenciasByIdFiltering() throws Exception {
+    void getJurisprudenciasByIdFiltering() throws Exception {
         // Initialize the database
         jurisprudenciaRepository.saveAndFlush(jurisprudencia);
 
@@ -182,10 +183,9 @@ public class JurisprudenciaResourceIT {
         defaultJurisprudenciaShouldNotBeFound("id.lessThan=" + id);
     }
 
-
     @Test
     @Transactional
-    public void getAllJurisprudenciasByFolhasJurisprudenciaCitadaIsEqualToSomething() throws Exception {
+    void getAllJurisprudenciasByFolhasJurisprudenciaCitadaIsEqualToSomething() throws Exception {
         // Initialize the database
         jurisprudenciaRepository.saveAndFlush(jurisprudencia);
 
@@ -198,7 +198,7 @@ public class JurisprudenciaResourceIT {
 
     @Test
     @Transactional
-    public void getAllJurisprudenciasByFolhasJurisprudenciaCitadaIsNotEqualToSomething() throws Exception {
+    void getAllJurisprudenciasByFolhasJurisprudenciaCitadaIsNotEqualToSomething() throws Exception {
         // Initialize the database
         jurisprudenciaRepository.saveAndFlush(jurisprudencia);
 
@@ -211,12 +211,14 @@ public class JurisprudenciaResourceIT {
 
     @Test
     @Transactional
-    public void getAllJurisprudenciasByFolhasJurisprudenciaCitadaIsInShouldWork() throws Exception {
+    void getAllJurisprudenciasByFolhasJurisprudenciaCitadaIsInShouldWork() throws Exception {
         // Initialize the database
         jurisprudenciaRepository.saveAndFlush(jurisprudencia);
 
         // Get all the jurisprudenciaList where folhasJurisprudenciaCitada in DEFAULT_FOLHAS_JURISPRUDENCIA_CITADA or UPDATED_FOLHAS_JURISPRUDENCIA_CITADA
-        defaultJurisprudenciaShouldBeFound("folhasJurisprudenciaCitada.in=" + DEFAULT_FOLHAS_JURISPRUDENCIA_CITADA + "," + UPDATED_FOLHAS_JURISPRUDENCIA_CITADA);
+        defaultJurisprudenciaShouldBeFound(
+            "folhasJurisprudenciaCitada.in=" + DEFAULT_FOLHAS_JURISPRUDENCIA_CITADA + "," + UPDATED_FOLHAS_JURISPRUDENCIA_CITADA
+        );
 
         // Get all the jurisprudenciaList where folhasJurisprudenciaCitada equals to UPDATED_FOLHAS_JURISPRUDENCIA_CITADA
         defaultJurisprudenciaShouldNotBeFound("folhasJurisprudenciaCitada.in=" + UPDATED_FOLHAS_JURISPRUDENCIA_CITADA);
@@ -224,7 +226,7 @@ public class JurisprudenciaResourceIT {
 
     @Test
     @Transactional
-    public void getAllJurisprudenciasByFolhasJurisprudenciaCitadaIsNullOrNotNull() throws Exception {
+    void getAllJurisprudenciasByFolhasJurisprudenciaCitadaIsNullOrNotNull() throws Exception {
         // Initialize the database
         jurisprudenciaRepository.saveAndFlush(jurisprudencia);
 
@@ -234,9 +236,10 @@ public class JurisprudenciaResourceIT {
         // Get all the jurisprudenciaList where folhasJurisprudenciaCitada is null
         defaultJurisprudenciaShouldNotBeFound("folhasJurisprudenciaCitada.specified=false");
     }
-                @Test
+
+    @Test
     @Transactional
-    public void getAllJurisprudenciasByFolhasJurisprudenciaCitadaContainsSomething() throws Exception {
+    void getAllJurisprudenciasByFolhasJurisprudenciaCitadaContainsSomething() throws Exception {
         // Initialize the database
         jurisprudenciaRepository.saveAndFlush(jurisprudencia);
 
@@ -249,7 +252,7 @@ public class JurisprudenciaResourceIT {
 
     @Test
     @Transactional
-    public void getAllJurisprudenciasByFolhasJurisprudenciaCitadaNotContainsSomething() throws Exception {
+    void getAllJurisprudenciasByFolhasJurisprudenciaCitadaNotContainsSomething() throws Exception {
         // Initialize the database
         jurisprudenciaRepository.saveAndFlush(jurisprudencia);
 
@@ -260,10 +263,9 @@ public class JurisprudenciaResourceIT {
         defaultJurisprudenciaShouldBeFound("folhasJurisprudenciaCitada.doesNotContain=" + UPDATED_FOLHAS_JURISPRUDENCIA_CITADA);
     }
 
-
     @Test
     @Transactional
-    public void getAllJurisprudenciasByProblemaJuridicoIsEqualToSomething() throws Exception {
+    void getAllJurisprudenciasByProblemaJuridicoIsEqualToSomething() throws Exception {
         // Initialize the database
         jurisprudenciaRepository.saveAndFlush(jurisprudencia);
         ProblemaJuridico problemaJuridico = ProblemaJuridicoResourceIT.createEntity(em);
@@ -276,7 +278,7 @@ public class JurisprudenciaResourceIT {
         // Get all the jurisprudenciaList where problemaJuridico equals to problemaJuridicoId
         defaultJurisprudenciaShouldBeFound("problemaJuridicoId.equals=" + problemaJuridicoId);
 
-        // Get all the jurisprudenciaList where problemaJuridico equals to problemaJuridicoId + 1
+        // Get all the jurisprudenciaList where problemaJuridico equals to (problemaJuridicoId + 1)
         defaultJurisprudenciaShouldNotBeFound("problemaJuridicoId.equals=" + (problemaJuridicoId + 1));
     }
 
@@ -284,7 +286,8 @@ public class JurisprudenciaResourceIT {
      * Executes the search, and checks that the default entity is returned.
      */
     private void defaultJurisprudenciaShouldBeFound(String filter) throws Exception {
-        restJurisprudenciaMockMvc.perform(get("/api/jurisprudencias?sort=id,desc&" + filter))
+        restJurisprudenciaMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(jurisprudencia.getId().intValue())))
@@ -293,7 +296,8 @@ public class JurisprudenciaResourceIT {
             .andExpect(jsonPath("$.[*].jurisprudenciaSugerida").value(hasItem(DEFAULT_JURISPRUDENCIA_SUGERIDA.toString())));
 
         // Check, that the count call also returns 1
-        restJurisprudenciaMockMvc.perform(get("/api/jurisprudencias/count?sort=id,desc&" + filter))
+        restJurisprudenciaMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("1"));
@@ -303,14 +307,16 @@ public class JurisprudenciaResourceIT {
      * Executes the search, and checks that the default entity is not returned.
      */
     private void defaultJurisprudenciaShouldNotBeFound(String filter) throws Exception {
-        restJurisprudenciaMockMvc.perform(get("/api/jurisprudencias?sort=id,desc&" + filter))
+        restJurisprudenciaMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$").isEmpty());
 
         // Check, that the count call also returns 0
-        restJurisprudenciaMockMvc.perform(get("/api/jurisprudencias/count?sort=id,desc&" + filter))
+        restJurisprudenciaMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("0"));
@@ -318,17 +324,16 @@ public class JurisprudenciaResourceIT {
 
     @Test
     @Transactional
-    public void getNonExistingJurisprudencia() throws Exception {
+    void getNonExistingJurisprudencia() throws Exception {
         // Get the jurisprudencia
-        restJurisprudenciaMockMvc.perform(get("/api/jurisprudencias/{id}", Long.MAX_VALUE))
-            .andExpect(status().isNotFound());
+        restJurisprudenciaMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
     @Test
     @Transactional
-    public void updateJurisprudencia() throws Exception {
+    void putNewJurisprudencia() throws Exception {
         // Initialize the database
-        jurisprudenciaService.save(jurisprudencia);
+        jurisprudenciaRepository.saveAndFlush(jurisprudencia);
 
         int databaseSizeBeforeUpdate = jurisprudenciaRepository.findAll().size();
 
@@ -341,9 +346,12 @@ public class JurisprudenciaResourceIT {
             .folhasJurisprudenciaCitada(UPDATED_FOLHAS_JURISPRUDENCIA_CITADA)
             .jurisprudenciaSugerida(UPDATED_JURISPRUDENCIA_SUGERIDA);
 
-        restJurisprudenciaMockMvc.perform(put("/api/jurisprudencias")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(updatedJurisprudencia)))
+        restJurisprudenciaMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, updatedJurisprudencia.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(updatedJurisprudencia))
+            )
             .andExpect(status().isOk());
 
         // Validate the Jurisprudencia in the database
@@ -357,13 +365,17 @@ public class JurisprudenciaResourceIT {
 
     @Test
     @Transactional
-    public void updateNonExistingJurisprudencia() throws Exception {
+    void putNonExistingJurisprudencia() throws Exception {
         int databaseSizeBeforeUpdate = jurisprudenciaRepository.findAll().size();
+        jurisprudencia.setId(count.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restJurisprudenciaMockMvc.perform(put("/api/jurisprudencias")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(jurisprudencia)))
+        restJurisprudenciaMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, jurisprudencia.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(jurisprudencia))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the Jurisprudencia in the database
@@ -373,15 +385,177 @@ public class JurisprudenciaResourceIT {
 
     @Test
     @Transactional
-    public void deleteJurisprudencia() throws Exception {
+    void putWithIdMismatchJurisprudencia() throws Exception {
+        int databaseSizeBeforeUpdate = jurisprudenciaRepository.findAll().size();
+        jurisprudencia.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restJurisprudenciaMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(jurisprudencia))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the Jurisprudencia in the database
+        List<Jurisprudencia> jurisprudenciaList = jurisprudenciaRepository.findAll();
+        assertThat(jurisprudenciaList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void putWithMissingIdPathParamJurisprudencia() throws Exception {
+        int databaseSizeBeforeUpdate = jurisprudenciaRepository.findAll().size();
+        jurisprudencia.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restJurisprudenciaMockMvc
+            .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(jurisprudencia)))
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the Jurisprudencia in the database
+        List<Jurisprudencia> jurisprudenciaList = jurisprudenciaRepository.findAll();
+        assertThat(jurisprudenciaList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void partialUpdateJurisprudenciaWithPatch() throws Exception {
         // Initialize the database
-        jurisprudenciaService.save(jurisprudencia);
+        jurisprudenciaRepository.saveAndFlush(jurisprudencia);
+
+        int databaseSizeBeforeUpdate = jurisprudenciaRepository.findAll().size();
+
+        // Update the jurisprudencia using partial update
+        Jurisprudencia partialUpdatedJurisprudencia = new Jurisprudencia();
+        partialUpdatedJurisprudencia.setId(jurisprudencia.getId());
+
+        partialUpdatedJurisprudencia
+            .jurisprudenciaCitadaDescricao(UPDATED_JURISPRUDENCIA_CITADA_DESCRICAO)
+            .folhasJurisprudenciaCitada(UPDATED_FOLHAS_JURISPRUDENCIA_CITADA)
+            .jurisprudenciaSugerida(UPDATED_JURISPRUDENCIA_SUGERIDA);
+
+        restJurisprudenciaMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedJurisprudencia.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedJurisprudencia))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the Jurisprudencia in the database
+        List<Jurisprudencia> jurisprudenciaList = jurisprudenciaRepository.findAll();
+        assertThat(jurisprudenciaList).hasSize(databaseSizeBeforeUpdate);
+        Jurisprudencia testJurisprudencia = jurisprudenciaList.get(jurisprudenciaList.size() - 1);
+        assertThat(testJurisprudencia.getJurisprudenciaCitadaDescricao()).isEqualTo(UPDATED_JURISPRUDENCIA_CITADA_DESCRICAO);
+        assertThat(testJurisprudencia.getFolhasJurisprudenciaCitada()).isEqualTo(UPDATED_FOLHAS_JURISPRUDENCIA_CITADA);
+        assertThat(testJurisprudencia.getJurisprudenciaSugerida()).isEqualTo(UPDATED_JURISPRUDENCIA_SUGERIDA);
+    }
+
+    @Test
+    @Transactional
+    void fullUpdateJurisprudenciaWithPatch() throws Exception {
+        // Initialize the database
+        jurisprudenciaRepository.saveAndFlush(jurisprudencia);
+
+        int databaseSizeBeforeUpdate = jurisprudenciaRepository.findAll().size();
+
+        // Update the jurisprudencia using partial update
+        Jurisprudencia partialUpdatedJurisprudencia = new Jurisprudencia();
+        partialUpdatedJurisprudencia.setId(jurisprudencia.getId());
+
+        partialUpdatedJurisprudencia
+            .jurisprudenciaCitadaDescricao(UPDATED_JURISPRUDENCIA_CITADA_DESCRICAO)
+            .folhasJurisprudenciaCitada(UPDATED_FOLHAS_JURISPRUDENCIA_CITADA)
+            .jurisprudenciaSugerida(UPDATED_JURISPRUDENCIA_SUGERIDA);
+
+        restJurisprudenciaMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedJurisprudencia.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedJurisprudencia))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the Jurisprudencia in the database
+        List<Jurisprudencia> jurisprudenciaList = jurisprudenciaRepository.findAll();
+        assertThat(jurisprudenciaList).hasSize(databaseSizeBeforeUpdate);
+        Jurisprudencia testJurisprudencia = jurisprudenciaList.get(jurisprudenciaList.size() - 1);
+        assertThat(testJurisprudencia.getJurisprudenciaCitadaDescricao()).isEqualTo(UPDATED_JURISPRUDENCIA_CITADA_DESCRICAO);
+        assertThat(testJurisprudencia.getFolhasJurisprudenciaCitada()).isEqualTo(UPDATED_FOLHAS_JURISPRUDENCIA_CITADA);
+        assertThat(testJurisprudencia.getJurisprudenciaSugerida()).isEqualTo(UPDATED_JURISPRUDENCIA_SUGERIDA);
+    }
+
+    @Test
+    @Transactional
+    void patchNonExistingJurisprudencia() throws Exception {
+        int databaseSizeBeforeUpdate = jurisprudenciaRepository.findAll().size();
+        jurisprudencia.setId(count.incrementAndGet());
+
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
+        restJurisprudenciaMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, jurisprudencia.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(jurisprudencia))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the Jurisprudencia in the database
+        List<Jurisprudencia> jurisprudenciaList = jurisprudenciaRepository.findAll();
+        assertThat(jurisprudenciaList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithIdMismatchJurisprudencia() throws Exception {
+        int databaseSizeBeforeUpdate = jurisprudenciaRepository.findAll().size();
+        jurisprudencia.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restJurisprudenciaMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(jurisprudencia))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the Jurisprudencia in the database
+        List<Jurisprudencia> jurisprudenciaList = jurisprudenciaRepository.findAll();
+        assertThat(jurisprudenciaList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithMissingIdPathParamJurisprudencia() throws Exception {
+        int databaseSizeBeforeUpdate = jurisprudenciaRepository.findAll().size();
+        jurisprudencia.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restJurisprudenciaMockMvc
+            .perform(
+                patch(ENTITY_API_URL).contentType("application/merge-patch+json").content(TestUtil.convertObjectToJsonBytes(jurisprudencia))
+            )
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the Jurisprudencia in the database
+        List<Jurisprudencia> jurisprudenciaList = jurisprudenciaRepository.findAll();
+        assertThat(jurisprudenciaList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void deleteJurisprudencia() throws Exception {
+        // Initialize the database
+        jurisprudenciaRepository.saveAndFlush(jurisprudencia);
 
         int databaseSizeBeforeDelete = jurisprudenciaRepository.findAll().size();
 
         // Delete the jurisprudencia
-        restJurisprudenciaMockMvc.perform(delete("/api/jurisprudencias/{id}", jurisprudencia.getId())
-            .accept(MediaType.APPLICATION_JSON))
+        restJurisprudenciaMockMvc
+            .perform(delete(ENTITY_API_URL_ID, jurisprudencia.getId()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item

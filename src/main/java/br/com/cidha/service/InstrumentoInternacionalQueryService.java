@@ -1,9 +1,11 @@
 package br.com.cidha.service;
 
+import br.com.cidha.domain.*; // for static metamodels
+import br.com.cidha.domain.InstrumentoInternacional;
+import br.com.cidha.repository.InstrumentoInternacionalRepository;
+import br.com.cidha.service.criteria.InstrumentoInternacionalCriteria;
 import java.util.List;
-
 import javax.persistence.criteria.JoinType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -11,13 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import io.github.jhipster.service.QueryService;
-
-import br.com.cidha.domain.InstrumentoInternacional;
-import br.com.cidha.domain.*; // for static metamodels
-import br.com.cidha.repository.InstrumentoInternacionalRepository;
-import br.com.cidha.service.dto.InstrumentoInternacionalCriteria;
+import tech.jhipster.service.QueryService;
 
 /**
  * Service for executing complex queries for {@link InstrumentoInternacional} entities in the database.
@@ -86,11 +82,22 @@ public class InstrumentoInternacionalQueryService extends QueryService<Instrumen
                 specification = specification.and(buildRangeSpecification(criteria.getId(), InstrumentoInternacional_.id));
             }
             if (criteria.getFolhasInstrumentoInternacional() != null) {
-                specification = specification.and(buildStringSpecification(criteria.getFolhasInstrumentoInternacional(), InstrumentoInternacional_.folhasInstrumentoInternacional));
+                specification =
+                    specification.and(
+                        buildStringSpecification(
+                            criteria.getFolhasInstrumentoInternacional(),
+                            InstrumentoInternacional_.folhasInstrumentoInternacional
+                        )
+                    );
             }
             if (criteria.getProblemaJuridicoId() != null) {
-                specification = specification.and(buildSpecification(criteria.getProblemaJuridicoId(),
-                    root -> root.join(InstrumentoInternacional_.problemaJuridicos, JoinType.LEFT).get(ProblemaJuridico_.id)));
+                specification =
+                    specification.and(
+                        buildSpecification(
+                            criteria.getProblemaJuridicoId(),
+                            root -> root.join(InstrumentoInternacional_.problemaJuridicos, JoinType.LEFT).get(ProblemaJuridico_.id)
+                        )
+                    );
             }
         }
         return specification;

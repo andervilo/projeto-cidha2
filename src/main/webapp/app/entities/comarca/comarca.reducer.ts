@@ -11,6 +11,7 @@ export const ACTION_TYPES = {
   FETCH_COMARCA: 'comarca/FETCH_COMARCA',
   CREATE_COMARCA: 'comarca/CREATE_COMARCA',
   UPDATE_COMARCA: 'comarca/UPDATE_COMARCA',
+  PARTIAL_UPDATE_COMARCA: 'comarca/PARTIAL_UPDATE_COMARCA',
   DELETE_COMARCA: 'comarca/DELETE_COMARCA',
   RESET: 'comarca/RESET',
 };
@@ -42,6 +43,7 @@ export default (state: ComarcaState = initialState, action): ComarcaState => {
     case REQUEST(ACTION_TYPES.CREATE_COMARCA):
     case REQUEST(ACTION_TYPES.UPDATE_COMARCA):
     case REQUEST(ACTION_TYPES.DELETE_COMARCA):
+    case REQUEST(ACTION_TYPES.PARTIAL_UPDATE_COMARCA):
       return {
         ...state,
         errorMessage: null,
@@ -52,6 +54,7 @@ export default (state: ComarcaState = initialState, action): ComarcaState => {
     case FAILURE(ACTION_TYPES.FETCH_COMARCA):
     case FAILURE(ACTION_TYPES.CREATE_COMARCA):
     case FAILURE(ACTION_TYPES.UPDATE_COMARCA):
+    case FAILURE(ACTION_TYPES.PARTIAL_UPDATE_COMARCA):
     case FAILURE(ACTION_TYPES.DELETE_COMARCA):
       return {
         ...state,
@@ -75,6 +78,7 @@ export default (state: ComarcaState = initialState, action): ComarcaState => {
       };
     case SUCCESS(ACTION_TYPES.CREATE_COMARCA):
     case SUCCESS(ACTION_TYPES.UPDATE_COMARCA):
+    case SUCCESS(ACTION_TYPES.PARTIAL_UPDATE_COMARCA):
       return {
         ...state,
         updating: false,
@@ -129,7 +133,15 @@ export const createEntity: ICrudPutAction<IComarca> = entity => async dispatch =
 export const updateEntity: ICrudPutAction<IComarca> = entity => async dispatch => {
   const result = await dispatch({
     type: ACTION_TYPES.UPDATE_COMARCA,
-    payload: axios.put(apiUrl, cleanEntity(entity)),
+    payload: axios.put(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
+  });
+  return result;
+};
+
+export const partialUpdate: ICrudPutAction<IComarca> = entity => async dispatch => {
+  const result = await dispatch({
+    type: ACTION_TYPES.PARTIAL_UPDATE_COMARCA,
+    payload: axios.patch(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
   });
   return result;
 };

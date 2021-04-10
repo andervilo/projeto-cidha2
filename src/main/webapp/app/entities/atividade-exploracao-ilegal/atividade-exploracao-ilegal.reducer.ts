@@ -11,6 +11,7 @@ export const ACTION_TYPES = {
   FETCH_ATIVIDADEEXPLORACAOILEGAL: 'atividadeExploracaoIlegal/FETCH_ATIVIDADEEXPLORACAOILEGAL',
   CREATE_ATIVIDADEEXPLORACAOILEGAL: 'atividadeExploracaoIlegal/CREATE_ATIVIDADEEXPLORACAOILEGAL',
   UPDATE_ATIVIDADEEXPLORACAOILEGAL: 'atividadeExploracaoIlegal/UPDATE_ATIVIDADEEXPLORACAOILEGAL',
+  PARTIAL_UPDATE_ATIVIDADEEXPLORACAOILEGAL: 'atividadeExploracaoIlegal/PARTIAL_UPDATE_ATIVIDADEEXPLORACAOILEGAL',
   DELETE_ATIVIDADEEXPLORACAOILEGAL: 'atividadeExploracaoIlegal/DELETE_ATIVIDADEEXPLORACAOILEGAL',
   RESET: 'atividadeExploracaoIlegal/RESET',
 };
@@ -42,6 +43,7 @@ export default (state: AtividadeExploracaoIlegalState = initialState, action): A
     case REQUEST(ACTION_TYPES.CREATE_ATIVIDADEEXPLORACAOILEGAL):
     case REQUEST(ACTION_TYPES.UPDATE_ATIVIDADEEXPLORACAOILEGAL):
     case REQUEST(ACTION_TYPES.DELETE_ATIVIDADEEXPLORACAOILEGAL):
+    case REQUEST(ACTION_TYPES.PARTIAL_UPDATE_ATIVIDADEEXPLORACAOILEGAL):
       return {
         ...state,
         errorMessage: null,
@@ -52,6 +54,7 @@ export default (state: AtividadeExploracaoIlegalState = initialState, action): A
     case FAILURE(ACTION_TYPES.FETCH_ATIVIDADEEXPLORACAOILEGAL):
     case FAILURE(ACTION_TYPES.CREATE_ATIVIDADEEXPLORACAOILEGAL):
     case FAILURE(ACTION_TYPES.UPDATE_ATIVIDADEEXPLORACAOILEGAL):
+    case FAILURE(ACTION_TYPES.PARTIAL_UPDATE_ATIVIDADEEXPLORACAOILEGAL):
     case FAILURE(ACTION_TYPES.DELETE_ATIVIDADEEXPLORACAOILEGAL):
       return {
         ...state,
@@ -75,6 +78,7 @@ export default (state: AtividadeExploracaoIlegalState = initialState, action): A
       };
     case SUCCESS(ACTION_TYPES.CREATE_ATIVIDADEEXPLORACAOILEGAL):
     case SUCCESS(ACTION_TYPES.UPDATE_ATIVIDADEEXPLORACAOILEGAL):
+    case SUCCESS(ACTION_TYPES.PARTIAL_UPDATE_ATIVIDADEEXPLORACAOILEGAL):
       return {
         ...state,
         updating: false,
@@ -129,7 +133,15 @@ export const createEntity: ICrudPutAction<IAtividadeExploracaoIlegal> = entity =
 export const updateEntity: ICrudPutAction<IAtividadeExploracaoIlegal> = entity => async dispatch => {
   const result = await dispatch({
     type: ACTION_TYPES.UPDATE_ATIVIDADEEXPLORACAOILEGAL,
-    payload: axios.put(apiUrl, cleanEntity(entity)),
+    payload: axios.put(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
+  });
+  return result;
+};
+
+export const partialUpdate: ICrudPutAction<IAtividadeExploracaoIlegal> = entity => async dispatch => {
+  const result = await dispatch({
+    type: ACTION_TYPES.PARTIAL_UPDATE_ATIVIDADEEXPLORACAOILEGAL,
+    payload: axios.patch(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
   });
   return result;
 };

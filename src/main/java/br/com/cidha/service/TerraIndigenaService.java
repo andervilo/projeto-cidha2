@@ -2,15 +2,13 @@ package br.com.cidha.service;
 
 import br.com.cidha.domain.TerraIndigena;
 import br.com.cidha.repository.TerraIndigenaRepository;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 /**
  * Service Implementation for managing {@link TerraIndigena}.
@@ -39,6 +37,29 @@ public class TerraIndigenaService {
     }
 
     /**
+     * Partially update a terraIndigena.
+     *
+     * @param terraIndigena the entity to update partially.
+     * @return the persisted entity.
+     */
+    public Optional<TerraIndigena> partialUpdate(TerraIndigena terraIndigena) {
+        log.debug("Request to partially update TerraIndigena : {}", terraIndigena);
+
+        return terraIndigenaRepository
+            .findById(terraIndigena.getId())
+            .map(
+                existingTerraIndigena -> {
+                    if (terraIndigena.getDescricao() != null) {
+                        existingTerraIndigena.setDescricao(terraIndigena.getDescricao());
+                    }
+
+                    return existingTerraIndigena;
+                }
+            )
+            .map(terraIndigenaRepository::save);
+    }
+
+    /**
      * Get all the terraIndigenas.
      *
      * @param pageable the pagination information.
@@ -49,7 +70,6 @@ public class TerraIndigenaService {
         log.debug("Request to get all TerraIndigenas");
         return terraIndigenaRepository.findAll(pageable);
     }
-
 
     /**
      * Get all the terraIndigenas with eager load of many-to-many relationships.

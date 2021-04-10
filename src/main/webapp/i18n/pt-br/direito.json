@@ -3,6 +3,7 @@
     "direito": {
       "home": {
         "title": "Direitos",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Direito",
         "createOrEditLabel": "Criar ou editar Direito",
         "notFound": "Nenhum Direito encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Direito"
       },
+      "id": "ID",
       "descricao": "Descricao",
       "processoConflito": "Processo Conflito"
     }

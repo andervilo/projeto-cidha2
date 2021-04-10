@@ -1,14 +1,16 @@
 package br.com.cidha.web.rest;
 
 import br.com.cidha.domain.TipoData;
-import br.com.cidha.service.TipoDataService;
-import br.com.cidha.web.rest.errors.BadRequestAlertException;
-import br.com.cidha.service.dto.TipoDataCriteria;
+import br.com.cidha.repository.TipoDataRepository;
 import br.com.cidha.service.TipoDataQueryService;
-
-import io.github.jhipster.web.util.HeaderUtil;
-import io.github.jhipster.web.util.PaginationUtil;
-import io.github.jhipster.web.util.ResponseUtil;
+import br.com.cidha.service.TipoDataService;
+import br.com.cidha.service.criteria.TipoDataCriteria;
+import br.com.cidha.web.rest.errors.BadRequestAlertException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,14 +18,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import tech.jhipster.web.util.HeaderUtil;
+import tech.jhipster.web.util.PaginationUtil;
+import tech.jhipster.web.util.ResponseUtil;
 
 /**
  * REST controller for managing {@link br.com.cidha.domain.TipoData}.
@@ -41,10 +41,17 @@ public class TipoDataResource {
 
     private final TipoDataService tipoDataService;
 
+    private final TipoDataRepository tipoDataRepository;
+
     private final TipoDataQueryService tipoDataQueryService;
 
-    public TipoDataResource(TipoDataService tipoDataService, TipoDataQueryService tipoDataQueryService) {
+    public TipoDataResource(
+        TipoDataService tipoDataService,
+        TipoDataRepository tipoDataRepository,
+        TipoDataQueryService tipoDataQueryService
+    ) {
         this.tipoDataService = tipoDataService;
+        this.tipoDataRepository = tipoDataRepository;
         this.tipoDataQueryService = tipoDataQueryService;
     }
 
@@ -62,30 +69,80 @@ public class TipoDataResource {
             throw new BadRequestAlertException("A new tipoData cannot already have an ID", ENTITY_NAME, "idexists");
         }
         TipoData result = tipoDataService.save(tipoData);
-        return ResponseEntity.created(new URI("/api/tipo-data/" + result.getId()))
+        return ResponseEntity
+            .created(new URI("/api/tipo-data/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
 
     /**
-     * {@code PUT  /tipo-data} : Updates an existing tipoData.
+     * {@code PUT  /tipo-data/:id} : Updates an existing tipoData.
      *
+     * @param id the id of the tipoData to save.
      * @param tipoData the tipoData to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated tipoData,
      * or with status {@code 400 (Bad Request)} if the tipoData is not valid,
      * or with status {@code 500 (Internal Server Error)} if the tipoData couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/tipo-data")
-    public ResponseEntity<TipoData> updateTipoData(@RequestBody TipoData tipoData) throws URISyntaxException {
-        log.debug("REST request to update TipoData : {}", tipoData);
+    @PutMapping("/tipo-data/{id}")
+    public ResponseEntity<TipoData> updateTipoData(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody TipoData tipoData
+    ) throws URISyntaxException {
+        log.debug("REST request to update TipoData : {}, {}", id, tipoData);
         if (tipoData.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+        if (!Objects.equals(id, tipoData.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!tipoDataRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
         TipoData result = tipoDataService.save(tipoData);
-        return ResponseEntity.ok()
+        return ResponseEntity
+            .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, tipoData.getId().toString()))
             .body(result);
+    }
+
+    /**
+     * {@code PATCH  /tipo-data/:id} : Partial updates given fields of an existing tipoData, field will ignore if it is null
+     *
+     * @param id the id of the tipoData to save.
+     * @param tipoData the tipoData to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated tipoData,
+     * or with status {@code 400 (Bad Request)} if the tipoData is not valid,
+     * or with status {@code 404 (Not Found)} if the tipoData is not found,
+     * or with status {@code 500 (Internal Server Error)} if the tipoData couldn't be updated.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PatchMapping(value = "/tipo-data/{id}", consumes = "application/merge-patch+json")
+    public ResponseEntity<TipoData> partialUpdateTipoData(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody TipoData tipoData
+    ) throws URISyntaxException {
+        log.debug("REST request to partial update TipoData partially : {}, {}", id, tipoData);
+        if (tipoData.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        if (!Objects.equals(id, tipoData.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!tipoDataRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
+        Optional<TipoData> result = tipoDataService.partialUpdate(tipoData);
+
+        return ResponseUtil.wrapOrNotFound(
+            result,
+            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, tipoData.getId().toString())
+        );
     }
 
     /**
@@ -138,6 +195,9 @@ public class TipoDataResource {
     public ResponseEntity<Void> deleteTipoData(@PathVariable Long id) {
         log.debug("REST request to delete TipoData : {}", id);
         tipoDataService.delete(id);
-        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
+        return ResponseEntity
+            .noContent()
+            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
+            .build();
     }
 }

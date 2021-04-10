@@ -3,6 +3,7 @@
     "etniaIndigena": {
       "home": {
         "title": "Etnia Indigenas",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Etnia Indigena",
         "createOrEditLabel": "Criar ou editar Etnia Indigena",
         "notFound": "Nenhum Etnia Indigena encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Etnia Indigena"
       },
+      "id": "ID",
       "nome": "Nome",
       "terraIndigena": "Terra Indigena"
     }

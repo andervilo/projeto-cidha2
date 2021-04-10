@@ -3,9 +3,9 @@ import { IProcesso } from 'app/shared/model/processo.model';
 
 export interface ITerraIndigena {
   id?: number;
-  descricao?: any;
-  etnias?: IEtniaIndigena[];
-  processos?: IProcesso[];
+  descricao?: string | null;
+  etnias?: IEtniaIndigena[] | null;
+  processos?: IProcesso[] | null;
 }
 
 export const defaultValue: Readonly<ITerraIndigena> = {};

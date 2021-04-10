@@ -2,12 +2,11 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col } from 'reactstrap';
-import { Translate, ICrudGetAction } from 'react-jhipster';
+import { Translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
 import { getEntity } from './tipo-recurso.reducer';
-import { ITipoRecurso } from 'app/shared/model/tipo-recurso.model';
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 
 export interface ITipoRecursoDetailProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
@@ -21,10 +20,16 @@ export const TipoRecursoDetail = (props: ITipoRecursoDetailProps) => {
   return (
     <Row>
       <Col md="8">
-        <h2>
-          <Translate contentKey="cidhaApp.tipoRecurso.detail.title">TipoRecurso</Translate> [<b>{tipoRecursoEntity.id}</b>]
+        <h2 data-cy="tipoRecursoDetailsHeading">
+          <Translate contentKey="cidhaApp.tipoRecurso.detail.title">TipoRecurso</Translate>
         </h2>
         <dl className="jh-entity-details">
+          <dt>
+            <span id="id">
+              <Translate contentKey="global.field.id">ID</Translate>
+            </span>
+          </dt>
+          <dd>{tipoRecursoEntity.id}</dd>
           <dt>
             <span id="descricao">
               <Translate contentKey="cidhaApp.tipoRecurso.descricao">Descricao</Translate>
@@ -32,7 +37,7 @@ export const TipoRecursoDetail = (props: ITipoRecursoDetailProps) => {
           </dt>
           <dd>{tipoRecursoEntity.descricao}</dd>
         </dl>
-        <Button tag={Link} to="/tipo-recurso" replace color="info">
+        <Button tag={Link} to="/tipo-recurso" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" />{' '}
           <span className="d-none d-md-inline">
             <Translate contentKey="entity.action.back">Back</Translate>

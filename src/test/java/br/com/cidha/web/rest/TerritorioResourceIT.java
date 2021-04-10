@@ -1,49 +1,47 @@
 package br.com.cidha.web.rest;
 
-import br.com.cidha.CidhaApp;
-import br.com.cidha.domain.Territorio;
-import br.com.cidha.domain.Processo;
-import br.com.cidha.repository.TerritorioRepository;
-import br.com.cidha.service.TerritorioService;
-import br.com.cidha.service.dto.TerritorioCriteria;
-import br.com.cidha.service.TerritorioQueryService;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
-import javax.persistence.EntityManager;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import br.com.cidha.IntegrationTest;
+import br.com.cidha.domain.Processo;
+import br.com.cidha.domain.Territorio;
+import br.com.cidha.repository.TerritorioRepository;
+import br.com.cidha.service.criteria.TerritorioCriteria;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
+import javax.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * Integration tests for the {@link TerritorioResource} REST controller.
  */
-@SpringBootTest(classes = CidhaApp.class)
+@IntegrationTest
 @AutoConfigureMockMvc
 @WithMockUser
-public class TerritorioResourceIT {
+class TerritorioResourceIT {
 
     private static final String DEFAULT_NOME = "AAAAAAAAAA";
     private static final String UPDATED_NOME = "BBBBBBBBBB";
 
+    private static final String ENTITY_API_URL = "/api/territorios";
+    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+
+    private static Random random = new Random();
+    private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
+
     @Autowired
     private TerritorioRepository territorioRepository;
-
-    @Autowired
-    private TerritorioService territorioService;
-
-    @Autowired
-    private TerritorioQueryService territorioQueryService;
 
     @Autowired
     private EntityManager em;
@@ -60,10 +58,10 @@ public class TerritorioResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Territorio createEntity(EntityManager em) {
-        Territorio territorio = new Territorio()
-            .nome(DEFAULT_NOME);
+        Territorio territorio = new Territorio().nome(DEFAULT_NOME);
         return territorio;
     }
+
     /**
      * Create an updated entity for this test.
      *
@@ -71,8 +69,7 @@ public class TerritorioResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Territorio createUpdatedEntity(EntityManager em) {
-        Territorio territorio = new Territorio()
-            .nome(UPDATED_NOME);
+        Territorio territorio = new Territorio().nome(UPDATED_NOME);
         return territorio;
     }
 
@@ -83,12 +80,11 @@ public class TerritorioResourceIT {
 
     @Test
     @Transactional
-    public void createTerritorio() throws Exception {
+    void createTerritorio() throws Exception {
         int databaseSizeBeforeCreate = territorioRepository.findAll().size();
         // Create the Territorio
-        restTerritorioMockMvc.perform(post("/api/territorios")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(territorio)))
+        restTerritorioMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(territorio)))
             .andExpect(status().isCreated());
 
         // Validate the Territorio in the database
@@ -100,16 +96,15 @@ public class TerritorioResourceIT {
 
     @Test
     @Transactional
-    public void createTerritorioWithExistingId() throws Exception {
-        int databaseSizeBeforeCreate = territorioRepository.findAll().size();
-
+    void createTerritorioWithExistingId() throws Exception {
         // Create the Territorio with an existing ID
         territorio.setId(1L);
 
+        int databaseSizeBeforeCreate = territorioRepository.findAll().size();
+
         // An entity with an existing ID cannot be created, so this API call must fail
-        restTerritorioMockMvc.perform(post("/api/territorios")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(territorio)))
+        restTerritorioMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(territorio)))
             .andExpect(status().isBadRequest());
 
         // Validate the Territorio in the database
@@ -117,39 +112,39 @@ public class TerritorioResourceIT {
         assertThat(territorioList).hasSize(databaseSizeBeforeCreate);
     }
 
-
     @Test
     @Transactional
-    public void getAllTerritorios() throws Exception {
+    void getAllTerritorios() throws Exception {
         // Initialize the database
         territorioRepository.saveAndFlush(territorio);
 
         // Get all the territorioList
-        restTerritorioMockMvc.perform(get("/api/territorios?sort=id,desc"))
+        restTerritorioMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(territorio.getId().intValue())))
             .andExpect(jsonPath("$.[*].nome").value(hasItem(DEFAULT_NOME)));
     }
-    
+
     @Test
     @Transactional
-    public void getTerritorio() throws Exception {
+    void getTerritorio() throws Exception {
         // Initialize the database
         territorioRepository.saveAndFlush(territorio);
 
         // Get the territorio
-        restTerritorioMockMvc.perform(get("/api/territorios/{id}", territorio.getId()))
+        restTerritorioMockMvc
+            .perform(get(ENTITY_API_URL_ID, territorio.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(territorio.getId().intValue()))
             .andExpect(jsonPath("$.nome").value(DEFAULT_NOME));
     }
 
-
     @Test
     @Transactional
-    public void getTerritoriosByIdFiltering() throws Exception {
+    void getTerritoriosByIdFiltering() throws Exception {
         // Initialize the database
         territorioRepository.saveAndFlush(territorio);
 
@@ -165,10 +160,9 @@ public class TerritorioResourceIT {
         defaultTerritorioShouldNotBeFound("id.lessThan=" + id);
     }
 
-
     @Test
     @Transactional
-    public void getAllTerritoriosByNomeIsEqualToSomething() throws Exception {
+    void getAllTerritoriosByNomeIsEqualToSomething() throws Exception {
         // Initialize the database
         territorioRepository.saveAndFlush(territorio);
 
@@ -181,7 +175,7 @@ public class TerritorioResourceIT {
 
     @Test
     @Transactional
-    public void getAllTerritoriosByNomeIsNotEqualToSomething() throws Exception {
+    void getAllTerritoriosByNomeIsNotEqualToSomething() throws Exception {
         // Initialize the database
         territorioRepository.saveAndFlush(territorio);
 
@@ -194,7 +188,7 @@ public class TerritorioResourceIT {
 
     @Test
     @Transactional
-    public void getAllTerritoriosByNomeIsInShouldWork() throws Exception {
+    void getAllTerritoriosByNomeIsInShouldWork() throws Exception {
         // Initialize the database
         territorioRepository.saveAndFlush(territorio);
 
@@ -207,7 +201,7 @@ public class TerritorioResourceIT {
 
     @Test
     @Transactional
-    public void getAllTerritoriosByNomeIsNullOrNotNull() throws Exception {
+    void getAllTerritoriosByNomeIsNullOrNotNull() throws Exception {
         // Initialize the database
         territorioRepository.saveAndFlush(territorio);
 
@@ -217,9 +211,10 @@ public class TerritorioResourceIT {
         // Get all the territorioList where nome is null
         defaultTerritorioShouldNotBeFound("nome.specified=false");
     }
-                @Test
+
+    @Test
     @Transactional
-    public void getAllTerritoriosByNomeContainsSomething() throws Exception {
+    void getAllTerritoriosByNomeContainsSomething() throws Exception {
         // Initialize the database
         territorioRepository.saveAndFlush(territorio);
 
@@ -232,7 +227,7 @@ public class TerritorioResourceIT {
 
     @Test
     @Transactional
-    public void getAllTerritoriosByNomeNotContainsSomething() throws Exception {
+    void getAllTerritoriosByNomeNotContainsSomething() throws Exception {
         // Initialize the database
         territorioRepository.saveAndFlush(territorio);
 
@@ -243,10 +238,9 @@ public class TerritorioResourceIT {
         defaultTerritorioShouldBeFound("nome.doesNotContain=" + UPDATED_NOME);
     }
 
-
     @Test
     @Transactional
-    public void getAllTerritoriosByProcessoIsEqualToSomething() throws Exception {
+    void getAllTerritoriosByProcessoIsEqualToSomething() throws Exception {
         // Initialize the database
         territorioRepository.saveAndFlush(territorio);
         Processo processo = ProcessoResourceIT.createEntity(em);
@@ -259,7 +253,7 @@ public class TerritorioResourceIT {
         // Get all the territorioList where processo equals to processoId
         defaultTerritorioShouldBeFound("processoId.equals=" + processoId);
 
-        // Get all the territorioList where processo equals to processoId + 1
+        // Get all the territorioList where processo equals to (processoId + 1)
         defaultTerritorioShouldNotBeFound("processoId.equals=" + (processoId + 1));
     }
 
@@ -267,14 +261,16 @@ public class TerritorioResourceIT {
      * Executes the search, and checks that the default entity is returned.
      */
     private void defaultTerritorioShouldBeFound(String filter) throws Exception {
-        restTerritorioMockMvc.perform(get("/api/territorios?sort=id,desc&" + filter))
+        restTerritorioMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(territorio.getId().intValue())))
             .andExpect(jsonPath("$.[*].nome").value(hasItem(DEFAULT_NOME)));
 
         // Check, that the count call also returns 1
-        restTerritorioMockMvc.perform(get("/api/territorios/count?sort=id,desc&" + filter))
+        restTerritorioMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("1"));
@@ -284,14 +280,16 @@ public class TerritorioResourceIT {
      * Executes the search, and checks that the default entity is not returned.
      */
     private void defaultTerritorioShouldNotBeFound(String filter) throws Exception {
-        restTerritorioMockMvc.perform(get("/api/territorios?sort=id,desc&" + filter))
+        restTerritorioMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$").isEmpty());
 
         // Check, that the count call also returns 0
-        restTerritorioMockMvc.perform(get("/api/territorios/count?sort=id,desc&" + filter))
+        restTerritorioMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("0"));
@@ -299,17 +297,16 @@ public class TerritorioResourceIT {
 
     @Test
     @Transactional
-    public void getNonExistingTerritorio() throws Exception {
+    void getNonExistingTerritorio() throws Exception {
         // Get the territorio
-        restTerritorioMockMvc.perform(get("/api/territorios/{id}", Long.MAX_VALUE))
-            .andExpect(status().isNotFound());
+        restTerritorioMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
     @Test
     @Transactional
-    public void updateTerritorio() throws Exception {
+    void putNewTerritorio() throws Exception {
         // Initialize the database
-        territorioService.save(territorio);
+        territorioRepository.saveAndFlush(territorio);
 
         int databaseSizeBeforeUpdate = territorioRepository.findAll().size();
 
@@ -317,12 +314,14 @@ public class TerritorioResourceIT {
         Territorio updatedTerritorio = territorioRepository.findById(territorio.getId()).get();
         // Disconnect from session so that the updates on updatedTerritorio are not directly saved in db
         em.detach(updatedTerritorio);
-        updatedTerritorio
-            .nome(UPDATED_NOME);
+        updatedTerritorio.nome(UPDATED_NOME);
 
-        restTerritorioMockMvc.perform(put("/api/territorios")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(updatedTerritorio)))
+        restTerritorioMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, updatedTerritorio.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(updatedTerritorio))
+            )
             .andExpect(status().isOk());
 
         // Validate the Territorio in the database
@@ -334,13 +333,17 @@ public class TerritorioResourceIT {
 
     @Test
     @Transactional
-    public void updateNonExistingTerritorio() throws Exception {
+    void putNonExistingTerritorio() throws Exception {
         int databaseSizeBeforeUpdate = territorioRepository.findAll().size();
+        territorio.setId(count.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restTerritorioMockMvc.perform(put("/api/territorios")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(territorio)))
+        restTerritorioMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, territorio.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(territorio))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the Territorio in the database
@@ -350,15 +353,165 @@ public class TerritorioResourceIT {
 
     @Test
     @Transactional
-    public void deleteTerritorio() throws Exception {
+    void putWithIdMismatchTerritorio() throws Exception {
+        int databaseSizeBeforeUpdate = territorioRepository.findAll().size();
+        territorio.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restTerritorioMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(territorio))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the Territorio in the database
+        List<Territorio> territorioList = territorioRepository.findAll();
+        assertThat(territorioList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void putWithMissingIdPathParamTerritorio() throws Exception {
+        int databaseSizeBeforeUpdate = territorioRepository.findAll().size();
+        territorio.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restTerritorioMockMvc
+            .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(territorio)))
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the Territorio in the database
+        List<Territorio> territorioList = territorioRepository.findAll();
+        assertThat(territorioList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void partialUpdateTerritorioWithPatch() throws Exception {
         // Initialize the database
-        territorioService.save(territorio);
+        territorioRepository.saveAndFlush(territorio);
+
+        int databaseSizeBeforeUpdate = territorioRepository.findAll().size();
+
+        // Update the territorio using partial update
+        Territorio partialUpdatedTerritorio = new Territorio();
+        partialUpdatedTerritorio.setId(territorio.getId());
+
+        restTerritorioMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedTerritorio.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedTerritorio))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the Territorio in the database
+        List<Territorio> territorioList = territorioRepository.findAll();
+        assertThat(territorioList).hasSize(databaseSizeBeforeUpdate);
+        Territorio testTerritorio = territorioList.get(territorioList.size() - 1);
+        assertThat(testTerritorio.getNome()).isEqualTo(DEFAULT_NOME);
+    }
+
+    @Test
+    @Transactional
+    void fullUpdateTerritorioWithPatch() throws Exception {
+        // Initialize the database
+        territorioRepository.saveAndFlush(territorio);
+
+        int databaseSizeBeforeUpdate = territorioRepository.findAll().size();
+
+        // Update the territorio using partial update
+        Territorio partialUpdatedTerritorio = new Territorio();
+        partialUpdatedTerritorio.setId(territorio.getId());
+
+        partialUpdatedTerritorio.nome(UPDATED_NOME);
+
+        restTerritorioMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedTerritorio.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedTerritorio))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the Territorio in the database
+        List<Territorio> territorioList = territorioRepository.findAll();
+        assertThat(territorioList).hasSize(databaseSizeBeforeUpdate);
+        Territorio testTerritorio = territorioList.get(territorioList.size() - 1);
+        assertThat(testTerritorio.getNome()).isEqualTo(UPDATED_NOME);
+    }
+
+    @Test
+    @Transactional
+    void patchNonExistingTerritorio() throws Exception {
+        int databaseSizeBeforeUpdate = territorioRepository.findAll().size();
+        territorio.setId(count.incrementAndGet());
+
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
+        restTerritorioMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, territorio.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(territorio))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the Territorio in the database
+        List<Territorio> territorioList = territorioRepository.findAll();
+        assertThat(territorioList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithIdMismatchTerritorio() throws Exception {
+        int databaseSizeBeforeUpdate = territorioRepository.findAll().size();
+        territorio.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restTerritorioMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(territorio))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the Territorio in the database
+        List<Territorio> territorioList = territorioRepository.findAll();
+        assertThat(territorioList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithMissingIdPathParamTerritorio() throws Exception {
+        int databaseSizeBeforeUpdate = territorioRepository.findAll().size();
+        territorio.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restTerritorioMockMvc
+            .perform(
+                patch(ENTITY_API_URL).contentType("application/merge-patch+json").content(TestUtil.convertObjectToJsonBytes(territorio))
+            )
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the Territorio in the database
+        List<Territorio> territorioList = territorioRepository.findAll();
+        assertThat(territorioList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void deleteTerritorio() throws Exception {
+        // Initialize the database
+        territorioRepository.saveAndFlush(territorio);
 
         int databaseSizeBeforeDelete = territorioRepository.findAll().size();
 
         // Delete the territorio
-        restTerritorioMockMvc.perform(delete("/api/territorios/{id}", territorio.getId())
-            .accept(MediaType.APPLICATION_JSON))
+        restTerritorioMockMvc
+            .perform(delete(ENTITY_API_URL_ID, territorio.getId()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item

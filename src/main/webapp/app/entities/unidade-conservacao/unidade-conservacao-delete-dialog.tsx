@@ -2,10 +2,9 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
-import { Translate, ICrudGetAction, ICrudDeleteAction } from 'react-jhipster';
+import { Translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { IUnidadeConservacao } from 'app/shared/model/unidade-conservacao.model';
 import { IRootState } from 'app/shared/reducers';
 import { getEntity, deleteEntity } from './unidade-conservacao.reducer';
 
@@ -33,7 +32,7 @@ export const UnidadeConservacaoDeleteDialog = (props: IUnidadeConservacaoDeleteD
   const { unidadeConservacaoEntity } = props;
   return (
     <Modal isOpen toggle={handleClose}>
-      <ModalHeader toggle={handleClose}>
+      <ModalHeader toggle={handleClose} data-cy="unidadeConservacaoDeleteDialogHeading">
         <Translate contentKey="entity.delete.title">Confirm delete operation</Translate>
       </ModalHeader>
       <ModalBody id="cidhaApp.unidadeConservacao.delete.question">
@@ -47,7 +46,7 @@ export const UnidadeConservacaoDeleteDialog = (props: IUnidadeConservacaoDeleteD
           &nbsp;
           <Translate contentKey="entity.action.cancel">Cancel</Translate>
         </Button>
-        <Button id="jhi-confirm-delete-unidadeConservacao" color="danger" onClick={confirmDelete}>
+        <Button id="jhi-confirm-delete-unidadeConservacao" data-cy="entityConfirmDeleteButton" color="danger" onClick={confirmDelete}>
           <FontAwesomeIcon icon="trash" />
           &nbsp;
           <Translate contentKey="entity.action.delete">Delete</Translate>

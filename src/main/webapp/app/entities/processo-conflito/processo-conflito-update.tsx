@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col, Label } from 'reactstrap';
 import { AvFeedback, AvForm, AvGroup, AvInput, AvField } from 'availity-reactstrap-validation';
-import { Translate, translate, ICrudGetAction, ICrudGetAllAction, setFileData, byteSize, ICrudPutAction } from 'react-jhipster';
+import { setFileData, byteSize, Translate, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
@@ -20,8 +20,7 @@ export interface IProcessoConflitoUpdateProps extends StateProps, DispatchProps,
 
 export const ProcessoConflitoUpdate = (props: IProcessoConflitoUpdateProps) => {
   const [idsdireito, setIdsdireito] = useState([]);
-  const [processoId, setProcessoId] = useState('0');
-  const [isNew, setIsNew] = useState(!props.match.params || !props.match.params.id);
+  const [isNew] = useState(!props.match.params || !props.match.params.id);
 
   const { processoConflitoEntity, direitos, processos, loading, updating } = props;
 
@@ -76,7 +75,7 @@ export const ProcessoConflitoUpdate = (props: IProcessoConflitoUpdateProps) => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="cidhaApp.processoConflito.home.createOrEditLabel">
+          <h2 id="cidhaApp.processoConflito.home.createOrEditLabel" data-cy="ProcessoConflitoCreateUpdateHeading">
             <Translate contentKey="cidhaApp.processoConflito.home.createOrEditLabel">Create or edit a ProcessoConflito</Translate>
           </h2>
         </Col>
@@ -99,23 +98,34 @@ export const ProcessoConflitoUpdate = (props: IProcessoConflitoUpdateProps) => {
                 <Label id="inicioConflitoObservacoesLabel" for="processo-conflito-inicioConflitoObservacoes">
                   <Translate contentKey="cidhaApp.processoConflito.inicioConflitoObservacoes">Inicio Conflito Observacoes</Translate>
                 </Label>
-                <AvInput id="processo-conflito-inicioConflitoObservacoes" type="textarea" name="inicioConflitoObservacoes" />
+                <AvInput
+                  id="processo-conflito-inicioConflitoObservacoes"
+                  data-cy="inicioConflitoObservacoes"
+                  type="textarea"
+                  name="inicioConflitoObservacoes"
+                />
               </AvGroup>
               <AvGroup>
                 <Label id="historicoConlitoLabel" for="processo-conflito-historicoConlito">
                   <Translate contentKey="cidhaApp.processoConflito.historicoConlito">Historico Conlito</Translate>
                 </Label>
-                <AvInput id="processo-conflito-historicoConlito" type="textarea" name="historicoConlito" />
+                <AvInput id="processo-conflito-historicoConlito" data-cy="historicoConlito" type="textarea" name="historicoConlito" />
               </AvGroup>
               <AvGroup>
                 <Label id="nomeCasoComuidadeLabel" for="processo-conflito-nomeCasoComuidade">
                   <Translate contentKey="cidhaApp.processoConflito.nomeCasoComuidade">Nome Caso Comuidade</Translate>
                 </Label>
-                <AvField id="processo-conflito-nomeCasoComuidade" type="text" name="nomeCasoComuidade" />
+                <AvField id="processo-conflito-nomeCasoComuidade" data-cy="nomeCasoComuidade" type="text" name="nomeCasoComuidade" />
               </AvGroup>
               <AvGroup check>
                 <Label id="consultaPreviaLabel">
-                  <AvInput id="processo-conflito-consultaPrevia" type="checkbox" className="form-check-input" name="consultaPrevia" />
+                  <AvInput
+                    id="processo-conflito-consultaPrevia"
+                    data-cy="consultaPrevia"
+                    type="checkbox"
+                    className="form-check-input"
+                    name="consultaPrevia"
+                  />
                   <Translate contentKey="cidhaApp.processoConflito.consultaPrevia">Consulta Previa</Translate>
                 </Label>
               </AvGroup>
@@ -125,11 +135,12 @@ export const ProcessoConflitoUpdate = (props: IProcessoConflitoUpdateProps) => {
                 </Label>
                 <AvInput
                   id="processo-conflito-direito"
+                  data-cy="direito"
                   type="select"
                   multiple
                   className="form-control"
                   name="direitos"
-                  value={processoConflitoEntity.direitos && processoConflitoEntity.direitos.map(e => e.id)}
+                  value={!isNew && processoConflitoEntity.direitos && processoConflitoEntity.direitos.map(e => e.id)}
                 >
                   <option value="" key="0" />
                   {direitos
@@ -149,7 +160,7 @@ export const ProcessoConflitoUpdate = (props: IProcessoConflitoUpdateProps) => {
                 </span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp;
                 <Translate contentKey="entity.action.save">Save</Translate>

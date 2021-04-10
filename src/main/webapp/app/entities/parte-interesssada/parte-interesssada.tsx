@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Col, Row, Table } from 'reactstrap';
-import { Translate, ICrudGetAllAction, getSortState, IPaginationBaseState, JhiPagination, JhiItemCount } from 'react-jhipster';
+import { Translate, getSortState, IPaginationBaseState, JhiPagination, JhiItemCount } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
@@ -16,7 +16,7 @@ export interface IParteInteresssadaProps extends StateProps, DispatchProps, Rout
 
 export const ParteInteresssada = (props: IParteInteresssadaProps) => {
   const [paginationState, setPaginationState] = useState(
-    overridePaginationStateWithQueryParams(getSortState(props.location, ITEMS_PER_PAGE), props.location.search)
+    overridePaginationStateWithQueryParams(getSortState(props.location, ITEMS_PER_PAGE, 'id'), props.location.search)
   );
 
   const getAllEntities = () => {
@@ -64,16 +64,26 @@ export const ParteInteresssada = (props: IParteInteresssadaProps) => {
       activePage: currentPage,
     });
 
+  const handleSyncList = () => {
+    sortEntities();
+  };
+
   const { parteInteresssadaList, match, loading, totalItems } = props;
   return (
     <div>
-      <h2 id="parte-interesssada-heading">
+      <h2 id="parte-interesssada-heading" data-cy="ParteInteresssadaHeading">
         <Translate contentKey="cidhaApp.parteInteresssada.home.title">Parte Interesssadas</Translate>
-        <Link to={`${match.url}/new`} className="btn btn-primary float-right jh-create-entity" id="jh-create-entity">
-          <FontAwesomeIcon icon="plus" />
-          &nbsp;
-          <Translate contentKey="cidhaApp.parteInteresssada.home.createLabel">Create new Parte Interesssada</Translate>
-        </Link>
+        <div className="d-flex justify-content-end">
+          <Button className="mr-2" color="info" onClick={handleSyncList} disabled={loading}>
+            <FontAwesomeIcon icon="sync" spin={loading} />{' '}
+            <Translate contentKey="cidhaApp.parteInteresssada.home.refreshListLabel">Refresh List</Translate>
+          </Button>
+          <Link to={`${match.url}/new`} className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
+            <FontAwesomeIcon icon="plus" />
+            &nbsp;
+            <Translate contentKey="cidhaApp.parteInteresssada.home.createLabel">Create new Parte Interesssada</Translate>
+          </Link>
+        </div>
       </h2>
       <div className="table-responsive">
         {parteInteresssadaList && parteInteresssadaList.length > 0 ? (
@@ -81,7 +91,7 @@ export const ParteInteresssada = (props: IParteInteresssadaProps) => {
             <thead>
               <tr>
                 <th className="hand" onClick={sort('id')}>
-                  <Translate contentKey="global.field.id">ID</Translate> <FontAwesomeIcon icon="sort" />
+                  <Translate contentKey="cidhaApp.parteInteresssada.id">ID</Translate> <FontAwesomeIcon icon="sort" />
                 </th>
                 <th className="hand" onClick={sort('nome')}>
                   <Translate contentKey="cidhaApp.parteInteresssada.nome">Nome</Translate> <FontAwesomeIcon icon="sort" />
@@ -94,7 +104,7 @@ export const ParteInteresssada = (props: IParteInteresssadaProps) => {
             </thead>
             <tbody>
               {parteInteresssadaList.map((parteInteresssada, i) => (
-                <tr key={`entity-${i}`}>
+                <tr key={`entity-${i}`} data-cy="entityTable">
                   <td>
                     <Button tag={Link} to={`${match.url}/${parteInteresssada.id}`} color="link" size="sm">
                       {parteInteresssada.id}
@@ -104,7 +114,7 @@ export const ParteInteresssada = (props: IParteInteresssadaProps) => {
                   <td>{parteInteresssada.classificacao}</td>
                   <td className="text-right">
                     <div className="btn-group flex-btn-group-container">
-                      <Button tag={Link} to={`${match.url}/${parteInteresssada.id}`} color="info" size="sm">
+                      <Button tag={Link} to={`${match.url}/${parteInteresssada.id}`} color="info" size="sm" data-cy="entityDetailsButton">
                         <FontAwesomeIcon icon="eye" />{' '}
                         <span className="d-none d-md-inline">
                           <Translate contentKey="entity.action.view">View</Translate>
@@ -115,6 +125,7 @@ export const ParteInteresssada = (props: IParteInteresssadaProps) => {
                         to={`${match.url}/${parteInteresssada.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
                         color="primary"
                         size="sm"
+                        data-cy="entityEditButton"
                       >
                         <FontAwesomeIcon icon="pencil-alt" />{' '}
                         <span className="d-none d-md-inline">
@@ -126,6 +137,7 @@ export const ParteInteresssada = (props: IParteInteresssadaProps) => {
                         to={`${match.url}/${parteInteresssada.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
                         color="danger"
                         size="sm"
+                        data-cy="entityDeleteButton"
                       >
                         <FontAwesomeIcon icon="trash" />{' '}
                         <span className="d-none d-md-inline">

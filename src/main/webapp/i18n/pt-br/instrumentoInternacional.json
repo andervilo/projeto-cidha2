@@ -3,6 +3,7 @@
     "instrumentoInternacional": {
       "home": {
         "title": "Instrumento Internacionals",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Instrumento Internacional",
         "createOrEditLabel": "Criar ou editar Instrumento Internacional",
         "notFound": "Nenhum Instrumento Internacional encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Instrumento Internacional"
       },
+      "id": "ID",
       "instrumentoInternacionalCitadoDescricao": "Instrumento Internacional Citado Descricao",
       "folhasInstrumentoInternacional": "Folhas Instrumento Internacional",
       "instrumentoInternacionalSugerido": "Instrumento Internacional Sugerido",

@@ -2,12 +2,11 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col } from 'reactstrap';
-import { Translate, ICrudGetAction } from 'react-jhipster';
+import { Translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
 import { getEntity } from './concessao-liminar-cassada.reducer';
-import { IConcessaoLiminarCassada } from 'app/shared/model/concessao-liminar-cassada.model';
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 
 export interface IConcessaoLiminarCassadaDetailProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
@@ -21,11 +20,16 @@ export const ConcessaoLiminarCassadaDetail = (props: IConcessaoLiminarCassadaDet
   return (
     <Row>
       <Col md="8">
-        <h2>
-          <Translate contentKey="cidhaApp.concessaoLiminarCassada.detail.title">ConcessaoLiminarCassada</Translate> [
-          <b>{concessaoLiminarCassadaEntity.id}</b>]
+        <h2 data-cy="concessaoLiminarCassadaDetailsHeading">
+          <Translate contentKey="cidhaApp.concessaoLiminarCassada.detail.title">ConcessaoLiminarCassada</Translate>
         </h2>
         <dl className="jh-entity-details">
+          <dt>
+            <span id="id">
+              <Translate contentKey="global.field.id">ID</Translate>
+            </span>
+          </dt>
+          <dd>{concessaoLiminarCassadaEntity.id}</dd>
           <dt>
             <span id="descricao">
               <Translate contentKey="cidhaApp.concessaoLiminarCassada.descricao">Descricao</Translate>
@@ -37,7 +41,7 @@ export const ConcessaoLiminarCassadaDetail = (props: IConcessaoLiminarCassadaDet
           </dt>
           <dd>{concessaoLiminarCassadaEntity.processo ? concessaoLiminarCassadaEntity.processo.id : ''}</dd>
         </dl>
-        <Button tag={Link} to="/concessao-liminar-cassada" replace color="info">
+        <Button tag={Link} to="/concessao-liminar-cassada" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" />{' '}
           <span className="d-none d-md-inline">
             <Translate contentKey="entity.action.back">Back</Translate>

@@ -11,6 +11,7 @@ export const ACTION_TYPES = {
   FETCH_TIPODECISAO: 'tipoDecisao/FETCH_TIPODECISAO',
   CREATE_TIPODECISAO: 'tipoDecisao/CREATE_TIPODECISAO',
   UPDATE_TIPODECISAO: 'tipoDecisao/UPDATE_TIPODECISAO',
+  PARTIAL_UPDATE_TIPODECISAO: 'tipoDecisao/PARTIAL_UPDATE_TIPODECISAO',
   DELETE_TIPODECISAO: 'tipoDecisao/DELETE_TIPODECISAO',
   RESET: 'tipoDecisao/RESET',
 };
@@ -42,6 +43,7 @@ export default (state: TipoDecisaoState = initialState, action): TipoDecisaoStat
     case REQUEST(ACTION_TYPES.CREATE_TIPODECISAO):
     case REQUEST(ACTION_TYPES.UPDATE_TIPODECISAO):
     case REQUEST(ACTION_TYPES.DELETE_TIPODECISAO):
+    case REQUEST(ACTION_TYPES.PARTIAL_UPDATE_TIPODECISAO):
       return {
         ...state,
         errorMessage: null,
@@ -52,6 +54,7 @@ export default (state: TipoDecisaoState = initialState, action): TipoDecisaoStat
     case FAILURE(ACTION_TYPES.FETCH_TIPODECISAO):
     case FAILURE(ACTION_TYPES.CREATE_TIPODECISAO):
     case FAILURE(ACTION_TYPES.UPDATE_TIPODECISAO):
+    case FAILURE(ACTION_TYPES.PARTIAL_UPDATE_TIPODECISAO):
     case FAILURE(ACTION_TYPES.DELETE_TIPODECISAO):
       return {
         ...state,
@@ -75,6 +78,7 @@ export default (state: TipoDecisaoState = initialState, action): TipoDecisaoStat
       };
     case SUCCESS(ACTION_TYPES.CREATE_TIPODECISAO):
     case SUCCESS(ACTION_TYPES.UPDATE_TIPODECISAO):
+    case SUCCESS(ACTION_TYPES.PARTIAL_UPDATE_TIPODECISAO):
       return {
         ...state,
         updating: false,
@@ -129,7 +133,15 @@ export const createEntity: ICrudPutAction<ITipoDecisao> = entity => async dispat
 export const updateEntity: ICrudPutAction<ITipoDecisao> = entity => async dispatch => {
   const result = await dispatch({
     type: ACTION_TYPES.UPDATE_TIPODECISAO,
-    payload: axios.put(apiUrl, cleanEntity(entity)),
+    payload: axios.put(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
+  });
+  return result;
+};
+
+export const partialUpdate: ICrudPutAction<ITipoDecisao> = entity => async dispatch => {
+  const result = await dispatch({
+    type: ACTION_TYPES.PARTIAL_UPDATE_TIPODECISAO,
+    payload: axios.patch(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
   });
   return result;
 };

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col, Label } from 'reactstrap';
 import { AvFeedback, AvForm, AvGroup, AvInput, AvField } from 'availity-reactstrap-validation';
-import { Translate, translate, ICrudGetAction, ICrudGetAllAction, ICrudPutAction } from 'react-jhipster';
+import { Translate, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
@@ -15,7 +15,7 @@ import { mapIdList } from 'app/shared/util/entity-utils';
 export interface IOpcaoRecursoUpdateProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
 
 export const OpcaoRecursoUpdate = (props: IOpcaoRecursoUpdateProps) => {
-  const [isNew, setIsNew] = useState(!props.match.params || !props.match.params.id);
+  const [isNew] = useState(!props.match.params || !props.match.params.id);
 
   const { opcaoRecursoEntity, loading, updating } = props;
 
@@ -56,7 +56,7 @@ export const OpcaoRecursoUpdate = (props: IOpcaoRecursoUpdateProps) => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="cidhaApp.opcaoRecurso.home.createOrEditLabel">
+          <h2 id="cidhaApp.opcaoRecurso.home.createOrEditLabel" data-cy="OpcaoRecursoCreateUpdateHeading">
             <Translate contentKey="cidhaApp.opcaoRecurso.home.createOrEditLabel">Create or edit a OpcaoRecurso</Translate>
           </h2>
         </Col>
@@ -79,7 +79,7 @@ export const OpcaoRecursoUpdate = (props: IOpcaoRecursoUpdateProps) => {
                 <Label id="descricaoLabel" for="opcao-recurso-descricao">
                   <Translate contentKey="cidhaApp.opcaoRecurso.descricao">Descricao</Translate>
                 </Label>
-                <AvField id="opcao-recurso-descricao" type="text" name="descricao" />
+                <AvField id="opcao-recurso-descricao" data-cy="descricao" type="text" name="descricao" />
               </AvGroup>
               <Button tag={Link} id="cancel-save" to="/opcao-recurso" replace color="info">
                 <FontAwesomeIcon icon="arrow-left" />
@@ -89,7 +89,7 @@ export const OpcaoRecursoUpdate = (props: IOpcaoRecursoUpdateProps) => {
                 </span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp;
                 <Translate contentKey="entity.action.save">Save</Translate>

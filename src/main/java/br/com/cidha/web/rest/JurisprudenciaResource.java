@@ -1,14 +1,16 @@
 package br.com.cidha.web.rest;
 
 import br.com.cidha.domain.Jurisprudencia;
-import br.com.cidha.service.JurisprudenciaService;
-import br.com.cidha.web.rest.errors.BadRequestAlertException;
-import br.com.cidha.service.dto.JurisprudenciaCriteria;
+import br.com.cidha.repository.JurisprudenciaRepository;
 import br.com.cidha.service.JurisprudenciaQueryService;
-
-import io.github.jhipster.web.util.HeaderUtil;
-import io.github.jhipster.web.util.PaginationUtil;
-import io.github.jhipster.web.util.ResponseUtil;
+import br.com.cidha.service.JurisprudenciaService;
+import br.com.cidha.service.criteria.JurisprudenciaCriteria;
+import br.com.cidha.web.rest.errors.BadRequestAlertException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,14 +18,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import tech.jhipster.web.util.HeaderUtil;
+import tech.jhipster.web.util.PaginationUtil;
+import tech.jhipster.web.util.ResponseUtil;
 
 /**
  * REST controller for managing {@link br.com.cidha.domain.Jurisprudencia}.
@@ -41,10 +41,17 @@ public class JurisprudenciaResource {
 
     private final JurisprudenciaService jurisprudenciaService;
 
+    private final JurisprudenciaRepository jurisprudenciaRepository;
+
     private final JurisprudenciaQueryService jurisprudenciaQueryService;
 
-    public JurisprudenciaResource(JurisprudenciaService jurisprudenciaService, JurisprudenciaQueryService jurisprudenciaQueryService) {
+    public JurisprudenciaResource(
+        JurisprudenciaService jurisprudenciaService,
+        JurisprudenciaRepository jurisprudenciaRepository,
+        JurisprudenciaQueryService jurisprudenciaQueryService
+    ) {
         this.jurisprudenciaService = jurisprudenciaService;
+        this.jurisprudenciaRepository = jurisprudenciaRepository;
         this.jurisprudenciaQueryService = jurisprudenciaQueryService;
     }
 
@@ -62,30 +69,80 @@ public class JurisprudenciaResource {
             throw new BadRequestAlertException("A new jurisprudencia cannot already have an ID", ENTITY_NAME, "idexists");
         }
         Jurisprudencia result = jurisprudenciaService.save(jurisprudencia);
-        return ResponseEntity.created(new URI("/api/jurisprudencias/" + result.getId()))
+        return ResponseEntity
+            .created(new URI("/api/jurisprudencias/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
 
     /**
-     * {@code PUT  /jurisprudencias} : Updates an existing jurisprudencia.
+     * {@code PUT  /jurisprudencias/:id} : Updates an existing jurisprudencia.
      *
+     * @param id the id of the jurisprudencia to save.
      * @param jurisprudencia the jurisprudencia to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated jurisprudencia,
      * or with status {@code 400 (Bad Request)} if the jurisprudencia is not valid,
      * or with status {@code 500 (Internal Server Error)} if the jurisprudencia couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/jurisprudencias")
-    public ResponseEntity<Jurisprudencia> updateJurisprudencia(@RequestBody Jurisprudencia jurisprudencia) throws URISyntaxException {
-        log.debug("REST request to update Jurisprudencia : {}", jurisprudencia);
+    @PutMapping("/jurisprudencias/{id}")
+    public ResponseEntity<Jurisprudencia> updateJurisprudencia(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody Jurisprudencia jurisprudencia
+    ) throws URISyntaxException {
+        log.debug("REST request to update Jurisprudencia : {}, {}", id, jurisprudencia);
         if (jurisprudencia.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+        if (!Objects.equals(id, jurisprudencia.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!jurisprudenciaRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
         Jurisprudencia result = jurisprudenciaService.save(jurisprudencia);
-        return ResponseEntity.ok()
+        return ResponseEntity
+            .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, jurisprudencia.getId().toString()))
             .body(result);
+    }
+
+    /**
+     * {@code PATCH  /jurisprudencias/:id} : Partial updates given fields of an existing jurisprudencia, field will ignore if it is null
+     *
+     * @param id the id of the jurisprudencia to save.
+     * @param jurisprudencia the jurisprudencia to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated jurisprudencia,
+     * or with status {@code 400 (Bad Request)} if the jurisprudencia is not valid,
+     * or with status {@code 404 (Not Found)} if the jurisprudencia is not found,
+     * or with status {@code 500 (Internal Server Error)} if the jurisprudencia couldn't be updated.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PatchMapping(value = "/jurisprudencias/{id}", consumes = "application/merge-patch+json")
+    public ResponseEntity<Jurisprudencia> partialUpdateJurisprudencia(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody Jurisprudencia jurisprudencia
+    ) throws URISyntaxException {
+        log.debug("REST request to partial update Jurisprudencia partially : {}, {}", id, jurisprudencia);
+        if (jurisprudencia.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        if (!Objects.equals(id, jurisprudencia.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!jurisprudenciaRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
+        Optional<Jurisprudencia> result = jurisprudenciaService.partialUpdate(jurisprudencia);
+
+        return ResponseUtil.wrapOrNotFound(
+            result,
+            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, jurisprudencia.getId().toString())
+        );
     }
 
     /**
@@ -138,6 +195,9 @@ public class JurisprudenciaResource {
     public ResponseEntity<Void> deleteJurisprudencia(@PathVariable Long id) {
         log.debug("REST request to delete Jurisprudencia : {}", id);
         jurisprudenciaService.delete(id);
-        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
+        return ResponseEntity
+            .noContent()
+            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
+            .build();
     }
 }

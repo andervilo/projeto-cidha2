@@ -3,6 +3,7 @@
     "concessaoLiminar": {
       "home": {
         "title": "Concessao Liminars",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Concessao Liminar",
         "createOrEditLabel": "Criar ou editar Concessao Liminar",
         "notFound": "Nenhum Concessao Liminar encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Concessao Liminar"
       },
+      "id": "ID",
       "descricao": "Descricao",
       "processo": "Processo"
     }

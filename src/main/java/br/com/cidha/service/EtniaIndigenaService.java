@@ -2,15 +2,13 @@ package br.com.cidha.service;
 
 import br.com.cidha.domain.EtniaIndigena;
 import br.com.cidha.repository.EtniaIndigenaRepository;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 /**
  * Service Implementation for managing {@link EtniaIndigena}.
@@ -39,6 +37,29 @@ public class EtniaIndigenaService {
     }
 
     /**
+     * Partially update a etniaIndigena.
+     *
+     * @param etniaIndigena the entity to update partially.
+     * @return the persisted entity.
+     */
+    public Optional<EtniaIndigena> partialUpdate(EtniaIndigena etniaIndigena) {
+        log.debug("Request to partially update EtniaIndigena : {}", etniaIndigena);
+
+        return etniaIndigenaRepository
+            .findById(etniaIndigena.getId())
+            .map(
+                existingEtniaIndigena -> {
+                    if (etniaIndigena.getNome() != null) {
+                        existingEtniaIndigena.setNome(etniaIndigena.getNome());
+                    }
+
+                    return existingEtniaIndigena;
+                }
+            )
+            .map(etniaIndigenaRepository::save);
+    }
+
+    /**
      * Get all the etniaIndigenas.
      *
      * @param pageable the pagination information.
@@ -49,7 +70,6 @@ public class EtniaIndigenaService {
         log.debug("Request to get all EtniaIndigenas");
         return etniaIndigenaRepository.findAll(pageable);
     }
-
 
     /**
      * Get one etniaIndigena by id.

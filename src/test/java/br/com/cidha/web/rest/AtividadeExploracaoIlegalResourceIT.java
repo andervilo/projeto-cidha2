@@ -1,49 +1,47 @@
 package br.com.cidha.web.rest;
 
-import br.com.cidha.CidhaApp;
-import br.com.cidha.domain.AtividadeExploracaoIlegal;
-import br.com.cidha.domain.Processo;
-import br.com.cidha.repository.AtividadeExploracaoIlegalRepository;
-import br.com.cidha.service.AtividadeExploracaoIlegalService;
-import br.com.cidha.service.dto.AtividadeExploracaoIlegalCriteria;
-import br.com.cidha.service.AtividadeExploracaoIlegalQueryService;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
-import javax.persistence.EntityManager;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import br.com.cidha.IntegrationTest;
+import br.com.cidha.domain.AtividadeExploracaoIlegal;
+import br.com.cidha.domain.Processo;
+import br.com.cidha.repository.AtividadeExploracaoIlegalRepository;
+import br.com.cidha.service.criteria.AtividadeExploracaoIlegalCriteria;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
+import javax.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * Integration tests for the {@link AtividadeExploracaoIlegalResource} REST controller.
  */
-@SpringBootTest(classes = CidhaApp.class)
+@IntegrationTest
 @AutoConfigureMockMvc
 @WithMockUser
-public class AtividadeExploracaoIlegalResourceIT {
+class AtividadeExploracaoIlegalResourceIT {
 
     private static final String DEFAULT_DESCRICAO = "AAAAAAAAAA";
     private static final String UPDATED_DESCRICAO = "BBBBBBBBBB";
 
+    private static final String ENTITY_API_URL = "/api/atividade-exploracao-ilegals";
+    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+
+    private static Random random = new Random();
+    private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
+
     @Autowired
     private AtividadeExploracaoIlegalRepository atividadeExploracaoIlegalRepository;
-
-    @Autowired
-    private AtividadeExploracaoIlegalService atividadeExploracaoIlegalService;
-
-    @Autowired
-    private AtividadeExploracaoIlegalQueryService atividadeExploracaoIlegalQueryService;
 
     @Autowired
     private EntityManager em;
@@ -60,10 +58,10 @@ public class AtividadeExploracaoIlegalResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static AtividadeExploracaoIlegal createEntity(EntityManager em) {
-        AtividadeExploracaoIlegal atividadeExploracaoIlegal = new AtividadeExploracaoIlegal()
-            .descricao(DEFAULT_DESCRICAO);
+        AtividadeExploracaoIlegal atividadeExploracaoIlegal = new AtividadeExploracaoIlegal().descricao(DEFAULT_DESCRICAO);
         return atividadeExploracaoIlegal;
     }
+
     /**
      * Create an updated entity for this test.
      *
@@ -71,8 +69,7 @@ public class AtividadeExploracaoIlegalResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static AtividadeExploracaoIlegal createUpdatedEntity(EntityManager em) {
-        AtividadeExploracaoIlegal atividadeExploracaoIlegal = new AtividadeExploracaoIlegal()
-            .descricao(UPDATED_DESCRICAO);
+        AtividadeExploracaoIlegal atividadeExploracaoIlegal = new AtividadeExploracaoIlegal().descricao(UPDATED_DESCRICAO);
         return atividadeExploracaoIlegal;
     }
 
@@ -83,33 +80,41 @@ public class AtividadeExploracaoIlegalResourceIT {
 
     @Test
     @Transactional
-    public void createAtividadeExploracaoIlegal() throws Exception {
+    void createAtividadeExploracaoIlegal() throws Exception {
         int databaseSizeBeforeCreate = atividadeExploracaoIlegalRepository.findAll().size();
         // Create the AtividadeExploracaoIlegal
-        restAtividadeExploracaoIlegalMockMvc.perform(post("/api/atividade-exploracao-ilegals")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(atividadeExploracaoIlegal)))
+        restAtividadeExploracaoIlegalMockMvc
+            .perform(
+                post(ENTITY_API_URL)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(atividadeExploracaoIlegal))
+            )
             .andExpect(status().isCreated());
 
         // Validate the AtividadeExploracaoIlegal in the database
         List<AtividadeExploracaoIlegal> atividadeExploracaoIlegalList = atividadeExploracaoIlegalRepository.findAll();
         assertThat(atividadeExploracaoIlegalList).hasSize(databaseSizeBeforeCreate + 1);
-        AtividadeExploracaoIlegal testAtividadeExploracaoIlegal = atividadeExploracaoIlegalList.get(atividadeExploracaoIlegalList.size() - 1);
+        AtividadeExploracaoIlegal testAtividadeExploracaoIlegal = atividadeExploracaoIlegalList.get(
+            atividadeExploracaoIlegalList.size() - 1
+        );
         assertThat(testAtividadeExploracaoIlegal.getDescricao()).isEqualTo(DEFAULT_DESCRICAO);
     }
 
     @Test
     @Transactional
-    public void createAtividadeExploracaoIlegalWithExistingId() throws Exception {
-        int databaseSizeBeforeCreate = atividadeExploracaoIlegalRepository.findAll().size();
-
+    void createAtividadeExploracaoIlegalWithExistingId() throws Exception {
         // Create the AtividadeExploracaoIlegal with an existing ID
         atividadeExploracaoIlegal.setId(1L);
 
+        int databaseSizeBeforeCreate = atividadeExploracaoIlegalRepository.findAll().size();
+
         // An entity with an existing ID cannot be created, so this API call must fail
-        restAtividadeExploracaoIlegalMockMvc.perform(post("/api/atividade-exploracao-ilegals")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(atividadeExploracaoIlegal)))
+        restAtividadeExploracaoIlegalMockMvc
+            .perform(
+                post(ENTITY_API_URL)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(atividadeExploracaoIlegal))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the AtividadeExploracaoIlegal in the database
@@ -117,39 +122,39 @@ public class AtividadeExploracaoIlegalResourceIT {
         assertThat(atividadeExploracaoIlegalList).hasSize(databaseSizeBeforeCreate);
     }
 
-
     @Test
     @Transactional
-    public void getAllAtividadeExploracaoIlegals() throws Exception {
+    void getAllAtividadeExploracaoIlegals() throws Exception {
         // Initialize the database
         atividadeExploracaoIlegalRepository.saveAndFlush(atividadeExploracaoIlegal);
 
         // Get all the atividadeExploracaoIlegalList
-        restAtividadeExploracaoIlegalMockMvc.perform(get("/api/atividade-exploracao-ilegals?sort=id,desc"))
+        restAtividadeExploracaoIlegalMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(atividadeExploracaoIlegal.getId().intValue())))
             .andExpect(jsonPath("$.[*].descricao").value(hasItem(DEFAULT_DESCRICAO)));
     }
-    
+
     @Test
     @Transactional
-    public void getAtividadeExploracaoIlegal() throws Exception {
+    void getAtividadeExploracaoIlegal() throws Exception {
         // Initialize the database
         atividadeExploracaoIlegalRepository.saveAndFlush(atividadeExploracaoIlegal);
 
         // Get the atividadeExploracaoIlegal
-        restAtividadeExploracaoIlegalMockMvc.perform(get("/api/atividade-exploracao-ilegals/{id}", atividadeExploracaoIlegal.getId()))
+        restAtividadeExploracaoIlegalMockMvc
+            .perform(get(ENTITY_API_URL_ID, atividadeExploracaoIlegal.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(atividadeExploracaoIlegal.getId().intValue()))
             .andExpect(jsonPath("$.descricao").value(DEFAULT_DESCRICAO));
     }
 
-
     @Test
     @Transactional
-    public void getAtividadeExploracaoIlegalsByIdFiltering() throws Exception {
+    void getAtividadeExploracaoIlegalsByIdFiltering() throws Exception {
         // Initialize the database
         atividadeExploracaoIlegalRepository.saveAndFlush(atividadeExploracaoIlegal);
 
@@ -165,10 +170,9 @@ public class AtividadeExploracaoIlegalResourceIT {
         defaultAtividadeExploracaoIlegalShouldNotBeFound("id.lessThan=" + id);
     }
 
-
     @Test
     @Transactional
-    public void getAllAtividadeExploracaoIlegalsByDescricaoIsEqualToSomething() throws Exception {
+    void getAllAtividadeExploracaoIlegalsByDescricaoIsEqualToSomething() throws Exception {
         // Initialize the database
         atividadeExploracaoIlegalRepository.saveAndFlush(atividadeExploracaoIlegal);
 
@@ -181,7 +185,7 @@ public class AtividadeExploracaoIlegalResourceIT {
 
     @Test
     @Transactional
-    public void getAllAtividadeExploracaoIlegalsByDescricaoIsNotEqualToSomething() throws Exception {
+    void getAllAtividadeExploracaoIlegalsByDescricaoIsNotEqualToSomething() throws Exception {
         // Initialize the database
         atividadeExploracaoIlegalRepository.saveAndFlush(atividadeExploracaoIlegal);
 
@@ -194,7 +198,7 @@ public class AtividadeExploracaoIlegalResourceIT {
 
     @Test
     @Transactional
-    public void getAllAtividadeExploracaoIlegalsByDescricaoIsInShouldWork() throws Exception {
+    void getAllAtividadeExploracaoIlegalsByDescricaoIsInShouldWork() throws Exception {
         // Initialize the database
         atividadeExploracaoIlegalRepository.saveAndFlush(atividadeExploracaoIlegal);
 
@@ -207,7 +211,7 @@ public class AtividadeExploracaoIlegalResourceIT {
 
     @Test
     @Transactional
-    public void getAllAtividadeExploracaoIlegalsByDescricaoIsNullOrNotNull() throws Exception {
+    void getAllAtividadeExploracaoIlegalsByDescricaoIsNullOrNotNull() throws Exception {
         // Initialize the database
         atividadeExploracaoIlegalRepository.saveAndFlush(atividadeExploracaoIlegal);
 
@@ -217,9 +221,10 @@ public class AtividadeExploracaoIlegalResourceIT {
         // Get all the atividadeExploracaoIlegalList where descricao is null
         defaultAtividadeExploracaoIlegalShouldNotBeFound("descricao.specified=false");
     }
-                @Test
+
+    @Test
     @Transactional
-    public void getAllAtividadeExploracaoIlegalsByDescricaoContainsSomething() throws Exception {
+    void getAllAtividadeExploracaoIlegalsByDescricaoContainsSomething() throws Exception {
         // Initialize the database
         atividadeExploracaoIlegalRepository.saveAndFlush(atividadeExploracaoIlegal);
 
@@ -232,7 +237,7 @@ public class AtividadeExploracaoIlegalResourceIT {
 
     @Test
     @Transactional
-    public void getAllAtividadeExploracaoIlegalsByDescricaoNotContainsSomething() throws Exception {
+    void getAllAtividadeExploracaoIlegalsByDescricaoNotContainsSomething() throws Exception {
         // Initialize the database
         atividadeExploracaoIlegalRepository.saveAndFlush(atividadeExploracaoIlegal);
 
@@ -243,10 +248,9 @@ public class AtividadeExploracaoIlegalResourceIT {
         defaultAtividadeExploracaoIlegalShouldBeFound("descricao.doesNotContain=" + UPDATED_DESCRICAO);
     }
 
-
     @Test
     @Transactional
-    public void getAllAtividadeExploracaoIlegalsByProcessoIsEqualToSomething() throws Exception {
+    void getAllAtividadeExploracaoIlegalsByProcessoIsEqualToSomething() throws Exception {
         // Initialize the database
         atividadeExploracaoIlegalRepository.saveAndFlush(atividadeExploracaoIlegal);
         Processo processo = ProcessoResourceIT.createEntity(em);
@@ -259,7 +263,7 @@ public class AtividadeExploracaoIlegalResourceIT {
         // Get all the atividadeExploracaoIlegalList where processo equals to processoId
         defaultAtividadeExploracaoIlegalShouldBeFound("processoId.equals=" + processoId);
 
-        // Get all the atividadeExploracaoIlegalList where processo equals to processoId + 1
+        // Get all the atividadeExploracaoIlegalList where processo equals to (processoId + 1)
         defaultAtividadeExploracaoIlegalShouldNotBeFound("processoId.equals=" + (processoId + 1));
     }
 
@@ -267,14 +271,16 @@ public class AtividadeExploracaoIlegalResourceIT {
      * Executes the search, and checks that the default entity is returned.
      */
     private void defaultAtividadeExploracaoIlegalShouldBeFound(String filter) throws Exception {
-        restAtividadeExploracaoIlegalMockMvc.perform(get("/api/atividade-exploracao-ilegals?sort=id,desc&" + filter))
+        restAtividadeExploracaoIlegalMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(atividadeExploracaoIlegal.getId().intValue())))
             .andExpect(jsonPath("$.[*].descricao").value(hasItem(DEFAULT_DESCRICAO)));
 
         // Check, that the count call also returns 1
-        restAtividadeExploracaoIlegalMockMvc.perform(get("/api/atividade-exploracao-ilegals/count?sort=id,desc&" + filter))
+        restAtividadeExploracaoIlegalMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("1"));
@@ -284,14 +290,16 @@ public class AtividadeExploracaoIlegalResourceIT {
      * Executes the search, and checks that the default entity is not returned.
      */
     private void defaultAtividadeExploracaoIlegalShouldNotBeFound(String filter) throws Exception {
-        restAtividadeExploracaoIlegalMockMvc.perform(get("/api/atividade-exploracao-ilegals?sort=id,desc&" + filter))
+        restAtividadeExploracaoIlegalMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$").isEmpty());
 
         // Check, that the count call also returns 0
-        restAtividadeExploracaoIlegalMockMvc.perform(get("/api/atividade-exploracao-ilegals/count?sort=id,desc&" + filter))
+        restAtividadeExploracaoIlegalMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("0"));
@@ -299,48 +307,57 @@ public class AtividadeExploracaoIlegalResourceIT {
 
     @Test
     @Transactional
-    public void getNonExistingAtividadeExploracaoIlegal() throws Exception {
+    void getNonExistingAtividadeExploracaoIlegal() throws Exception {
         // Get the atividadeExploracaoIlegal
-        restAtividadeExploracaoIlegalMockMvc.perform(get("/api/atividade-exploracao-ilegals/{id}", Long.MAX_VALUE))
-            .andExpect(status().isNotFound());
+        restAtividadeExploracaoIlegalMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
     @Test
     @Transactional
-    public void updateAtividadeExploracaoIlegal() throws Exception {
+    void putNewAtividadeExploracaoIlegal() throws Exception {
         // Initialize the database
-        atividadeExploracaoIlegalService.save(atividadeExploracaoIlegal);
+        atividadeExploracaoIlegalRepository.saveAndFlush(atividadeExploracaoIlegal);
 
         int databaseSizeBeforeUpdate = atividadeExploracaoIlegalRepository.findAll().size();
 
         // Update the atividadeExploracaoIlegal
-        AtividadeExploracaoIlegal updatedAtividadeExploracaoIlegal = atividadeExploracaoIlegalRepository.findById(atividadeExploracaoIlegal.getId()).get();
+        AtividadeExploracaoIlegal updatedAtividadeExploracaoIlegal = atividadeExploracaoIlegalRepository
+            .findById(atividadeExploracaoIlegal.getId())
+            .get();
         // Disconnect from session so that the updates on updatedAtividadeExploracaoIlegal are not directly saved in db
         em.detach(updatedAtividadeExploracaoIlegal);
-        updatedAtividadeExploracaoIlegal
-            .descricao(UPDATED_DESCRICAO);
+        updatedAtividadeExploracaoIlegal.descricao(UPDATED_DESCRICAO);
 
-        restAtividadeExploracaoIlegalMockMvc.perform(put("/api/atividade-exploracao-ilegals")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(updatedAtividadeExploracaoIlegal)))
+        restAtividadeExploracaoIlegalMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, updatedAtividadeExploracaoIlegal.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(updatedAtividadeExploracaoIlegal))
+            )
             .andExpect(status().isOk());
 
         // Validate the AtividadeExploracaoIlegal in the database
         List<AtividadeExploracaoIlegal> atividadeExploracaoIlegalList = atividadeExploracaoIlegalRepository.findAll();
         assertThat(atividadeExploracaoIlegalList).hasSize(databaseSizeBeforeUpdate);
-        AtividadeExploracaoIlegal testAtividadeExploracaoIlegal = atividadeExploracaoIlegalList.get(atividadeExploracaoIlegalList.size() - 1);
+        AtividadeExploracaoIlegal testAtividadeExploracaoIlegal = atividadeExploracaoIlegalList.get(
+            atividadeExploracaoIlegalList.size() - 1
+        );
         assertThat(testAtividadeExploracaoIlegal.getDescricao()).isEqualTo(UPDATED_DESCRICAO);
     }
 
     @Test
     @Transactional
-    public void updateNonExistingAtividadeExploracaoIlegal() throws Exception {
+    void putNonExistingAtividadeExploracaoIlegal() throws Exception {
         int databaseSizeBeforeUpdate = atividadeExploracaoIlegalRepository.findAll().size();
+        atividadeExploracaoIlegal.setId(count.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restAtividadeExploracaoIlegalMockMvc.perform(put("/api/atividade-exploracao-ilegals")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(atividadeExploracaoIlegal)))
+        restAtividadeExploracaoIlegalMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, atividadeExploracaoIlegal.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(atividadeExploracaoIlegal))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the AtividadeExploracaoIlegal in the database
@@ -350,15 +367,175 @@ public class AtividadeExploracaoIlegalResourceIT {
 
     @Test
     @Transactional
-    public void deleteAtividadeExploracaoIlegal() throws Exception {
+    void putWithIdMismatchAtividadeExploracaoIlegal() throws Exception {
+        int databaseSizeBeforeUpdate = atividadeExploracaoIlegalRepository.findAll().size();
+        atividadeExploracaoIlegal.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restAtividadeExploracaoIlegalMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(atividadeExploracaoIlegal))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the AtividadeExploracaoIlegal in the database
+        List<AtividadeExploracaoIlegal> atividadeExploracaoIlegalList = atividadeExploracaoIlegalRepository.findAll();
+        assertThat(atividadeExploracaoIlegalList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void putWithMissingIdPathParamAtividadeExploracaoIlegal() throws Exception {
+        int databaseSizeBeforeUpdate = atividadeExploracaoIlegalRepository.findAll().size();
+        atividadeExploracaoIlegal.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restAtividadeExploracaoIlegalMockMvc
+            .perform(
+                put(ENTITY_API_URL)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(atividadeExploracaoIlegal))
+            )
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the AtividadeExploracaoIlegal in the database
+        List<AtividadeExploracaoIlegal> atividadeExploracaoIlegalList = atividadeExploracaoIlegalRepository.findAll();
+        assertThat(atividadeExploracaoIlegalList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void partialUpdateAtividadeExploracaoIlegalWithPatch() throws Exception {
         // Initialize the database
-        atividadeExploracaoIlegalService.save(atividadeExploracaoIlegal);
+        atividadeExploracaoIlegalRepository.saveAndFlush(atividadeExploracaoIlegal);
+
+        int databaseSizeBeforeUpdate = atividadeExploracaoIlegalRepository.findAll().size();
+
+        // Update the atividadeExploracaoIlegal using partial update
+        AtividadeExploracaoIlegal partialUpdatedAtividadeExploracaoIlegal = new AtividadeExploracaoIlegal();
+        partialUpdatedAtividadeExploracaoIlegal.setId(atividadeExploracaoIlegal.getId());
+
+        restAtividadeExploracaoIlegalMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedAtividadeExploracaoIlegal.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedAtividadeExploracaoIlegal))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the AtividadeExploracaoIlegal in the database
+        List<AtividadeExploracaoIlegal> atividadeExploracaoIlegalList = atividadeExploracaoIlegalRepository.findAll();
+        assertThat(atividadeExploracaoIlegalList).hasSize(databaseSizeBeforeUpdate);
+        AtividadeExploracaoIlegal testAtividadeExploracaoIlegal = atividadeExploracaoIlegalList.get(
+            atividadeExploracaoIlegalList.size() - 1
+        );
+        assertThat(testAtividadeExploracaoIlegal.getDescricao()).isEqualTo(DEFAULT_DESCRICAO);
+    }
+
+    @Test
+    @Transactional
+    void fullUpdateAtividadeExploracaoIlegalWithPatch() throws Exception {
+        // Initialize the database
+        atividadeExploracaoIlegalRepository.saveAndFlush(atividadeExploracaoIlegal);
+
+        int databaseSizeBeforeUpdate = atividadeExploracaoIlegalRepository.findAll().size();
+
+        // Update the atividadeExploracaoIlegal using partial update
+        AtividadeExploracaoIlegal partialUpdatedAtividadeExploracaoIlegal = new AtividadeExploracaoIlegal();
+        partialUpdatedAtividadeExploracaoIlegal.setId(atividadeExploracaoIlegal.getId());
+
+        partialUpdatedAtividadeExploracaoIlegal.descricao(UPDATED_DESCRICAO);
+
+        restAtividadeExploracaoIlegalMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedAtividadeExploracaoIlegal.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedAtividadeExploracaoIlegal))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the AtividadeExploracaoIlegal in the database
+        List<AtividadeExploracaoIlegal> atividadeExploracaoIlegalList = atividadeExploracaoIlegalRepository.findAll();
+        assertThat(atividadeExploracaoIlegalList).hasSize(databaseSizeBeforeUpdate);
+        AtividadeExploracaoIlegal testAtividadeExploracaoIlegal = atividadeExploracaoIlegalList.get(
+            atividadeExploracaoIlegalList.size() - 1
+        );
+        assertThat(testAtividadeExploracaoIlegal.getDescricao()).isEqualTo(UPDATED_DESCRICAO);
+    }
+
+    @Test
+    @Transactional
+    void patchNonExistingAtividadeExploracaoIlegal() throws Exception {
+        int databaseSizeBeforeUpdate = atividadeExploracaoIlegalRepository.findAll().size();
+        atividadeExploracaoIlegal.setId(count.incrementAndGet());
+
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
+        restAtividadeExploracaoIlegalMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, atividadeExploracaoIlegal.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(atividadeExploracaoIlegal))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the AtividadeExploracaoIlegal in the database
+        List<AtividadeExploracaoIlegal> atividadeExploracaoIlegalList = atividadeExploracaoIlegalRepository.findAll();
+        assertThat(atividadeExploracaoIlegalList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithIdMismatchAtividadeExploracaoIlegal() throws Exception {
+        int databaseSizeBeforeUpdate = atividadeExploracaoIlegalRepository.findAll().size();
+        atividadeExploracaoIlegal.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restAtividadeExploracaoIlegalMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(atividadeExploracaoIlegal))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the AtividadeExploracaoIlegal in the database
+        List<AtividadeExploracaoIlegal> atividadeExploracaoIlegalList = atividadeExploracaoIlegalRepository.findAll();
+        assertThat(atividadeExploracaoIlegalList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithMissingIdPathParamAtividadeExploracaoIlegal() throws Exception {
+        int databaseSizeBeforeUpdate = atividadeExploracaoIlegalRepository.findAll().size();
+        atividadeExploracaoIlegal.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restAtividadeExploracaoIlegalMockMvc
+            .perform(
+                patch(ENTITY_API_URL)
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(atividadeExploracaoIlegal))
+            )
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the AtividadeExploracaoIlegal in the database
+        List<AtividadeExploracaoIlegal> atividadeExploracaoIlegalList = atividadeExploracaoIlegalRepository.findAll();
+        assertThat(atividadeExploracaoIlegalList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void deleteAtividadeExploracaoIlegal() throws Exception {
+        // Initialize the database
+        atividadeExploracaoIlegalRepository.saveAndFlush(atividadeExploracaoIlegal);
 
         int databaseSizeBeforeDelete = atividadeExploracaoIlegalRepository.findAll().size();
 
         // Delete the atividadeExploracaoIlegal
-        restAtividadeExploracaoIlegalMockMvc.perform(delete("/api/atividade-exploracao-ilegals/{id}", atividadeExploracaoIlegal.getId())
-            .accept(MediaType.APPLICATION_JSON))
+        restAtividadeExploracaoIlegalMockMvc
+            .perform(delete(ENTITY_API_URL_ID, atividadeExploracaoIlegal.getId()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item

@@ -3,6 +3,7 @@
     "embargoRespRe": {
       "home": {
         "title": "Embargo Resp Res",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Embargo Resp Re",
         "createOrEditLabel": "Criar ou editar Embargo Resp Re",
         "notFound": "Nenhum Embargo Resp Re encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Embargo Resp Re"
       },
+      "id": "ID",
       "descricao": "Descricao",
       "processo": "Processo"
     }

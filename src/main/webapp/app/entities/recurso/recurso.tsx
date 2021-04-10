@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Col, Row, Table } from 'reactstrap';
-import { byteSize, Translate, ICrudGetAllAction, getSortState, IPaginationBaseState, JhiPagination, JhiItemCount } from 'react-jhipster';
+import { byteSize, Translate, getSortState, IPaginationBaseState, JhiPagination, JhiItemCount } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
@@ -16,7 +16,7 @@ export interface IRecursoProps extends StateProps, DispatchProps, RouteComponent
 
 export const Recurso = (props: IRecursoProps) => {
   const [paginationState, setPaginationState] = useState(
-    overridePaginationStateWithQueryParams(getSortState(props.location, ITEMS_PER_PAGE), props.location.search)
+    overridePaginationStateWithQueryParams(getSortState(props.location, ITEMS_PER_PAGE, 'id'), props.location.search)
   );
 
   const getAllEntities = () => {
@@ -64,16 +64,26 @@ export const Recurso = (props: IRecursoProps) => {
       activePage: currentPage,
     });
 
+  const handleSyncList = () => {
+    sortEntities();
+  };
+
   const { recursoList, match, loading, totalItems } = props;
   return (
     <div>
-      <h2 id="recurso-heading">
+      <h2 id="recurso-heading" data-cy="RecursoHeading">
         <Translate contentKey="cidhaApp.recurso.home.title">Recursos</Translate>
-        <Link to={`${match.url}/new`} className="btn btn-primary float-right jh-create-entity" id="jh-create-entity">
-          <FontAwesomeIcon icon="plus" />
-          &nbsp;
-          <Translate contentKey="cidhaApp.recurso.home.createLabel">Create new Recurso</Translate>
-        </Link>
+        <div className="d-flex justify-content-end">
+          <Button className="mr-2" color="info" onClick={handleSyncList} disabled={loading}>
+            <FontAwesomeIcon icon="sync" spin={loading} />{' '}
+            <Translate contentKey="cidhaApp.recurso.home.refreshListLabel">Refresh List</Translate>
+          </Button>
+          <Link to={`${match.url}/new`} className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
+            <FontAwesomeIcon icon="plus" />
+            &nbsp;
+            <Translate contentKey="cidhaApp.recurso.home.createLabel">Create new Recurso</Translate>
+          </Link>
+        </div>
       </h2>
       <div className="table-responsive">
         {recursoList && recursoList.length > 0 ? (
@@ -81,7 +91,7 @@ export const Recurso = (props: IRecursoProps) => {
             <thead>
               <tr>
                 <th className="hand" onClick={sort('id')}>
-                  <Translate contentKey="global.field.id">ID</Translate> <FontAwesomeIcon icon="sort" />
+                  <Translate contentKey="cidhaApp.recurso.id">ID</Translate> <FontAwesomeIcon icon="sort" />
                 </th>
                 <th className="hand" onClick={sort('observacoes')}>
                   <Translate contentKey="cidhaApp.recurso.observacoes">Observacoes</Translate> <FontAwesomeIcon icon="sort" />
@@ -100,7 +110,7 @@ export const Recurso = (props: IRecursoProps) => {
             </thead>
             <tbody>
               {recursoList.map((recurso, i) => (
-                <tr key={`entity-${i}`}>
+                <tr key={`entity-${i}`} data-cy="entityTable">
                   <td>
                     <Button tag={Link} to={`${match.url}/${recurso.id}`} color="link" size="sm">
                       {recurso.id}
@@ -120,7 +130,7 @@ export const Recurso = (props: IRecursoProps) => {
                   <td>{recurso.processo ? <Link to={`processo/${recurso.processo.id}`}>{recurso.processo.oficio}</Link> : ''}</td>
                   <td className="text-right">
                     <div className="btn-group flex-btn-group-container">
-                      <Button tag={Link} to={`${match.url}/${recurso.id}`} color="info" size="sm">
+                      <Button tag={Link} to={`${match.url}/${recurso.id}`} color="info" size="sm" data-cy="entityDetailsButton">
                         <FontAwesomeIcon icon="eye" />{' '}
                         <span className="d-none d-md-inline">
                           <Translate contentKey="entity.action.view">View</Translate>
@@ -131,6 +141,7 @@ export const Recurso = (props: IRecursoProps) => {
                         to={`${match.url}/${recurso.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
                         color="primary"
                         size="sm"
+                        data-cy="entityEditButton"
                       >
                         <FontAwesomeIcon icon="pencil-alt" />{' '}
                         <span className="d-none d-md-inline">
@@ -142,6 +153,7 @@ export const Recurso = (props: IRecursoProps) => {
                         to={`${match.url}/${recurso.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
                         color="danger"
                         size="sm"
+                        data-cy="entityDeleteButton"
                       >
                         <FontAwesomeIcon icon="trash" />{' '}
                         <span className="d-none d-md-inline">

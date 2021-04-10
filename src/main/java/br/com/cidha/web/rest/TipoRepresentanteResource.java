@@ -1,14 +1,16 @@
 package br.com.cidha.web.rest;
 
 import br.com.cidha.domain.TipoRepresentante;
-import br.com.cidha.service.TipoRepresentanteService;
-import br.com.cidha.web.rest.errors.BadRequestAlertException;
-import br.com.cidha.service.dto.TipoRepresentanteCriteria;
+import br.com.cidha.repository.TipoRepresentanteRepository;
 import br.com.cidha.service.TipoRepresentanteQueryService;
-
-import io.github.jhipster.web.util.HeaderUtil;
-import io.github.jhipster.web.util.PaginationUtil;
-import io.github.jhipster.web.util.ResponseUtil;
+import br.com.cidha.service.TipoRepresentanteService;
+import br.com.cidha.service.criteria.TipoRepresentanteCriteria;
+import br.com.cidha.web.rest.errors.BadRequestAlertException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,14 +18,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import tech.jhipster.web.util.HeaderUtil;
+import tech.jhipster.web.util.PaginationUtil;
+import tech.jhipster.web.util.ResponseUtil;
 
 /**
  * REST controller for managing {@link br.com.cidha.domain.TipoRepresentante}.
@@ -41,10 +41,17 @@ public class TipoRepresentanteResource {
 
     private final TipoRepresentanteService tipoRepresentanteService;
 
+    private final TipoRepresentanteRepository tipoRepresentanteRepository;
+
     private final TipoRepresentanteQueryService tipoRepresentanteQueryService;
 
-    public TipoRepresentanteResource(TipoRepresentanteService tipoRepresentanteService, TipoRepresentanteQueryService tipoRepresentanteQueryService) {
+    public TipoRepresentanteResource(
+        TipoRepresentanteService tipoRepresentanteService,
+        TipoRepresentanteRepository tipoRepresentanteRepository,
+        TipoRepresentanteQueryService tipoRepresentanteQueryService
+    ) {
         this.tipoRepresentanteService = tipoRepresentanteService;
+        this.tipoRepresentanteRepository = tipoRepresentanteRepository;
         this.tipoRepresentanteQueryService = tipoRepresentanteQueryService;
     }
 
@@ -56,36 +63,87 @@ public class TipoRepresentanteResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/tipo-representantes")
-    public ResponseEntity<TipoRepresentante> createTipoRepresentante(@RequestBody TipoRepresentante tipoRepresentante) throws URISyntaxException {
+    public ResponseEntity<TipoRepresentante> createTipoRepresentante(@RequestBody TipoRepresentante tipoRepresentante)
+        throws URISyntaxException {
         log.debug("REST request to save TipoRepresentante : {}", tipoRepresentante);
         if (tipoRepresentante.getId() != null) {
             throw new BadRequestAlertException("A new tipoRepresentante cannot already have an ID", ENTITY_NAME, "idexists");
         }
         TipoRepresentante result = tipoRepresentanteService.save(tipoRepresentante);
-        return ResponseEntity.created(new URI("/api/tipo-representantes/" + result.getId()))
+        return ResponseEntity
+            .created(new URI("/api/tipo-representantes/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
 
     /**
-     * {@code PUT  /tipo-representantes} : Updates an existing tipoRepresentante.
+     * {@code PUT  /tipo-representantes/:id} : Updates an existing tipoRepresentante.
      *
+     * @param id the id of the tipoRepresentante to save.
      * @param tipoRepresentante the tipoRepresentante to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated tipoRepresentante,
      * or with status {@code 400 (Bad Request)} if the tipoRepresentante is not valid,
      * or with status {@code 500 (Internal Server Error)} if the tipoRepresentante couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/tipo-representantes")
-    public ResponseEntity<TipoRepresentante> updateTipoRepresentante(@RequestBody TipoRepresentante tipoRepresentante) throws URISyntaxException {
-        log.debug("REST request to update TipoRepresentante : {}", tipoRepresentante);
+    @PutMapping("/tipo-representantes/{id}")
+    public ResponseEntity<TipoRepresentante> updateTipoRepresentante(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody TipoRepresentante tipoRepresentante
+    ) throws URISyntaxException {
+        log.debug("REST request to update TipoRepresentante : {}, {}", id, tipoRepresentante);
         if (tipoRepresentante.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+        if (!Objects.equals(id, tipoRepresentante.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!tipoRepresentanteRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
         TipoRepresentante result = tipoRepresentanteService.save(tipoRepresentante);
-        return ResponseEntity.ok()
+        return ResponseEntity
+            .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, tipoRepresentante.getId().toString()))
             .body(result);
+    }
+
+    /**
+     * {@code PATCH  /tipo-representantes/:id} : Partial updates given fields of an existing tipoRepresentante, field will ignore if it is null
+     *
+     * @param id the id of the tipoRepresentante to save.
+     * @param tipoRepresentante the tipoRepresentante to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated tipoRepresentante,
+     * or with status {@code 400 (Bad Request)} if the tipoRepresentante is not valid,
+     * or with status {@code 404 (Not Found)} if the tipoRepresentante is not found,
+     * or with status {@code 500 (Internal Server Error)} if the tipoRepresentante couldn't be updated.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PatchMapping(value = "/tipo-representantes/{id}", consumes = "application/merge-patch+json")
+    public ResponseEntity<TipoRepresentante> partialUpdateTipoRepresentante(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody TipoRepresentante tipoRepresentante
+    ) throws URISyntaxException {
+        log.debug("REST request to partial update TipoRepresentante partially : {}, {}", id, tipoRepresentante);
+        if (tipoRepresentante.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        if (!Objects.equals(id, tipoRepresentante.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!tipoRepresentanteRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
+        Optional<TipoRepresentante> result = tipoRepresentanteService.partialUpdate(tipoRepresentante);
+
+        return ResponseUtil.wrapOrNotFound(
+            result,
+            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, tipoRepresentante.getId().toString())
+        );
     }
 
     /**
@@ -138,6 +196,9 @@ public class TipoRepresentanteResource {
     public ResponseEntity<Void> deleteTipoRepresentante(@PathVariable Long id) {
         log.debug("REST request to delete TipoRepresentante : {}", id);
         tipoRepresentanteService.delete(id);
-        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
+        return ResponseEntity
+            .noContent()
+            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
+            .build();
     }
 }
