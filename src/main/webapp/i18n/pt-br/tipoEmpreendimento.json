@@ -1,0 +1,22 @@
+{
+  "cidhaApp": {
+    "tipoEmpreendimento": {
+      "home": {
+        "title": "Tipo Empreendimentos",
+        "createLabel": "Criar novo Tipo Empreendimento",
+        "createOrEditLabel": "Criar ou editar Tipo Empreendimento",
+        "notFound": "Nenhum Tipo Empreendimento encontrado"
+      },
+      "created": "Um novo Tipo Empreendimento foi criado com o identificador {{ param }}",
+      "updated": "Um Tipo Empreendimento foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Tipo Empreendimento foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Tipo Empreendimento {{ id }}?"
+      },
+      "detail": {
+        "title": "Tipo Empreendimento"
+      },
+      "descricao": "Descricao"
+    }
+  }
+}

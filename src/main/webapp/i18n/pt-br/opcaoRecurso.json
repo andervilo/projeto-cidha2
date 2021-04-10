@@ -1,0 +1,22 @@
+{
+  "cidhaApp": {
+    "opcaoRecurso": {
+      "home": {
+        "title": "Opcao Recursos",
+        "createLabel": "Criar novo Opcao Recurso",
+        "createOrEditLabel": "Criar ou editar Opcao Recurso",
+        "notFound": "Nenhum Opcao Recurso encontrado"
+      },
+      "created": "Um novo Opcao Recurso foi criado com o identificador {{ param }}",
+      "updated": "Um Opcao Recurso foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Opcao Recurso foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Opcao Recurso {{ id }}?"
+      },
+      "detail": {
+        "title": "Opcao Recurso"
+      },
+      "descricao": "Descricao"
+    }
+  }
+}

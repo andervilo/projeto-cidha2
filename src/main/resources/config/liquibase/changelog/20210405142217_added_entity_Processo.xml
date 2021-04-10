@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    
+    <!--
+        Added the entity Processo.
+    -->
+    <changeSet id="20210405142217-1" author="jhipster">
+        <createTable tableName="processo">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="oficio" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="assunto" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="link_unico" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="link_trf" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="subsecao_judiciaria" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="turma_trf_1" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="numero_processo_administrativo" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="numero_processo_judicial_primeira_instancia" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="numero_processo_judicial_primeira_instancia_link" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="numero_processo_judicial_primeira_instancia_observacoes" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="parecer" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="apelacao" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="tipo_decisao_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+            <column name="tipo_empreendimento_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+            <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20210405142217-1-relations" author="jhipster">
+
+        <createTable tableName="processo_comarca">
+            <column name="comarca_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processo_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="processo_id, comarca_id" tableName="processo_comarca"/>
+        
+        <createTable tableName="processo_quilombo">
+            <column name="quilombo_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processo_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="processo_id, quilombo_id" tableName="processo_quilombo"/>
+        
+        <createTable tableName="processo_municipio">
+            <column name="municipio_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processo_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="processo_id, municipio_id" tableName="processo_municipio"/>
+        
+        <createTable tableName="processo_territorio">
+            <column name="territorio_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processo_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="processo_id, territorio_id" tableName="processo_territorio"/>
+        
+        <createTable tableName="processo_atividade_exploracao_ilegal">
+            <column name="atividade_exploracao_ilegal_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processo_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="processo_id, atividade_exploracao_ilegal_id" tableName="processo_atividade_exploracao_ilegal"/>
+        
+        <createTable tableName="processo_unidade_conservacao">
+            <column name="unidade_conservacao_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processo_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="processo_id, unidade_conservacao_id" tableName="processo_unidade_conservacao"/>
+        
+        <createTable tableName="processo_envolvidos_conflito_litigio">
+            <column name="envolvidos_conflito_litigio_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processo_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="processo_id, envolvidos_conflito_litigio_id" tableName="processo_envolvidos_conflito_litigio"/>
+        
+        <createTable tableName="processo_terra_indigena">
+            <column name="terra_indigena_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processo_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="processo_id, terra_indigena_id" tableName="processo_terra_indigena"/>
+        
+        <createTable tableName="processo_processo_conflito">
+            <column name="processo_conflito_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processo_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="processo_id, processo_conflito_id" tableName="processo_processo_conflito"/>
+        
+        <createTable tableName="processo_parte_interesssada">
+            <column name="parte_interesssada_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processo_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="processo_id, parte_interesssada_id" tableName="processo_parte_interesssada"/>
+        
+        <createTable tableName="processo_relator">
+            <column name="relator_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processo_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="processo_id, relator_id" tableName="processo_relator"/>
+        
+    </changeSet>
+    <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
+
+    <!--
+        Load sample data generated with Faker.js
+        - This data can be easily edited using a CSV editor (or even MS Excel) and
+          is located in the 'src/main/resources/config/liquibase/fake-data' directory
+        - By default this data is applied when running with the JHipster 'dev' profile.
+          This can be customized by adding or removing 'faker' in the 'spring.liquibase.contexts'
+          Spring Boot configuration key.
+    -->
+    <changeSet id="20210405142217-1-data" author="jhipster" context="faker">
+        <loadData
+                  file="config/liquibase/fake-data/processo.csv"
+                  separator=";"
+                  tableName="processo">
+            <column name="id" type="numeric"/>
+            <column name="oficio" type="string"/>
+            <column name="assunto" type="clob"/>
+            <column name="link_unico" type="string"/>
+            <column name="link_trf" type="string"/>
+            <column name="subsecao_judiciaria" type="string"/>
+            <column name="turma_trf_1" type="string"/>
+            <column name="numero_processo_administrativo" type="string"/>
+            <column name="numero_processo_judicial_primeira_instancia" type="string"/>
+            <column name="numero_processo_judicial_primeira_instancia_link" type="string"/>
+            <column name="numero_processo_judicial_primeira_instancia_observacoes" type="clob"/>
+            <column name="parecer" type="boolean"/>
+            <column name="apelacao" type="string"/>
+            <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
+        </loadData>
+    </changeSet>
+
+</databaseChangeLog>

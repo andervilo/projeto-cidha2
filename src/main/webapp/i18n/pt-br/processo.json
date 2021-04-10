@@ -1,0 +1,53 @@
+{
+  "cidhaApp": {
+    "processo": {
+      "home": {
+        "title": "Processos",
+        "createLabel": "Criar novo Processo",
+        "createOrEditLabel": "Criar ou editar Processo",
+        "notFound": "Nenhum Processo encontrado"
+      },
+      "created": "Um novo Processo foi criado com o identificador {{ param }}",
+      "updated": "Um Processo foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Processo foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Processo {{ id }}?"
+      },
+      "detail": {
+        "title": "Processo"
+      },
+      "oficio": "Oficio",
+      "assunto": "Assunto",
+      "linkUnico": "Link Unico",
+      "linkTrf": "Link Trf",
+      "subsecaoJudiciaria": "Subsecao Judiciaria",
+      "turmaTrf1": "Turma Trf 1",
+      "numeroProcessoAdministrativo": "Numero Processo Administrativo",
+      "numeroProcessoJudicialPrimeiraInstancia": "Numero Processo Judicial Primeira Instancia",
+      "numeroProcessoJudicialPrimeiraInstanciaLink": "Numero Processo Judicial Primeira Instancia Link",
+      "numeroProcessoJudicialPrimeiraInstanciaObservacoes": "Numero Processo Judicial Primeira Instancia Observacoes",
+      "parecer": "Parecer",
+      "apelacao": "Apelacao",
+      "concessaoLiminar": "Concessao Liminar",
+      "concessaoLiminarCassada": "Concessao Liminar Cassada",
+      "embargoRespRe": "Embargo Resp Re",
+      "embargoDeclaracaoAgravo": "Embargo Declaracao Agravo",
+      "embargoDeclaracao": "Embargo Declaracao",
+      "embargoRecursoEspecial": "Embargo Recurso Especial",
+      "tipoDecisao": "Tipo Decisao",
+      "tipoEmpreendimento": "Tipo Empreendimento",
+      "comarca": "Comarca",
+      "quilombo": "Quilombo",
+      "municipio": "Municipio",
+      "territorio": "Territorio",
+      "atividadeExploracaoIlegal": "Atividade Exploracao Ilegal",
+      "unidadeConservacao": "Unidade Conservacao",
+      "envolvidosConflitoLitigio": "Envolvidos Conflito Litigio",
+      "terraIndigena": "Terra Indigena",
+      "processoConflito": "Processo Conflito",
+      "parteInteresssada": "Parte Interesssada",
+      "relator": "Relator",
+      "problemaJuridico": "Problema Juridico"
+    }
+  }
+}

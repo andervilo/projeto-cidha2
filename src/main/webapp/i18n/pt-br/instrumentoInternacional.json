@@ -1,0 +1,25 @@
+{
+  "cidhaApp": {
+    "instrumentoInternacional": {
+      "home": {
+        "title": "Instrumento Internacionals",
+        "createLabel": "Criar novo Instrumento Internacional",
+        "createOrEditLabel": "Criar ou editar Instrumento Internacional",
+        "notFound": "Nenhum Instrumento Internacional encontrado"
+      },
+      "created": "Um novo Instrumento Internacional foi criado com o identificador {{ param }}",
+      "updated": "Um Instrumento Internacional foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Instrumento Internacional foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Instrumento Internacional {{ id }}?"
+      },
+      "detail": {
+        "title": "Instrumento Internacional"
+      },
+      "instrumentoInternacionalCitadoDescricao": "Instrumento Internacional Citado Descricao",
+      "folhasInstrumentoInternacional": "Folhas Instrumento Internacional",
+      "instrumentoInternacionalSugerido": "Instrumento Internacional Sugerido",
+      "problemaJuridico": "Problema Juridico"
+    }
+  }
+}

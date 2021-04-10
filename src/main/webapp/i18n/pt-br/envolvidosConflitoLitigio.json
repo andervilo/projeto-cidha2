@@ -1,0 +1,25 @@
+{
+  "cidhaApp": {
+    "envolvidosConflitoLitigio": {
+      "home": {
+        "title": "Envolvidos Conflito Litigios",
+        "createLabel": "Criar novo Envolvidos Conflito Litigio",
+        "createOrEditLabel": "Criar ou editar Envolvidos Conflito Litigio",
+        "notFound": "Nenhum Envolvidos Conflito Litigio encontrado"
+      },
+      "created": "Um novo Envolvidos Conflito Litigio foi criado com o identificador {{ param }}",
+      "updated": "Um Envolvidos Conflito Litigio foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Envolvidos Conflito Litigio foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Envolvidos Conflito Litigio {{ id }}?"
+      },
+      "detail": {
+        "title": "Envolvidos Conflito Litigio"
+      },
+      "numeroIndividuos": "Numero Individuos",
+      "fonteInformacaoQtde": "Fonte Informacao Qtde",
+      "observacoes": "Observacoes",
+      "processo": "Processo"
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "cidhaApp": {
+    "tipoData": {
+      "home": {
+        "title": "Tipo Data",
+        "createLabel": "Criar novo Tipo Data",
+        "createOrEditLabel": "Criar ou editar Tipo Data",
+        "notFound": "Nenhum Tipo Data encontrado"
+      },
+      "created": "Um novo Tipo Data foi criado com o identificador {{ param }}",
+      "updated": "Um Tipo Data foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Tipo Data foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Tipo Data {{ id }}?"
+      },
+      "detail": {
+        "title": "Tipo Data"
+      },
+      "descricao": "Descricao"
+    }
+  }
+}

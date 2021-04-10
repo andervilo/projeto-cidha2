@@ -1,0 +1,31 @@
+{
+  "name": "Direito",
+  "fields": [
+    {
+      "fieldName": "descricao",
+      "fieldType": "byte[]",
+      "fieldTypeBlobContent": "text"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "many-to-many",
+      "otherEntityName": "processoConflito",
+      "otherEntityRelationshipName": "direito",
+      "relationshipName": "processoConflito",
+      "otherEntityField": "nomeCasoComuidade",
+      "ownerSide": false
+    }
+  ],
+  "changelogDate": "20210405144817",
+  "entityTableName": "direito",
+  "dto": "no",
+  "pagination": "pagination",
+  "service": "serviceClass",
+  "jpaMetamodelFiltering": true,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": "*"
+}

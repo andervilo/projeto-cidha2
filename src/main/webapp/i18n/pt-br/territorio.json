@@ -1,0 +1,23 @@
+{
+  "cidhaApp": {
+    "territorio": {
+      "home": {
+        "title": "Territorios",
+        "createLabel": "Criar novo Territorio",
+        "createOrEditLabel": "Criar ou editar Territorio",
+        "notFound": "Nenhum Territorio encontrado"
+      },
+      "created": "Um novo Territorio foi criado com o identificador {{ param }}",
+      "updated": "Um Territorio foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Territorio foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Territorio {{ id }}?"
+      },
+      "detail": {
+        "title": "Territorio"
+      },
+      "nome": "Nome",
+      "processo": "Processo"
+    }
+  }
+}

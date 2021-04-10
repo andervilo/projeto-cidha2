@@ -1,0 +1,37 @@
+{
+  "name": "RepresentanteLegal",
+  "fields": [
+    {
+      "fieldName": "nome",
+      "fieldType": "String"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "tipoRepresentante",
+      "otherEntityRelationshipName": "representanteLegal",
+      "relationshipName": "tipoRepresentante",
+      "otherEntityField": "descricao"
+    },
+    {
+      "relationshipType": "many-to-many",
+      "otherEntityName": "parteInteresssada",
+      "otherEntityRelationshipName": "representanteLegal",
+      "relationshipName": "processoConflito",
+      "otherEntityField": "nomeCasoComuidade",
+      "ownerSide": false
+    }
+  ],
+  "changelogDate": "20210405145217",
+  "entityTableName": "representante_legal",
+  "dto": "no",
+  "pagination": "pagination",
+  "service": "serviceClass",
+  "jpaMetamodelFiltering": true,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": "*"
+}

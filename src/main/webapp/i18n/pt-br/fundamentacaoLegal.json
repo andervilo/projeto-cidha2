@@ -1,0 +1,25 @@
+{
+  "cidhaApp": {
+    "fundamentacaoLegal": {
+      "home": {
+        "title": "Fundamentacao Legals",
+        "createLabel": "Criar novo Fundamentacao Legal",
+        "createOrEditLabel": "Criar ou editar Fundamentacao Legal",
+        "notFound": "Nenhum Fundamentacao Legal encontrado"
+      },
+      "created": "Um novo Fundamentacao Legal foi criado com o identificador {{ param }}",
+      "updated": "Um Fundamentacao Legal foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Fundamentacao Legal foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Fundamentacao Legal {{ id }}?"
+      },
+      "detail": {
+        "title": "Fundamentacao Legal"
+      },
+      "fundamentacaoLegal": "Fundamentacao Legal",
+      "folhasFundamentacaoLegal": "Folhas Fundamentacao Legal",
+      "fundamentacaoLegalSugerida": "Fundamentacao Legal Sugerida",
+      "problemaJuridico": "Problema Juridico"
+    }
+  }
+}

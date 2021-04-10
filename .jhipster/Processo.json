@@ -1,0 +1,216 @@
+{
+  "name": "Processo",
+  "fields": [
+    {
+      "fieldName": "oficio",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "assunto",
+      "fieldType": "byte[]",
+      "fieldTypeBlobContent": "text"
+    },
+    {
+      "fieldName": "linkUnico",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "linkTrf",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "subsecaoJudiciaria",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "turmaTrf1",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "numeroProcessoAdministrativo",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "numeroProcessoJudicialPrimeiraInstancia",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "numeroProcessoJudicialPrimeiraInstanciaLink",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "numeroProcessoJudicialPrimeiraInstanciaObservacoes",
+      "fieldType": "byte[]",
+      "fieldTypeBlobContent": "text"
+    },
+    {
+      "fieldName": "parecer",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "apelacao",
+      "fieldType": "String"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "one-to-many",
+      "otherEntityName": "concessaoLiminar",
+      "otherEntityRelationshipName": "processo",
+      "relationshipName": "concessaoLiminar"
+    },
+    {
+      "relationshipType": "one-to-many",
+      "otherEntityName": "concessaoLiminarCassada",
+      "otherEntityRelationshipName": "processo",
+      "relationshipName": "concessaoLiminarCassada"
+    },
+    {
+      "relationshipType": "one-to-many",
+      "otherEntityName": "embargoRespRe",
+      "otherEntityRelationshipName": "processo",
+      "relationshipName": "embargoRespRe"
+    },
+    {
+      "relationshipType": "one-to-many",
+      "otherEntityName": "embargoDeclaracaoAgravo",
+      "otherEntityRelationshipName": "processo",
+      "relationshipName": "embargoDeclaracaoAgravo"
+    },
+    {
+      "relationshipType": "one-to-many",
+      "otherEntityName": "embargoDeclaracao",
+      "otherEntityRelationshipName": "processo",
+      "relationshipName": "embargoDeclaracao"
+    },
+    {
+      "relationshipType": "one-to-many",
+      "otherEntityName": "embargoRecursoEspecial",
+      "otherEntityRelationshipName": "processo",
+      "relationshipName": "embargoRecursoEspecial"
+    },
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "tipoDecisao",
+      "otherEntityRelationshipName": "processo",
+      "relationshipName": "tipoDecisao",
+      "otherEntityField": "descricao"
+    },
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "tipoEmpreendimento",
+      "otherEntityRelationshipName": "processo",
+      "relationshipName": "tipoEmpreendimento",
+      "otherEntityField": "descricao"
+    },
+    {
+      "relationshipType": "many-to-many",
+      "otherEntityName": "comarca",
+      "otherEntityRelationshipName": "processo",
+      "relationshipName": "comarca",
+      "otherEntityField": "nome",
+      "ownerSide": true
+    },
+    {
+      "relationshipType": "many-to-many",
+      "otherEntityName": "quilombo",
+      "otherEntityRelationshipName": "processo",
+      "relationshipName": "quilombo",
+      "otherEntityField": "nome",
+      "ownerSide": true
+    },
+    {
+      "relationshipType": "many-to-many",
+      "otherEntityName": "municipio",
+      "otherEntityRelationshipName": "processo",
+      "relationshipName": "municipio",
+      "otherEntityField": "nome",
+      "ownerSide": true
+    },
+    {
+      "relationshipType": "many-to-many",
+      "otherEntityName": "territorio",
+      "otherEntityRelationshipName": "processo",
+      "relationshipName": "territorio",
+      "otherEntityField": "nome",
+      "ownerSide": true
+    },
+    {
+      "relationshipType": "many-to-many",
+      "otherEntityName": "atividadeExploracaoIlegal",
+      "otherEntityRelationshipName": "processo",
+      "relationshipName": "atividadeExploracaoIlegal",
+      "otherEntityField": "descricao",
+      "ownerSide": true
+    },
+    {
+      "relationshipType": "many-to-many",
+      "otherEntityName": "unidadeConservacao",
+      "otherEntityRelationshipName": "processo",
+      "relationshipName": "unidadeConservacao",
+      "otherEntityField": "descricao",
+      "ownerSide": true
+    },
+    {
+      "relationshipType": "many-to-many",
+      "otherEntityName": "envolvidosConflitoLitigio",
+      "otherEntityRelationshipName": "processo",
+      "relationshipName": "envolvidosConflitoLitigio",
+      "otherEntityField": "id",
+      "ownerSide": true
+    },
+    {
+      "relationshipType": "many-to-many",
+      "otherEntityName": "terraIndigena",
+      "otherEntityRelationshipName": "processo",
+      "relationshipName": "terraIndigena",
+      "otherEntityField": "descricao",
+      "ownerSide": true
+    },
+    {
+      "relationshipType": "many-to-many",
+      "otherEntityName": "processoConflito",
+      "otherEntityRelationshipName": "processo",
+      "relationshipName": "processoConflito",
+      "otherEntityField": "nomeCasoComuidade",
+      "ownerSide": true
+    },
+    {
+      "relationshipType": "many-to-many",
+      "otherEntityName": "parteInteresssada",
+      "otherEntityRelationshipName": "processo",
+      "relationshipName": "parteInteresssada",
+      "otherEntityField": "nome",
+      "ownerSide": true
+    },
+    {
+      "relationshipType": "many-to-many",
+      "otherEntityName": "relator",
+      "otherEntityRelationshipName": "processo",
+      "relationshipName": "relator",
+      "otherEntityField": "nome",
+      "ownerSide": true
+    },
+    {
+      "relationshipType": "many-to-many",
+      "otherEntityName": "problemaJuridico",
+      "otherEntityRelationshipName": "processo",
+      "relationshipName": "problemaJuridico",
+      "otherEntityField": "id",
+      "ownerSide": false
+    }
+  ],
+  "changelogDate": "20210405142217",
+  "entityTableName": "processo",
+  "dto": "no",
+  "pagination": "pagination",
+  "service": "serviceClass",
+  "jpaMetamodelFiltering": true,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": "*",
+  "searchEngine": false,
+  "databaseType": "sql"
+}

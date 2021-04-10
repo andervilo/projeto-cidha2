@@ -1,0 +1,23 @@
+{
+  "cidhaApp": {
+    "concessaoLiminarCassada": {
+      "home": {
+        "title": "Concessao Liminar Cassadas",
+        "createLabel": "Criar novo Concessao Liminar Cassada",
+        "createOrEditLabel": "Criar ou editar Concessao Liminar Cassada",
+        "notFound": "Nenhum Concessao Liminar Cassada encontrado"
+      },
+      "created": "Um novo Concessao Liminar Cassada foi criado com o identificador {{ param }}",
+      "updated": "Um Concessao Liminar Cassada foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Concessao Liminar Cassada foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Concessao Liminar Cassada {{ id }}?"
+      },
+      "detail": {
+        "title": "Concessao Liminar Cassada"
+      },
+      "descricao": "Descricao",
+      "processo": "Processo"
+    }
+  }
+}

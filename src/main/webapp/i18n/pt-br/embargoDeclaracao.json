@@ -1,0 +1,23 @@
+{
+  "cidhaApp": {
+    "embargoDeclaracao": {
+      "home": {
+        "title": "Embargo Declaracaos",
+        "createLabel": "Criar novo Embargo Declaracao",
+        "createOrEditLabel": "Criar ou editar Embargo Declaracao",
+        "notFound": "Nenhum Embargo Declaracao encontrado"
+      },
+      "created": "Um novo Embargo Declaracao foi criado com o identificador {{ param }}",
+      "updated": "Um Embargo Declaracao foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Embargo Declaracao foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Embargo Declaracao {{ id }}?"
+      },
+      "detail": {
+        "title": "Embargo Declaracao"
+      },
+      "descricao": "Descricao",
+      "processo": "Processo"
+    }
+  }
+}

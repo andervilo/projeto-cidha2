@@ -1,0 +1,23 @@
+{
+  "cidhaApp": {
+    "relator": {
+      "home": {
+        "title": "Relators",
+        "createLabel": "Criar novo Relator",
+        "createOrEditLabel": "Criar ou editar Relator",
+        "notFound": "Nenhum Relator encontrado"
+      },
+      "created": "Um novo Relator foi criado com o identificador {{ param }}",
+      "updated": "Um Relator foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Relator foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Relator {{ id }}?"
+      },
+      "detail": {
+        "title": "Relator"
+      },
+      "nome": "Nome",
+      "processo": "Processo"
+    }
+  }
+}

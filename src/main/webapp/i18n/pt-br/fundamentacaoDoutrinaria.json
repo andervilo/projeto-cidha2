@@ -1,0 +1,25 @@
+{
+  "cidhaApp": {
+    "fundamentacaoDoutrinaria": {
+      "home": {
+        "title": "Fundamentacao Doutrinarias",
+        "createLabel": "Criar novo Fundamentacao Doutrinaria",
+        "createOrEditLabel": "Criar ou editar Fundamentacao Doutrinaria",
+        "notFound": "Nenhum Fundamentacao Doutrinaria encontrado"
+      },
+      "created": "Um novo Fundamentacao Doutrinaria foi criado com o identificador {{ param }}",
+      "updated": "Um Fundamentacao Doutrinaria foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Fundamentacao Doutrinaria foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Fundamentacao Doutrinaria {{ id }}?"
+      },
+      "detail": {
+        "title": "Fundamentacao Doutrinaria"
+      },
+      "fundamentacaoDoutrinariaCitada": "Fundamentacao Doutrinaria Citada",
+      "folhasFundamentacaoDoutrinaria": "Folhas Fundamentacao Doutrinaria",
+      "fundamentacaoDoutrinariaSugerida": "Fundamentacao Doutrinaria Sugerida",
+      "problemaJuridico": "Problema Juridico"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "cidhaApp": {
+    "concessaoLiminar": {
+      "home": {
+        "title": "Concessao Liminars",
+        "createLabel": "Criar novo Concessao Liminar",
+        "createOrEditLabel": "Criar ou editar Concessao Liminar",
+        "notFound": "Nenhum Concessao Liminar encontrado"
+      },
+      "created": "Um novo Concessao Liminar foi criado com o identificador {{ param }}",
+      "updated": "Um Concessao Liminar foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Concessao Liminar foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Concessao Liminar {{ id }}?"
+      },
+      "detail": {
+        "title": "Concessao Liminar"
+      },
+      "descricao": "Descricao",
+      "processo": "Processo"
+    }
+  }
+}

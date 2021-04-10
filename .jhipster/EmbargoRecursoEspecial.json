@@ -1,0 +1,29 @@
+{
+  "name": "EmbargoRecursoEspecial",
+  "fields": [
+    {
+      "fieldName": "descricao",
+      "fieldType": "String"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "processo",
+      "otherEntityRelationshipName": "embargoRecursoEspecial",
+      "relationshipName": "processo",
+      "otherEntityField": "id"
+    }
+  ],
+  "changelogDate": "20210405144317",
+  "entityTableName": "embargo_recurso_especial",
+  "dto": "no",
+  "pagination": "pagination",
+  "service": "serviceClass",
+  "jpaMetamodelFiltering": true,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": "*"
+}

@@ -1,0 +1,67 @@
+{
+  "name": "ProblemaJuridico",
+  "fields": [
+    {
+      "fieldName": "prolemaJuridicoRespondido",
+      "fieldType": "byte[]",
+      "fieldTypeBlobContent": "text"
+    },
+    {
+      "fieldName": "folhasProblemaJuridico",
+      "fieldType": "String"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "many-to-many",
+      "otherEntityName": "fundamentacaoDoutrinaria",
+      "otherEntityRelationshipName": "problemaJuridico",
+      "relationshipName": "fundamentacaoDoutrinaria",
+      "otherEntityField": "fundamentacaoDoutrinariaCitada",
+      "ownerSide": true
+    },
+    {
+      "relationshipType": "many-to-many",
+      "otherEntityName": "jurisprudencia",
+      "otherEntityRelationshipName": "problemaJuridico",
+      "relationshipName": "jurisprudencia",
+      "otherEntityField": "jurisprudenciaCitadaDescricao",
+      "ownerSide": true
+    },
+    {
+      "relationshipType": "many-to-many",
+      "otherEntityName": "fundamentacaoLegal",
+      "otherEntityRelationshipName": "problemaJuridico",
+      "relationshipName": "fundamentacaoLegal",
+      "otherEntityField": "fundamentacaoLegal",
+      "ownerSide": true
+    },
+    {
+      "relationshipType": "many-to-many",
+      "otherEntityName": "instrumentoInternacional",
+      "otherEntityRelationshipName": "problemaJuridico",
+      "relationshipName": "instrumentoInternacional",
+      "otherEntityField": "instrumentoInternacionalCitadoDescricao",
+      "ownerSide": true
+    },
+    {
+      "relationshipType": "many-to-many",
+      "otherEntityName": "processo",
+      "otherEntityRelationshipName": "problemaJuridico",
+      "relationshipName": "processo",
+      "otherEntityField": "oficio",
+      "ownerSide": true
+    }
+  ],
+  "changelogDate": "20210405144017",
+  "entityTableName": "problema_juridico",
+  "dto": "no",
+  "pagination": "pagination",
+  "service": "serviceClass",
+  "jpaMetamodelFiltering": true,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": "*"
+}

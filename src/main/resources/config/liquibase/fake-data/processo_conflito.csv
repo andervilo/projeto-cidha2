@@ -1,0 +1,11 @@
+id;inicio_conflito_observacoes;historico_conlito;nome_caso_comuidade;consulta_previa
+1;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;ivory;false
+2;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;white Engineer;false
+3;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;Senior;false
+4;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;District;true
+5;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;Savings Account Steel Rhode Island;true
+6;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;Handcrafted leading-edge lime;false
+7;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;Personal Loan Account payment;true
+8;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;Internal;true
+9;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;deposit;false
+10;../fake-data/blob/hipster.txt;../fake-data/blob/hipster.txt;virtual Mouse;true

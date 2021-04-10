@@ -1,0 +1,26 @@
+{
+  "cidhaApp": {
+    "municipio": {
+      "home": {
+        "title": "Municipios",
+        "createLabel": "Criar novo Municipio",
+        "createOrEditLabel": "Criar ou editar Municipio",
+        "notFound": "Nenhum Municipio encontrado"
+      },
+      "created": "Um novo Municipio foi criado com o identificador {{ param }}",
+      "updated": "Um Municipio foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Municipio foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Municipio {{ id }}?"
+      },
+      "detail": {
+        "title": "Municipio"
+      },
+      "amazoniaLegal": "Amazonia Legal",
+      "codigoIbge": "Codigo Ibge",
+      "estado": "Estado",
+      "nome": "Nome",
+      "processo": "Processo"
+    }
+  }
+}

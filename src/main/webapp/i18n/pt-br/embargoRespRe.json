@@ -1,0 +1,23 @@
+{
+  "cidhaApp": {
+    "embargoRespRe": {
+      "home": {
+        "title": "Embargo Resp Res",
+        "createLabel": "Criar novo Embargo Resp Re",
+        "createOrEditLabel": "Criar ou editar Embargo Resp Re",
+        "notFound": "Nenhum Embargo Resp Re encontrado"
+      },
+      "created": "Um novo Embargo Resp Re foi criado com o identificador {{ param }}",
+      "updated": "Um Embargo Resp Re foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Embargo Resp Re foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Embargo Resp Re {{ id }}?"
+      },
+      "detail": {
+        "title": "Embargo Resp Re"
+      },
+      "descricao": "Descricao",
+      "processo": "Processo"
+    }
+  }
+}

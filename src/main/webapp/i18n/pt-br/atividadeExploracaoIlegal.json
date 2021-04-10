@@ -1,0 +1,23 @@
+{
+  "cidhaApp": {
+    "atividadeExploracaoIlegal": {
+      "home": {
+        "title": "Atividade Exploracao Ilegals",
+        "createLabel": "Criar novo Atividade Exploracao Ilegal",
+        "createOrEditLabel": "Criar ou editar Atividade Exploracao Ilegal",
+        "notFound": "Nenhum Atividade Exploracao Ilegal encontrado"
+      },
+      "created": "Um novo Atividade Exploracao Ilegal foi criado com o identificador {{ param }}",
+      "updated": "Um Atividade Exploracao Ilegal foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Atividade Exploracao Ilegal foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Atividade Exploracao Ilegal {{ id }}?"
+      },
+      "detail": {
+        "title": "Atividade Exploracao Ilegal"
+      },
+      "descricao": "Descricao",
+      "processo": "Processo"
+    }
+  }
+}

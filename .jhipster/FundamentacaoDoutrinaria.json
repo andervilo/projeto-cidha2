@@ -1,0 +1,40 @@
+{
+  "name": "FundamentacaoDoutrinaria",
+  "fields": [
+    {
+      "fieldName": "fundamentacaoDoutrinariaCitada",
+      "fieldType": "byte[]",
+      "fieldTypeBlobContent": "text"
+    },
+    {
+      "fieldName": "folhasFundamentacaoDoutrinaria",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "fundamentacaoDoutrinariaSugerida",
+      "fieldType": "byte[]",
+      "fieldTypeBlobContent": "text"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "many-to-many",
+      "otherEntityName": "problemaJuridico",
+      "otherEntityRelationshipName": "fundamentacaoDoutrinaria",
+      "relationshipName": "problemaJuridico",
+      "otherEntityField": "id",
+      "ownerSide": false
+    }
+  ],
+  "changelogDate": "20210405143617",
+  "entityTableName": "fundamentacao_doutrinaria",
+  "dto": "no",
+  "pagination": "pagination",
+  "service": "serviceClass",
+  "jpaMetamodelFiltering": true,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": "*"
+}

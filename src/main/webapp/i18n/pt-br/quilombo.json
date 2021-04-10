@@ -1,0 +1,23 @@
+{
+  "cidhaApp": {
+    "quilombo": {
+      "home": {
+        "title": "Quilombos",
+        "createLabel": "Criar novo Quilombo",
+        "createOrEditLabel": "Criar ou editar Quilombo",
+        "notFound": "Nenhum Quilombo encontrado"
+      },
+      "created": "Um novo Quilombo foi criado com o identificador {{ param }}",
+      "updated": "Um Quilombo foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Quilombo foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Quilombo {{ id }}?"
+      },
+      "detail": {
+        "title": "Quilombo"
+      },
+      "nome": "Nome",
+      "processo": "Processo"
+    }
+  }
+}

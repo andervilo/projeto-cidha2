@@ -1,0 +1,25 @@
+{
+  "cidhaApp": {
+    "jurisprudencia": {
+      "home": {
+        "title": "Jurisprudencias",
+        "createLabel": "Criar novo Jurisprudencia",
+        "createOrEditLabel": "Criar ou editar Jurisprudencia",
+        "notFound": "Nenhum Jurisprudencia encontrado"
+      },
+      "created": "Um novo Jurisprudencia foi criado com o identificador {{ param }}",
+      "updated": "Um Jurisprudencia foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Jurisprudencia foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Jurisprudencia {{ id }}?"
+      },
+      "detail": {
+        "title": "Jurisprudencia"
+      },
+      "jurisprudenciaCitadaDescricao": "Jurisprudencia Citada Descricao",
+      "folhasJurisprudenciaCitada": "Folhas Jurisprudencia Citada",
+      "jurisprudenciaSugerida": "Jurisprudencia Sugerida",
+      "problemaJuridico": "Problema Juridico"
+    }
+  }
+}

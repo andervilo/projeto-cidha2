@@ -1,0 +1,24 @@
+{
+  "cidhaApp": {
+    "data": {
+      "home": {
+        "title": "Data",
+        "createLabel": "Criar novo Data",
+        "createOrEditLabel": "Criar ou editar Data",
+        "notFound": "Nenhum Data encontrado"
+      },
+      "created": "Um novo Data foi criado com o identificador {{ param }}",
+      "updated": "Um Data foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Data foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Data {{ id }}?"
+      },
+      "detail": {
+        "title": "Data"
+      },
+      "data": "Data",
+      "tipoData": "Tipo Data",
+      "processo": "Processo"
+    }
+  }
+}

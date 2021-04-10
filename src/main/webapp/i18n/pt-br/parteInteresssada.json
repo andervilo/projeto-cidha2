@@ -1,0 +1,25 @@
+{
+  "cidhaApp": {
+    "parteInteresssada": {
+      "home": {
+        "title": "Parte Interesssadas",
+        "createLabel": "Criar novo Parte Interesssada",
+        "createOrEditLabel": "Criar ou editar Parte Interesssada",
+        "notFound": "Nenhum Parte Interesssada encontrado"
+      },
+      "created": "Um novo Parte Interesssada foi criado com o identificador {{ param }}",
+      "updated": "Um Parte Interesssada foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Parte Interesssada foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Parte Interesssada {{ id }}?"
+      },
+      "detail": {
+        "title": "Parte Interesssada"
+      },
+      "nome": "Nome",
+      "classificacao": "Classificacao",
+      "representanteLegal": "Representante Legal",
+      "processo": "Processo"
+    }
+  }
+}

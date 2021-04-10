@@ -1,0 +1,29 @@
+{
+  "name": "EmbargoDeclaracaoAgravo",
+  "fields": [
+    {
+      "fieldName": "descricao",
+      "fieldType": "String"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "processo",
+      "otherEntityRelationshipName": "embargoDeclaracaoAgravo",
+      "relationshipName": "processo",
+      "otherEntityField": "id"
+    }
+  ],
+  "changelogDate": "20210405142917",
+  "entityTableName": "embargo_declaracao_agravo",
+  "dto": "no",
+  "pagination": "pagination",
+  "service": "serviceClass",
+  "jpaMetamodelFiltering": true,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": "*"
+}
