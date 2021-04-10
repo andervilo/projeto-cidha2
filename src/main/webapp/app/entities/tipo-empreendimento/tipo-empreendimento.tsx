@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Col, Row, Table } from 'reactstrap';
-import { Translate, ICrudGetAllAction, getSortState, IPaginationBaseState, JhiPagination, JhiItemCount } from 'react-jhipster';
+import { Translate, getSortState, IPaginationBaseState, JhiPagination, JhiItemCount } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
@@ -16,7 +16,7 @@ export interface ITipoEmpreendimentoProps extends StateProps, DispatchProps, Rou
 
 export const TipoEmpreendimento = (props: ITipoEmpreendimentoProps) => {
   const [paginationState, setPaginationState] = useState(
-    overridePaginationStateWithQueryParams(getSortState(props.location, ITEMS_PER_PAGE), props.location.search)
+    overridePaginationStateWithQueryParams(getSortState(props.location, ITEMS_PER_PAGE, 'id'), props.location.search)
   );
 
   const getAllEntities = () => {
@@ -64,16 +64,26 @@ export const TipoEmpreendimento = (props: ITipoEmpreendimentoProps) => {
       activePage: currentPage,
     });
 
+  const handleSyncList = () => {
+    sortEntities();
+  };
+
   const { tipoEmpreendimentoList, match, loading, totalItems } = props;
   return (
     <div>
-      <h2 id="tipo-empreendimento-heading">
+      <h2 id="tipo-empreendimento-heading" data-cy="TipoEmpreendimentoHeading">
         <Translate contentKey="cidhaApp.tipoEmpreendimento.home.title">Tipo Empreendimentos</Translate>
-        <Link to={`${match.url}/new`} className="btn btn-primary float-right jh-create-entity" id="jh-create-entity">
-          <FontAwesomeIcon icon="plus" />
-          &nbsp;
-          <Translate contentKey="cidhaApp.tipoEmpreendimento.home.createLabel">Create new Tipo Empreendimento</Translate>
-        </Link>
+        <div className="d-flex justify-content-end">
+          <Button className="mr-2" color="info" onClick={handleSyncList} disabled={loading}>
+            <FontAwesomeIcon icon="sync" spin={loading} />{' '}
+            <Translate contentKey="cidhaApp.tipoEmpreendimento.home.refreshListLabel">Refresh List</Translate>
+          </Button>
+          <Link to={`${match.url}/new`} className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
+            <FontAwesomeIcon icon="plus" />
+            &nbsp;
+            <Translate contentKey="cidhaApp.tipoEmpreendimento.home.createLabel">Create new Tipo Empreendimento</Translate>
+          </Link>
+        </div>
       </h2>
       <div className="table-responsive">
         {tipoEmpreendimentoList && tipoEmpreendimentoList.length > 0 ? (
@@ -81,7 +91,7 @@ export const TipoEmpreendimento = (props: ITipoEmpreendimentoProps) => {
             <thead>
               <tr>
                 <th className="hand" onClick={sort('id')}>
-                  <Translate contentKey="global.field.id">ID</Translate> <FontAwesomeIcon icon="sort" />
+                  <Translate contentKey="cidhaApp.tipoEmpreendimento.id">ID</Translate> <FontAwesomeIcon icon="sort" />
                 </th>
                 <th className="hand" onClick={sort('descricao')}>
                   <Translate contentKey="cidhaApp.tipoEmpreendimento.descricao">Descricao</Translate> <FontAwesomeIcon icon="sort" />
@@ -91,7 +101,7 @@ export const TipoEmpreendimento = (props: ITipoEmpreendimentoProps) => {
             </thead>
             <tbody>
               {tipoEmpreendimentoList.map((tipoEmpreendimento, i) => (
-                <tr key={`entity-${i}`}>
+                <tr key={`entity-${i}`} data-cy="entityTable">
                   <td>
                     <Button tag={Link} to={`${match.url}/${tipoEmpreendimento.id}`} color="link" size="sm">
                       {tipoEmpreendimento.id}
@@ -100,7 +110,7 @@ export const TipoEmpreendimento = (props: ITipoEmpreendimentoProps) => {
                   <td>{tipoEmpreendimento.descricao}</td>
                   <td className="text-right">
                     <div className="btn-group flex-btn-group-container">
-                      <Button tag={Link} to={`${match.url}/${tipoEmpreendimento.id}`} color="info" size="sm">
+                      <Button tag={Link} to={`${match.url}/${tipoEmpreendimento.id}`} color="info" size="sm" data-cy="entityDetailsButton">
                         <FontAwesomeIcon icon="eye" />{' '}
                         <span className="d-none d-md-inline">
                           <Translate contentKey="entity.action.view">View</Translate>
@@ -111,6 +121,7 @@ export const TipoEmpreendimento = (props: ITipoEmpreendimentoProps) => {
                         to={`${match.url}/${tipoEmpreendimento.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
                         color="primary"
                         size="sm"
+                        data-cy="entityEditButton"
                       >
                         <FontAwesomeIcon icon="pencil-alt" />{' '}
                         <span className="d-none d-md-inline">
@@ -122,6 +133,7 @@ export const TipoEmpreendimento = (props: ITipoEmpreendimentoProps) => {
                         to={`${match.url}/${tipoEmpreendimento.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
                         color="danger"
                         size="sm"
+                        data-cy="entityDeleteButton"
                       >
                         <FontAwesomeIcon icon="trash" />{' '}
                         <span className="d-none d-md-inline">

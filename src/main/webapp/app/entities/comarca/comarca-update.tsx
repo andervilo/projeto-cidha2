@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col, Label } from 'reactstrap';
 import { AvFeedback, AvForm, AvGroup, AvInput, AvField } from 'availity-reactstrap-validation';
-import { Translate, translate, ICrudGetAction, ICrudGetAllAction, ICrudPutAction } from 'react-jhipster';
+import { Translate, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
@@ -17,8 +17,7 @@ import { mapIdList } from 'app/shared/util/entity-utils';
 export interface IComarcaUpdateProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
 
 export const ComarcaUpdate = (props: IComarcaUpdateProps) => {
-  const [processoId, setProcessoId] = useState('0');
-  const [isNew, setIsNew] = useState(!props.match.params || !props.match.params.id);
+  const [isNew] = useState(!props.match.params || !props.match.params.id);
 
   const { comarcaEntity, processos, loading, updating } = props;
 
@@ -61,7 +60,7 @@ export const ComarcaUpdate = (props: IComarcaUpdateProps) => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="cidhaApp.comarca.home.createOrEditLabel">
+          <h2 id="cidhaApp.comarca.home.createOrEditLabel" data-cy="ComarcaCreateUpdateHeading">
             <Translate contentKey="cidhaApp.comarca.home.createOrEditLabel">Create or edit a Comarca</Translate>
           </h2>
         </Col>
@@ -84,13 +83,13 @@ export const ComarcaUpdate = (props: IComarcaUpdateProps) => {
                 <Label id="nomeLabel" for="comarca-nome">
                   <Translate contentKey="cidhaApp.comarca.nome">Nome</Translate>
                 </Label>
-                <AvField id="comarca-nome" type="text" name="nome" />
+                <AvField id="comarca-nome" data-cy="nome" type="text" name="nome" />
               </AvGroup>
               <AvGroup>
                 <Label id="codigoCnjLabel" for="comarca-codigoCnj">
                   <Translate contentKey="cidhaApp.comarca.codigoCnj">Codigo Cnj</Translate>
                 </Label>
-                <AvField id="comarca-codigoCnj" type="text" name="codigoCnj" />
+                <AvField id="comarca-codigoCnj" data-cy="codigoCnj" type="text" name="codigoCnj" />
               </AvGroup>
               <Button tag={Link} id="cancel-save" to="/comarca" replace color="info">
                 <FontAwesomeIcon icon="arrow-left" />
@@ -100,7 +99,7 @@ export const ComarcaUpdate = (props: IComarcaUpdateProps) => {
                 </span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp;
                 <Translate contentKey="entity.action.save">Save</Translate>

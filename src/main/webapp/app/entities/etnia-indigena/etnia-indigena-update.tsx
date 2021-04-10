@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col, Label } from 'reactstrap';
 import { AvFeedback, AvForm, AvGroup, AvInput, AvField } from 'availity-reactstrap-validation';
-import { Translate, translate, ICrudGetAction, ICrudGetAllAction, ICrudPutAction } from 'react-jhipster';
+import { Translate, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
@@ -17,8 +17,7 @@ import { mapIdList } from 'app/shared/util/entity-utils';
 export interface IEtniaIndigenaUpdateProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
 
 export const EtniaIndigenaUpdate = (props: IEtniaIndigenaUpdateProps) => {
-  const [terraIndigenaId, setTerraIndigenaId] = useState('0');
-  const [isNew, setIsNew] = useState(!props.match.params || !props.match.params.id);
+  const [isNew] = useState(!props.match.params || !props.match.params.id);
 
   const { etniaIndigenaEntity, terraIndigenas, loading, updating } = props;
 
@@ -61,7 +60,7 @@ export const EtniaIndigenaUpdate = (props: IEtniaIndigenaUpdateProps) => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="cidhaApp.etniaIndigena.home.createOrEditLabel">
+          <h2 id="cidhaApp.etniaIndigena.home.createOrEditLabel" data-cy="EtniaIndigenaCreateUpdateHeading">
             <Translate contentKey="cidhaApp.etniaIndigena.home.createOrEditLabel">Create or edit a EtniaIndigena</Translate>
           </h2>
         </Col>
@@ -84,7 +83,7 @@ export const EtniaIndigenaUpdate = (props: IEtniaIndigenaUpdateProps) => {
                 <Label id="nomeLabel" for="etnia-indigena-nome">
                   <Translate contentKey="cidhaApp.etniaIndigena.nome">Nome</Translate>
                 </Label>
-                <AvField id="etnia-indigena-nome" type="text" name="nome" />
+                <AvField id="etnia-indigena-nome" data-cy="nome" type="text" name="nome" />
               </AvGroup>
               <Button tag={Link} id="cancel-save" to="/etnia-indigena" replace color="info">
                 <FontAwesomeIcon icon="arrow-left" />
@@ -94,7 +93,7 @@ export const EtniaIndigenaUpdate = (props: IEtniaIndigenaUpdateProps) => {
                 </span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp;
                 <Translate contentKey="entity.action.save">Save</Translate>

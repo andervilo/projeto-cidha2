@@ -11,6 +11,7 @@ export const ACTION_TYPES = {
   FETCH_UNIDADECONSERVACAO: 'unidadeConservacao/FETCH_UNIDADECONSERVACAO',
   CREATE_UNIDADECONSERVACAO: 'unidadeConservacao/CREATE_UNIDADECONSERVACAO',
   UPDATE_UNIDADECONSERVACAO: 'unidadeConservacao/UPDATE_UNIDADECONSERVACAO',
+  PARTIAL_UPDATE_UNIDADECONSERVACAO: 'unidadeConservacao/PARTIAL_UPDATE_UNIDADECONSERVACAO',
   DELETE_UNIDADECONSERVACAO: 'unidadeConservacao/DELETE_UNIDADECONSERVACAO',
   RESET: 'unidadeConservacao/RESET',
 };
@@ -42,6 +43,7 @@ export default (state: UnidadeConservacaoState = initialState, action): UnidadeC
     case REQUEST(ACTION_TYPES.CREATE_UNIDADECONSERVACAO):
     case REQUEST(ACTION_TYPES.UPDATE_UNIDADECONSERVACAO):
     case REQUEST(ACTION_TYPES.DELETE_UNIDADECONSERVACAO):
+    case REQUEST(ACTION_TYPES.PARTIAL_UPDATE_UNIDADECONSERVACAO):
       return {
         ...state,
         errorMessage: null,
@@ -52,6 +54,7 @@ export default (state: UnidadeConservacaoState = initialState, action): UnidadeC
     case FAILURE(ACTION_TYPES.FETCH_UNIDADECONSERVACAO):
     case FAILURE(ACTION_TYPES.CREATE_UNIDADECONSERVACAO):
     case FAILURE(ACTION_TYPES.UPDATE_UNIDADECONSERVACAO):
+    case FAILURE(ACTION_TYPES.PARTIAL_UPDATE_UNIDADECONSERVACAO):
     case FAILURE(ACTION_TYPES.DELETE_UNIDADECONSERVACAO):
       return {
         ...state,
@@ -75,6 +78,7 @@ export default (state: UnidadeConservacaoState = initialState, action): UnidadeC
       };
     case SUCCESS(ACTION_TYPES.CREATE_UNIDADECONSERVACAO):
     case SUCCESS(ACTION_TYPES.UPDATE_UNIDADECONSERVACAO):
+    case SUCCESS(ACTION_TYPES.PARTIAL_UPDATE_UNIDADECONSERVACAO):
       return {
         ...state,
         updating: false,
@@ -129,7 +133,15 @@ export const createEntity: ICrudPutAction<IUnidadeConservacao> = entity => async
 export const updateEntity: ICrudPutAction<IUnidadeConservacao> = entity => async dispatch => {
   const result = await dispatch({
     type: ACTION_TYPES.UPDATE_UNIDADECONSERVACAO,
-    payload: axios.put(apiUrl, cleanEntity(entity)),
+    payload: axios.put(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
+  });
+  return result;
+};
+
+export const partialUpdate: ICrudPutAction<IUnidadeConservacao> = entity => async dispatch => {
+  const result = await dispatch({
+    type: ACTION_TYPES.PARTIAL_UPDATE_UNIDADECONSERVACAO,
+    payload: axios.patch(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
   });
   return result;
 };

@@ -1,14 +1,16 @@
 package br.com.cidha.web.rest;
 
 import br.com.cidha.domain.RepresentanteLegal;
-import br.com.cidha.service.RepresentanteLegalService;
-import br.com.cidha.web.rest.errors.BadRequestAlertException;
-import br.com.cidha.service.dto.RepresentanteLegalCriteria;
+import br.com.cidha.repository.RepresentanteLegalRepository;
 import br.com.cidha.service.RepresentanteLegalQueryService;
-
-import io.github.jhipster.web.util.HeaderUtil;
-import io.github.jhipster.web.util.PaginationUtil;
-import io.github.jhipster.web.util.ResponseUtil;
+import br.com.cidha.service.RepresentanteLegalService;
+import br.com.cidha.service.criteria.RepresentanteLegalCriteria;
+import br.com.cidha.web.rest.errors.BadRequestAlertException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,14 +18,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import tech.jhipster.web.util.HeaderUtil;
+import tech.jhipster.web.util.PaginationUtil;
+import tech.jhipster.web.util.ResponseUtil;
 
 /**
  * REST controller for managing {@link br.com.cidha.domain.RepresentanteLegal}.
@@ -41,10 +41,17 @@ public class RepresentanteLegalResource {
 
     private final RepresentanteLegalService representanteLegalService;
 
+    private final RepresentanteLegalRepository representanteLegalRepository;
+
     private final RepresentanteLegalQueryService representanteLegalQueryService;
 
-    public RepresentanteLegalResource(RepresentanteLegalService representanteLegalService, RepresentanteLegalQueryService representanteLegalQueryService) {
+    public RepresentanteLegalResource(
+        RepresentanteLegalService representanteLegalService,
+        RepresentanteLegalRepository representanteLegalRepository,
+        RepresentanteLegalQueryService representanteLegalQueryService
+    ) {
         this.representanteLegalService = representanteLegalService;
+        this.representanteLegalRepository = representanteLegalRepository;
         this.representanteLegalQueryService = representanteLegalQueryService;
     }
 
@@ -56,36 +63,87 @@ public class RepresentanteLegalResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/representante-legals")
-    public ResponseEntity<RepresentanteLegal> createRepresentanteLegal(@RequestBody RepresentanteLegal representanteLegal) throws URISyntaxException {
+    public ResponseEntity<RepresentanteLegal> createRepresentanteLegal(@RequestBody RepresentanteLegal representanteLegal)
+        throws URISyntaxException {
         log.debug("REST request to save RepresentanteLegal : {}", representanteLegal);
         if (representanteLegal.getId() != null) {
             throw new BadRequestAlertException("A new representanteLegal cannot already have an ID", ENTITY_NAME, "idexists");
         }
         RepresentanteLegal result = representanteLegalService.save(representanteLegal);
-        return ResponseEntity.created(new URI("/api/representante-legals/" + result.getId()))
+        return ResponseEntity
+            .created(new URI("/api/representante-legals/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
 
     /**
-     * {@code PUT  /representante-legals} : Updates an existing representanteLegal.
+     * {@code PUT  /representante-legals/:id} : Updates an existing representanteLegal.
      *
+     * @param id the id of the representanteLegal to save.
      * @param representanteLegal the representanteLegal to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated representanteLegal,
      * or with status {@code 400 (Bad Request)} if the representanteLegal is not valid,
      * or with status {@code 500 (Internal Server Error)} if the representanteLegal couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/representante-legals")
-    public ResponseEntity<RepresentanteLegal> updateRepresentanteLegal(@RequestBody RepresentanteLegal representanteLegal) throws URISyntaxException {
-        log.debug("REST request to update RepresentanteLegal : {}", representanteLegal);
+    @PutMapping("/representante-legals/{id}")
+    public ResponseEntity<RepresentanteLegal> updateRepresentanteLegal(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody RepresentanteLegal representanteLegal
+    ) throws URISyntaxException {
+        log.debug("REST request to update RepresentanteLegal : {}, {}", id, representanteLegal);
         if (representanteLegal.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+        if (!Objects.equals(id, representanteLegal.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!representanteLegalRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
         RepresentanteLegal result = representanteLegalService.save(representanteLegal);
-        return ResponseEntity.ok()
+        return ResponseEntity
+            .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, representanteLegal.getId().toString()))
             .body(result);
+    }
+
+    /**
+     * {@code PATCH  /representante-legals/:id} : Partial updates given fields of an existing representanteLegal, field will ignore if it is null
+     *
+     * @param id the id of the representanteLegal to save.
+     * @param representanteLegal the representanteLegal to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated representanteLegal,
+     * or with status {@code 400 (Bad Request)} if the representanteLegal is not valid,
+     * or with status {@code 404 (Not Found)} if the representanteLegal is not found,
+     * or with status {@code 500 (Internal Server Error)} if the representanteLegal couldn't be updated.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PatchMapping(value = "/representante-legals/{id}", consumes = "application/merge-patch+json")
+    public ResponseEntity<RepresentanteLegal> partialUpdateRepresentanteLegal(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody RepresentanteLegal representanteLegal
+    ) throws URISyntaxException {
+        log.debug("REST request to partial update RepresentanteLegal partially : {}, {}", id, representanteLegal);
+        if (representanteLegal.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        if (!Objects.equals(id, representanteLegal.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!representanteLegalRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
+        Optional<RepresentanteLegal> result = representanteLegalService.partialUpdate(representanteLegal);
+
+        return ResponseUtil.wrapOrNotFound(
+            result,
+            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, representanteLegal.getId().toString())
+        );
     }
 
     /**
@@ -138,6 +196,9 @@ public class RepresentanteLegalResource {
     public ResponseEntity<Void> deleteRepresentanteLegal(@PathVariable Long id) {
         log.debug("REST request to delete RepresentanteLegal : {}", id);
         representanteLegalService.delete(id);
-        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
+        return ResponseEntity
+            .noContent()
+            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
+            .build();
     }
 }

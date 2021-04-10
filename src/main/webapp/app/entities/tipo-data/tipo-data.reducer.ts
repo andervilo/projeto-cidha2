@@ -11,6 +11,7 @@ export const ACTION_TYPES = {
   FETCH_TIPODATA: 'tipoData/FETCH_TIPODATA',
   CREATE_TIPODATA: 'tipoData/CREATE_TIPODATA',
   UPDATE_TIPODATA: 'tipoData/UPDATE_TIPODATA',
+  PARTIAL_UPDATE_TIPODATA: 'tipoData/PARTIAL_UPDATE_TIPODATA',
   DELETE_TIPODATA: 'tipoData/DELETE_TIPODATA',
   RESET: 'tipoData/RESET',
 };
@@ -42,6 +43,7 @@ export default (state: TipoDataState = initialState, action): TipoDataState => {
     case REQUEST(ACTION_TYPES.CREATE_TIPODATA):
     case REQUEST(ACTION_TYPES.UPDATE_TIPODATA):
     case REQUEST(ACTION_TYPES.DELETE_TIPODATA):
+    case REQUEST(ACTION_TYPES.PARTIAL_UPDATE_TIPODATA):
       return {
         ...state,
         errorMessage: null,
@@ -52,6 +54,7 @@ export default (state: TipoDataState = initialState, action): TipoDataState => {
     case FAILURE(ACTION_TYPES.FETCH_TIPODATA):
     case FAILURE(ACTION_TYPES.CREATE_TIPODATA):
     case FAILURE(ACTION_TYPES.UPDATE_TIPODATA):
+    case FAILURE(ACTION_TYPES.PARTIAL_UPDATE_TIPODATA):
     case FAILURE(ACTION_TYPES.DELETE_TIPODATA):
       return {
         ...state,
@@ -75,6 +78,7 @@ export default (state: TipoDataState = initialState, action): TipoDataState => {
       };
     case SUCCESS(ACTION_TYPES.CREATE_TIPODATA):
     case SUCCESS(ACTION_TYPES.UPDATE_TIPODATA):
+    case SUCCESS(ACTION_TYPES.PARTIAL_UPDATE_TIPODATA):
       return {
         ...state,
         updating: false,
@@ -129,7 +133,15 @@ export const createEntity: ICrudPutAction<ITipoData> = entity => async dispatch 
 export const updateEntity: ICrudPutAction<ITipoData> = entity => async dispatch => {
   const result = await dispatch({
     type: ACTION_TYPES.UPDATE_TIPODATA,
-    payload: axios.put(apiUrl, cleanEntity(entity)),
+    payload: axios.put(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
+  });
+  return result;
+};
+
+export const partialUpdate: ICrudPutAction<ITipoData> = entity => async dispatch => {
+  const result = await dispatch({
+    type: ACTION_TYPES.PARTIAL_UPDATE_TIPODATA,
+    payload: axios.patch(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
   });
   return result;
 };

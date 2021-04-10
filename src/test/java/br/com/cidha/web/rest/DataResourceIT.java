@@ -1,53 +1,51 @@
 package br.com.cidha.web.rest;
 
-import br.com.cidha.CidhaApp;
-import br.com.cidha.domain.Data;
-import br.com.cidha.domain.TipoData;
-import br.com.cidha.domain.Processo;
-import br.com.cidha.repository.DataRepository;
-import br.com.cidha.service.DataService;
-import br.com.cidha.service.dto.DataCriteria;
-import br.com.cidha.service.DataQueryService;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
-import javax.persistence.EntityManager;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import br.com.cidha.IntegrationTest;
+import br.com.cidha.domain.Data;
+import br.com.cidha.domain.Processo;
+import br.com.cidha.domain.TipoData;
+import br.com.cidha.repository.DataRepository;
+import br.com.cidha.service.criteria.DataCriteria;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
+import javax.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * Integration tests for the {@link DataResource} REST controller.
  */
-@SpringBootTest(classes = CidhaApp.class)
+@IntegrationTest
 @AutoConfigureMockMvc
 @WithMockUser
-public class DataResourceIT {
+class DataResourceIT {
 
     private static final LocalDate DEFAULT_DATA = LocalDate.ofEpochDay(0L);
     private static final LocalDate UPDATED_DATA = LocalDate.now(ZoneId.systemDefault());
     private static final LocalDate SMALLER_DATA = LocalDate.ofEpochDay(-1L);
 
+    private static final String ENTITY_API_URL = "/api/data";
+    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+
+    private static Random random = new Random();
+    private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
+
     @Autowired
     private DataRepository dataRepository;
-
-    @Autowired
-    private DataService dataService;
-
-    @Autowired
-    private DataQueryService dataQueryService;
 
     @Autowired
     private EntityManager em;
@@ -64,10 +62,10 @@ public class DataResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Data createEntity(EntityManager em) {
-        Data data = new Data()
-            .data(DEFAULT_DATA);
+        Data data = new Data().data(DEFAULT_DATA);
         return data;
     }
+
     /**
      * Create an updated entity for this test.
      *
@@ -75,8 +73,7 @@ public class DataResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Data createUpdatedEntity(EntityManager em) {
-        Data data = new Data()
-            .data(UPDATED_DATA);
+        Data data = new Data().data(UPDATED_DATA);
         return data;
     }
 
@@ -87,12 +84,11 @@ public class DataResourceIT {
 
     @Test
     @Transactional
-    public void createData() throws Exception {
+    void createData() throws Exception {
         int databaseSizeBeforeCreate = dataRepository.findAll().size();
         // Create the Data
-        restDataMockMvc.perform(post("/api/data")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(data)))
+        restDataMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(data)))
             .andExpect(status().isCreated());
 
         // Validate the Data in the database
@@ -104,16 +100,15 @@ public class DataResourceIT {
 
     @Test
     @Transactional
-    public void createDataWithExistingId() throws Exception {
-        int databaseSizeBeforeCreate = dataRepository.findAll().size();
-
+    void createDataWithExistingId() throws Exception {
         // Create the Data with an existing ID
         data.setId(1L);
 
+        int databaseSizeBeforeCreate = dataRepository.findAll().size();
+
         // An entity with an existing ID cannot be created, so this API call must fail
-        restDataMockMvc.perform(post("/api/data")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(data)))
+        restDataMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(data)))
             .andExpect(status().isBadRequest());
 
         // Validate the Data in the database
@@ -121,39 +116,39 @@ public class DataResourceIT {
         assertThat(dataList).hasSize(databaseSizeBeforeCreate);
     }
 
-
     @Test
     @Transactional
-    public void getAllData() throws Exception {
+    void getAllData() throws Exception {
         // Initialize the database
         dataRepository.saveAndFlush(data);
 
         // Get all the dataList
-        restDataMockMvc.perform(get("/api/data?sort=id,desc"))
+        restDataMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(data.getId().intValue())))
             .andExpect(jsonPath("$.[*].data").value(hasItem(DEFAULT_DATA.toString())));
     }
-    
+
     @Test
     @Transactional
-    public void getData() throws Exception {
+    void getData() throws Exception {
         // Initialize the database
         dataRepository.saveAndFlush(data);
 
         // Get the data
-        restDataMockMvc.perform(get("/api/data/{id}", data.getId()))
+        restDataMockMvc
+            .perform(get(ENTITY_API_URL_ID, data.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(data.getId().intValue()))
             .andExpect(jsonPath("$.data").value(DEFAULT_DATA.toString()));
     }
 
-
     @Test
     @Transactional
-    public void getDataByIdFiltering() throws Exception {
+    void getDataByIdFiltering() throws Exception {
         // Initialize the database
         dataRepository.saveAndFlush(data);
 
@@ -169,10 +164,9 @@ public class DataResourceIT {
         defaultDataShouldNotBeFound("id.lessThan=" + id);
     }
 
-
     @Test
     @Transactional
-    public void getAllDataByDataIsEqualToSomething() throws Exception {
+    void getAllDataByDataIsEqualToSomething() throws Exception {
         // Initialize the database
         dataRepository.saveAndFlush(data);
 
@@ -185,7 +179,7 @@ public class DataResourceIT {
 
     @Test
     @Transactional
-    public void getAllDataByDataIsNotEqualToSomething() throws Exception {
+    void getAllDataByDataIsNotEqualToSomething() throws Exception {
         // Initialize the database
         dataRepository.saveAndFlush(data);
 
@@ -198,7 +192,7 @@ public class DataResourceIT {
 
     @Test
     @Transactional
-    public void getAllDataByDataIsInShouldWork() throws Exception {
+    void getAllDataByDataIsInShouldWork() throws Exception {
         // Initialize the database
         dataRepository.saveAndFlush(data);
 
@@ -211,7 +205,7 @@ public class DataResourceIT {
 
     @Test
     @Transactional
-    public void getAllDataByDataIsNullOrNotNull() throws Exception {
+    void getAllDataByDataIsNullOrNotNull() throws Exception {
         // Initialize the database
         dataRepository.saveAndFlush(data);
 
@@ -224,7 +218,7 @@ public class DataResourceIT {
 
     @Test
     @Transactional
-    public void getAllDataByDataIsGreaterThanOrEqualToSomething() throws Exception {
+    void getAllDataByDataIsGreaterThanOrEqualToSomething() throws Exception {
         // Initialize the database
         dataRepository.saveAndFlush(data);
 
@@ -237,7 +231,7 @@ public class DataResourceIT {
 
     @Test
     @Transactional
-    public void getAllDataByDataIsLessThanOrEqualToSomething() throws Exception {
+    void getAllDataByDataIsLessThanOrEqualToSomething() throws Exception {
         // Initialize the database
         dataRepository.saveAndFlush(data);
 
@@ -250,7 +244,7 @@ public class DataResourceIT {
 
     @Test
     @Transactional
-    public void getAllDataByDataIsLessThanSomething() throws Exception {
+    void getAllDataByDataIsLessThanSomething() throws Exception {
         // Initialize the database
         dataRepository.saveAndFlush(data);
 
@@ -263,7 +257,7 @@ public class DataResourceIT {
 
     @Test
     @Transactional
-    public void getAllDataByDataIsGreaterThanSomething() throws Exception {
+    void getAllDataByDataIsGreaterThanSomething() throws Exception {
         // Initialize the database
         dataRepository.saveAndFlush(data);
 
@@ -274,10 +268,9 @@ public class DataResourceIT {
         defaultDataShouldBeFound("data.greaterThan=" + SMALLER_DATA);
     }
 
-
     @Test
     @Transactional
-    public void getAllDataByTipoDataIsEqualToSomething() throws Exception {
+    void getAllDataByTipoDataIsEqualToSomething() throws Exception {
         // Initialize the database
         dataRepository.saveAndFlush(data);
         TipoData tipoData = TipoDataResourceIT.createEntity(em);
@@ -290,14 +283,13 @@ public class DataResourceIT {
         // Get all the dataList where tipoData equals to tipoDataId
         defaultDataShouldBeFound("tipoDataId.equals=" + tipoDataId);
 
-        // Get all the dataList where tipoData equals to tipoDataId + 1
+        // Get all the dataList where tipoData equals to (tipoDataId + 1)
         defaultDataShouldNotBeFound("tipoDataId.equals=" + (tipoDataId + 1));
     }
 
-
     @Test
     @Transactional
-    public void getAllDataByProcessoIsEqualToSomething() throws Exception {
+    void getAllDataByProcessoIsEqualToSomething() throws Exception {
         // Initialize the database
         dataRepository.saveAndFlush(data);
         Processo processo = ProcessoResourceIT.createEntity(em);
@@ -310,7 +302,7 @@ public class DataResourceIT {
         // Get all the dataList where processo equals to processoId
         defaultDataShouldBeFound("processoId.equals=" + processoId);
 
-        // Get all the dataList where processo equals to processoId + 1
+        // Get all the dataList where processo equals to (processoId + 1)
         defaultDataShouldNotBeFound("processoId.equals=" + (processoId + 1));
     }
 
@@ -318,14 +310,16 @@ public class DataResourceIT {
      * Executes the search, and checks that the default entity is returned.
      */
     private void defaultDataShouldBeFound(String filter) throws Exception {
-        restDataMockMvc.perform(get("/api/data?sort=id,desc&" + filter))
+        restDataMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(data.getId().intValue())))
             .andExpect(jsonPath("$.[*].data").value(hasItem(DEFAULT_DATA.toString())));
 
         // Check, that the count call also returns 1
-        restDataMockMvc.perform(get("/api/data/count?sort=id,desc&" + filter))
+        restDataMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("1"));
@@ -335,14 +329,16 @@ public class DataResourceIT {
      * Executes the search, and checks that the default entity is not returned.
      */
     private void defaultDataShouldNotBeFound(String filter) throws Exception {
-        restDataMockMvc.perform(get("/api/data?sort=id,desc&" + filter))
+        restDataMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$").isEmpty());
 
         // Check, that the count call also returns 0
-        restDataMockMvc.perform(get("/api/data/count?sort=id,desc&" + filter))
+        restDataMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("0"));
@@ -350,17 +346,16 @@ public class DataResourceIT {
 
     @Test
     @Transactional
-    public void getNonExistingData() throws Exception {
+    void getNonExistingData() throws Exception {
         // Get the data
-        restDataMockMvc.perform(get("/api/data/{id}", Long.MAX_VALUE))
-            .andExpect(status().isNotFound());
+        restDataMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
     @Test
     @Transactional
-    public void updateData() throws Exception {
+    void putNewData() throws Exception {
         // Initialize the database
-        dataService.save(data);
+        dataRepository.saveAndFlush(data);
 
         int databaseSizeBeforeUpdate = dataRepository.findAll().size();
 
@@ -368,12 +363,14 @@ public class DataResourceIT {
         Data updatedData = dataRepository.findById(data.getId()).get();
         // Disconnect from session so that the updates on updatedData are not directly saved in db
         em.detach(updatedData);
-        updatedData
-            .data(UPDATED_DATA);
+        updatedData.data(UPDATED_DATA);
 
-        restDataMockMvc.perform(put("/api/data")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(updatedData)))
+        restDataMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, updatedData.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(updatedData))
+            )
             .andExpect(status().isOk());
 
         // Validate the Data in the database
@@ -385,13 +382,17 @@ public class DataResourceIT {
 
     @Test
     @Transactional
-    public void updateNonExistingData() throws Exception {
+    void putNonExistingData() throws Exception {
         int databaseSizeBeforeUpdate = dataRepository.findAll().size();
+        data.setId(count.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restDataMockMvc.perform(put("/api/data")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(data)))
+        restDataMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, data.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(data))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the Data in the database
@@ -401,15 +402,165 @@ public class DataResourceIT {
 
     @Test
     @Transactional
-    public void deleteData() throws Exception {
+    void putWithIdMismatchData() throws Exception {
+        int databaseSizeBeforeUpdate = dataRepository.findAll().size();
+        data.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restDataMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(data))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the Data in the database
+        List<Data> dataList = dataRepository.findAll();
+        assertThat(dataList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void putWithMissingIdPathParamData() throws Exception {
+        int databaseSizeBeforeUpdate = dataRepository.findAll().size();
+        data.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restDataMockMvc
+            .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(data)))
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the Data in the database
+        List<Data> dataList = dataRepository.findAll();
+        assertThat(dataList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void partialUpdateDataWithPatch() throws Exception {
         // Initialize the database
-        dataService.save(data);
+        dataRepository.saveAndFlush(data);
+
+        int databaseSizeBeforeUpdate = dataRepository.findAll().size();
+
+        // Update the data using partial update
+        Data partialUpdatedData = new Data();
+        partialUpdatedData.setId(data.getId());
+
+        partialUpdatedData.data(UPDATED_DATA);
+
+        restDataMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedData.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedData))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the Data in the database
+        List<Data> dataList = dataRepository.findAll();
+        assertThat(dataList).hasSize(databaseSizeBeforeUpdate);
+        Data testData = dataList.get(dataList.size() - 1);
+        assertThat(testData.getData()).isEqualTo(UPDATED_DATA);
+    }
+
+    @Test
+    @Transactional
+    void fullUpdateDataWithPatch() throws Exception {
+        // Initialize the database
+        dataRepository.saveAndFlush(data);
+
+        int databaseSizeBeforeUpdate = dataRepository.findAll().size();
+
+        // Update the data using partial update
+        Data partialUpdatedData = new Data();
+        partialUpdatedData.setId(data.getId());
+
+        partialUpdatedData.data(UPDATED_DATA);
+
+        restDataMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedData.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedData))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the Data in the database
+        List<Data> dataList = dataRepository.findAll();
+        assertThat(dataList).hasSize(databaseSizeBeforeUpdate);
+        Data testData = dataList.get(dataList.size() - 1);
+        assertThat(testData.getData()).isEqualTo(UPDATED_DATA);
+    }
+
+    @Test
+    @Transactional
+    void patchNonExistingData() throws Exception {
+        int databaseSizeBeforeUpdate = dataRepository.findAll().size();
+        data.setId(count.incrementAndGet());
+
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
+        restDataMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, data.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(data))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the Data in the database
+        List<Data> dataList = dataRepository.findAll();
+        assertThat(dataList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithIdMismatchData() throws Exception {
+        int databaseSizeBeforeUpdate = dataRepository.findAll().size();
+        data.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restDataMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(data))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the Data in the database
+        List<Data> dataList = dataRepository.findAll();
+        assertThat(dataList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithMissingIdPathParamData() throws Exception {
+        int databaseSizeBeforeUpdate = dataRepository.findAll().size();
+        data.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restDataMockMvc
+            .perform(patch(ENTITY_API_URL).contentType("application/merge-patch+json").content(TestUtil.convertObjectToJsonBytes(data)))
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the Data in the database
+        List<Data> dataList = dataRepository.findAll();
+        assertThat(dataList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void deleteData() throws Exception {
+        // Initialize the database
+        dataRepository.saveAndFlush(data);
 
         int databaseSizeBeforeDelete = dataRepository.findAll().size();
 
         // Delete the data
-        restDataMockMvc.perform(delete("/api/data/{id}", data.getId())
-            .accept(MediaType.APPLICATION_JSON))
+        restDataMockMvc
+            .perform(delete(ENTITY_API_URL_ID, data.getId()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item

@@ -1,0 +1,225 @@
+application {
+  config {
+    applicationType monolith
+    authenticationType jwt
+    baseName CIDHA
+    blueprints []
+    buildTool maven
+    cacheProvider ehcache
+    clientFramework react
+    clientPackageManager npm
+    clientTheme materia
+    clientThemeVariant dark
+    creationTimestamp 1616980560254
+    databaseType sql
+    devDatabaseType postgresql
+    dtoSuffix DTO
+    embeddableLaunchScript false
+    enableHibernateCache true
+    enableSwaggerCodegen false
+    enableTranslation true
+    jhiPrefix jhi
+    jhipsterVersion "7.0.1"
+    jwtSecretKey "OTI1NzViOTQ3ZTI5ZmU2NDczMDI5NjdkYmRlYjk4Yjc4ODQ1NDE4ZWQ1MDBiMWU1ZGJkMjk4OWI0NDFiYzU4YzI5YjFjZjgxMzZkY2JlYmJmYTcxYjQzODA0NjA5MzFlZmY1NWVjYWUyMjg3YjE2MzIyMzNjMDlkNzViMGRkOTc="
+    languages [pt-br]
+    messageBroker false
+    nativeLanguage pt-br
+    otherModules []
+    packageName br.com.cidha
+    prodDatabaseType postgresql
+    reactive false
+    searchEngine false
+    serverPort 8080
+    serviceDiscoveryType false
+    skipClient false
+    skipServer false
+    skipUserManagement false
+    testFrameworks []
+    websocket false
+    withAdminUi true
+  }
+
+  entities AtividadeExploracaoIlegal, Comarca, ConcessaoLiminar, ConcessaoLiminarCassada, Conflito, Data, Direito, EmbargoDeclaracao, EmbargoDeclaracaoAgravo, EmbargoRecursoEspecial, EmbargoRespRe, EnvolvidosConflitoLitigio, EtniaIndigena, FundamentacaoDoutrinaria, FundamentacaoLegal, InstrumentoInternacional, Jurisprudencia, Municipio, OpcaoRecurso, ParteInteresssada, ProblemaJuridico, Processo, ProcessoConflito, Quilombo, Recurso, Relator, RepresentanteLegal, TerraIndigena, Territorio, TipoData, TipoDecisao, TipoEmpreendimento, TipoRecurso, TipoRepresentante, UnidadeConservacao
+}
+
+entity AtividadeExploracaoIlegal {
+  descricao String
+}
+entity Comarca {
+  nome String
+  codigoCnj BigDecimal
+}
+entity ConcessaoLiminar {
+  descricao String
+}
+entity ConcessaoLiminarCassada {
+  descricao String
+}
+entity Conflito {
+  descricao TextBlob
+}
+entity Data {
+  data LocalDate
+}
+entity Direito {
+  descricao TextBlob
+}
+entity EmbargoDeclaracao {
+  descricao String
+}
+entity EmbargoDeclaracaoAgravo {
+  descricao String
+}
+entity EmbargoRecursoEspecial {
+  descricao String
+}
+entity EmbargoRespRe {
+  descricao String
+}
+entity EnvolvidosConflitoLitigio {
+  numeroIndividuos Integer
+  fonteInformacaoQtde TextBlob
+  observacoes TextBlob
+}
+entity EtniaIndigena {
+  nome String
+}
+entity FundamentacaoDoutrinaria {
+  fundamentacaoDoutrinariaCitada TextBlob
+  folhasFundamentacaoDoutrinaria String
+  fundamentacaoDoutrinariaSugerida TextBlob
+}
+entity FundamentacaoLegal {
+  fundamentacaoLegal TextBlob
+  folhasFundamentacaoLegal String
+  fundamentacaoLegalSugerida TextBlob
+}
+entity InstrumentoInternacional {
+  instrumentoInternacionalCitadoDescricao TextBlob
+  folhasInstrumentoInternacional String
+  instrumentoInternacionalSugerido TextBlob
+}
+entity Jurisprudencia {
+  jurisprudenciaCitadaDescricao TextBlob
+  folhasJurisprudenciaCitada String
+  jurisprudenciaSugerida TextBlob
+}
+entity Municipio {
+  amazoniaLegal Boolean
+  codigoIbge Integer
+  estado String
+  nome String
+}
+entity OpcaoRecurso {
+  descricao String
+}
+entity ParteInteresssada {
+  nome String
+  classificacao String
+}
+entity ProblemaJuridico {
+  prolemaJuridicoRespondido TextBlob
+  folhasProblemaJuridico String
+}
+entity Processo {
+  oficio String
+  assunto TextBlob
+  linkUnico String
+  linkTrf String
+  subsecaoJudiciaria String
+  turmaTrf1 String
+  numeroProcessoAdministrativo String
+  numeroProcessoJudicialPrimeiraInstancia String
+  numeroProcessoJudicialPrimeiraInstanciaLink String
+  numeroProcessoJudicialPrimeiraInstanciaObservacoes TextBlob
+  parecer Boolean
+  apelacao String
+}
+entity ProcessoConflito {
+  inicioConflitoObservacoes TextBlob
+  historicoConlito TextBlob
+  nomeCasoComuidade String
+  consultaPrevia Boolean
+}
+entity Quilombo {
+  nome String
+}
+entity Recurso {
+  observacoes TextBlob
+}
+entity Relator {
+  nome String
+}
+entity RepresentanteLegal {
+  nome String
+}
+entity TerraIndigena {
+  descricao TextBlob
+}
+entity Territorio {
+  nome String
+}
+entity TipoData {
+  descricao String
+}
+entity TipoDecisao {
+  descricao String
+}
+entity TipoEmpreendimento {
+  descricao String
+}
+entity TipoRecurso {
+  descricao String
+}
+entity TipoRepresentante {
+  descricao String
+}
+entity UnidadeConservacao {
+  descricao String
+}
+relationship OneToOne {
+  Data{tipoData(descricao)} to TipoData
+  Recurso{tipoRecurso(descricao)} to TipoRecurso
+  Recurso{opcaoRecurso(descricao)} to OpcaoRecurso
+}
+relationship OneToMany {
+  Processo{concessaoLiminar} to ConcessaoLiminar{processo}
+  Processo{concessaoLiminarCassada} to ConcessaoLiminarCassada{processo}
+  ProcessoConflito{conflito} to Conflito{processoConflito}
+  Processo{embargoDeclaracao} to EmbargoDeclaracao{processo}
+  Processo{embargoDeclaracaoAgravo} to EmbargoDeclaracaoAgravo{processo}
+  Processo{embargoRecursoEspecial} to EmbargoRecursoEspecial{processo}
+  Processo{embargoRespRe} to EmbargoRespRe{processo}
+}
+relationship ManyToOne {
+  Data{processo(oficio)} to Processo
+  Processo{tipoDecisao(descricao)} to TipoDecisao
+  Processo{tipoEmpreendimento(descricao)} to TipoEmpreendimento
+  Recurso{processo(oficio)} to Processo
+  RepresentanteLegal{tipoRepresentante(descricao)} to TipoRepresentante
+}
+relationship ManyToMany {
+  ParteInteresssada{representanteLegal(nome)} to RepresentanteLegal{processoConflito(nomeCasoComuidade)}
+  ProblemaJuridico{fundamentacaoDoutrinaria(fundamentacaoDoutrinariaCitada)} to FundamentacaoDoutrinaria{problemaJuridico}
+  ProblemaJuridico{jurisprudencia(jurisprudenciaCitadaDescricao)} to Jurisprudencia{problemaJuridico}
+  ProblemaJuridico{fundamentacaoLegal(fundamentacaoLegal)} to FundamentacaoLegal{problemaJuridico}
+  ProblemaJuridico{instrumentoInternacional(instrumentoInternacionalCitadoDescricao)} to InstrumentoInternacional{problemaJuridico}
+  ProblemaJuridico{processo(oficio)} to Processo{problemaJuridico}
+  Processo{comarca(nome)} to Comarca{processo(oficio)}
+  Processo{quilombo(nome)} to Quilombo{processo(oficio)}
+  Processo{municipio(nome)} to Municipio{processo(oficio)}
+  Processo{territorio(nome)} to Territorio{processo(oficio)}
+  Processo{atividadeExploracaoIlegal(descricao)} to AtividadeExploracaoIlegal{processo(oficio)}
+  Processo{unidadeConservacao(descricao)} to UnidadeConservacao{processo(oficio)}
+  Processo{envolvidosConflitoLitigio} to EnvolvidosConflitoLitigio{processo(oficio)}
+  Processo{terraIndigena(descricao)} to TerraIndigena{processo(oficio)}
+  Processo{processoConflito(nomeCasoComuidade)} to ProcessoConflito{processo(oficio)}
+  Processo{parteInteresssada(nome)} to ParteInteresssada{processo(oficio)}
+  Processo{relator(nome)} to Relator{processo(oficio)}
+  ProcessoConflito{direito(descricao)} to Direito{processoConflito(nomeCasoComuidade)}
+  TerraIndigena{etnia(nome)} to EtniaIndigena{terraIndigena(descricao)}
+}
+
+paginate AtividadeExploracaoIlegal, Comarca, ConcessaoLiminar, ConcessaoLiminarCassada, Conflito, Data, Direito, EmbargoDeclaracao, EmbargoDeclaracaoAgravo, EmbargoRecursoEspecial, EmbargoRespRe, EnvolvidosConflitoLitigio, EtniaIndigena, FundamentacaoDoutrinaria, FundamentacaoLegal, InstrumentoInternacional, Jurisprudencia, Municipio, OpcaoRecurso, ParteInteresssada, ProblemaJuridico, Processo, ProcessoConflito, Quilombo, Recurso, Relator, RepresentanteLegal, TerraIndigena, Territorio, TipoData, TipoDecisao, TipoEmpreendimento, TipoRecurso, TipoRepresentante, UnidadeConservacao with pagination
+service AtividadeExploracaoIlegal, Comarca, ConcessaoLiminar, ConcessaoLiminarCassada, Conflito, Data, Direito, EmbargoDeclaracao, EmbargoDeclaracaoAgravo, EmbargoRecursoEspecial, EmbargoRespRe, EnvolvidosConflitoLitigio, EtniaIndigena, FundamentacaoDoutrinaria, FundamentacaoLegal, InstrumentoInternacional, Jurisprudencia, Municipio, OpcaoRecurso, ParteInteresssada, ProblemaJuridico, Processo, ProcessoConflito, Quilombo, Recurso, Relator, RepresentanteLegal, TerraIndigena, Territorio, TipoData, TipoDecisao, TipoEmpreendimento, TipoRecurso, TipoRepresentante, UnidadeConservacao with serviceClass
+filter AtividadeExploracaoIlegal, Comarca, ConcessaoLiminar, ConcessaoLiminarCassada, Conflito, Data, Direito, EmbargoDeclaracao, EmbargoDeclaracaoAgravo, EmbargoRecursoEspecial, EmbargoRespRe, EnvolvidosConflitoLitigio, EtniaIndigena, FundamentacaoDoutrinaria, FundamentacaoLegal, InstrumentoInternacional, Jurisprudencia, Municipio, OpcaoRecurso, ParteInteresssada, ProblemaJuridico, Processo, ProcessoConflito, Quilombo, Recurso, Relator, RepresentanteLegal, TerraIndigena, Territorio, TipoData, TipoDecisao, TipoEmpreendimento, TipoRecurso, TipoRepresentante, UnidadeConservacao

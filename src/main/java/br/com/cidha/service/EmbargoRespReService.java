@@ -2,15 +2,13 @@ package br.com.cidha.service;
 
 import br.com.cidha.domain.EmbargoRespRe;
 import br.com.cidha.repository.EmbargoRespReRepository;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 /**
  * Service Implementation for managing {@link EmbargoRespRe}.
@@ -39,6 +37,29 @@ public class EmbargoRespReService {
     }
 
     /**
+     * Partially update a embargoRespRe.
+     *
+     * @param embargoRespRe the entity to update partially.
+     * @return the persisted entity.
+     */
+    public Optional<EmbargoRespRe> partialUpdate(EmbargoRespRe embargoRespRe) {
+        log.debug("Request to partially update EmbargoRespRe : {}", embargoRespRe);
+
+        return embargoRespReRepository
+            .findById(embargoRespRe.getId())
+            .map(
+                existingEmbargoRespRe -> {
+                    if (embargoRespRe.getDescricao() != null) {
+                        existingEmbargoRespRe.setDescricao(embargoRespRe.getDescricao());
+                    }
+
+                    return existingEmbargoRespRe;
+                }
+            )
+            .map(embargoRespReRepository::save);
+    }
+
+    /**
      * Get all the embargoRespRes.
      *
      * @param pageable the pagination information.
@@ -49,7 +70,6 @@ public class EmbargoRespReService {
         log.debug("Request to get all EmbargoRespRes");
         return embargoRespReRepository.findAll(pageable);
     }
-
 
     /**
      * Get one embargoRespRe by id.

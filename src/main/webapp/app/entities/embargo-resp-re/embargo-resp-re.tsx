@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Col, Row, Table } from 'reactstrap';
-import { Translate, ICrudGetAllAction, getSortState, IPaginationBaseState, JhiPagination, JhiItemCount } from 'react-jhipster';
+import { Translate, getSortState, IPaginationBaseState, JhiPagination, JhiItemCount } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
@@ -16,7 +16,7 @@ export interface IEmbargoRespReProps extends StateProps, DispatchProps, RouteCom
 
 export const EmbargoRespRe = (props: IEmbargoRespReProps) => {
   const [paginationState, setPaginationState] = useState(
-    overridePaginationStateWithQueryParams(getSortState(props.location, ITEMS_PER_PAGE), props.location.search)
+    overridePaginationStateWithQueryParams(getSortState(props.location, ITEMS_PER_PAGE, 'id'), props.location.search)
   );
 
   const getAllEntities = () => {
@@ -64,16 +64,26 @@ export const EmbargoRespRe = (props: IEmbargoRespReProps) => {
       activePage: currentPage,
     });
 
+  const handleSyncList = () => {
+    sortEntities();
+  };
+
   const { embargoRespReList, match, loading, totalItems } = props;
   return (
     <div>
-      <h2 id="embargo-resp-re-heading">
+      <h2 id="embargo-resp-re-heading" data-cy="EmbargoRespReHeading">
         <Translate contentKey="cidhaApp.embargoRespRe.home.title">Embargo Resp Res</Translate>
-        <Link to={`${match.url}/new`} className="btn btn-primary float-right jh-create-entity" id="jh-create-entity">
-          <FontAwesomeIcon icon="plus" />
-          &nbsp;
-          <Translate contentKey="cidhaApp.embargoRespRe.home.createLabel">Create new Embargo Resp Re</Translate>
-        </Link>
+        <div className="d-flex justify-content-end">
+          <Button className="mr-2" color="info" onClick={handleSyncList} disabled={loading}>
+            <FontAwesomeIcon icon="sync" spin={loading} />{' '}
+            <Translate contentKey="cidhaApp.embargoRespRe.home.refreshListLabel">Refresh List</Translate>
+          </Button>
+          <Link to={`${match.url}/new`} className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
+            <FontAwesomeIcon icon="plus" />
+            &nbsp;
+            <Translate contentKey="cidhaApp.embargoRespRe.home.createLabel">Create new Embargo Resp Re</Translate>
+          </Link>
+        </div>
       </h2>
       <div className="table-responsive">
         {embargoRespReList && embargoRespReList.length > 0 ? (
@@ -81,7 +91,7 @@ export const EmbargoRespRe = (props: IEmbargoRespReProps) => {
             <thead>
               <tr>
                 <th className="hand" onClick={sort('id')}>
-                  <Translate contentKey="global.field.id">ID</Translate> <FontAwesomeIcon icon="sort" />
+                  <Translate contentKey="cidhaApp.embargoRespRe.id">ID</Translate> <FontAwesomeIcon icon="sort" />
                 </th>
                 <th className="hand" onClick={sort('descricao')}>
                   <Translate contentKey="cidhaApp.embargoRespRe.descricao">Descricao</Translate> <FontAwesomeIcon icon="sort" />
@@ -94,7 +104,7 @@ export const EmbargoRespRe = (props: IEmbargoRespReProps) => {
             </thead>
             <tbody>
               {embargoRespReList.map((embargoRespRe, i) => (
-                <tr key={`entity-${i}`}>
+                <tr key={`entity-${i}`} data-cy="entityTable">
                   <td>
                     <Button tag={Link} to={`${match.url}/${embargoRespRe.id}`} color="link" size="sm">
                       {embargoRespRe.id}
@@ -106,7 +116,7 @@ export const EmbargoRespRe = (props: IEmbargoRespReProps) => {
                   </td>
                   <td className="text-right">
                     <div className="btn-group flex-btn-group-container">
-                      <Button tag={Link} to={`${match.url}/${embargoRespRe.id}`} color="info" size="sm">
+                      <Button tag={Link} to={`${match.url}/${embargoRespRe.id}`} color="info" size="sm" data-cy="entityDetailsButton">
                         <FontAwesomeIcon icon="eye" />{' '}
                         <span className="d-none d-md-inline">
                           <Translate contentKey="entity.action.view">View</Translate>
@@ -117,6 +127,7 @@ export const EmbargoRespRe = (props: IEmbargoRespReProps) => {
                         to={`${match.url}/${embargoRespRe.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
                         color="primary"
                         size="sm"
+                        data-cy="entityEditButton"
                       >
                         <FontAwesomeIcon icon="pencil-alt" />{' '}
                         <span className="d-none d-md-inline">
@@ -128,6 +139,7 @@ export const EmbargoRespRe = (props: IEmbargoRespReProps) => {
                         to={`${match.url}/${embargoRespRe.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
                         color="danger"
                         size="sm"
+                        data-cy="entityDeleteButton"
                       >
                         <FontAwesomeIcon icon="trash" />{' '}
                         <span className="d-none d-md-inline">

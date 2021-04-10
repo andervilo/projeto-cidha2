@@ -2,12 +2,11 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col } from 'reactstrap';
-import { Translate, ICrudGetAction } from 'react-jhipster';
+import { Translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
 import { getEntity } from './territorio.reducer';
-import { ITerritorio } from 'app/shared/model/territorio.model';
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 
 export interface ITerritorioDetailProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
@@ -21,10 +20,16 @@ export const TerritorioDetail = (props: ITerritorioDetailProps) => {
   return (
     <Row>
       <Col md="8">
-        <h2>
-          <Translate contentKey="cidhaApp.territorio.detail.title">Territorio</Translate> [<b>{territorioEntity.id}</b>]
+        <h2 data-cy="territorioDetailsHeading">
+          <Translate contentKey="cidhaApp.territorio.detail.title">Territorio</Translate>
         </h2>
         <dl className="jh-entity-details">
+          <dt>
+            <span id="id">
+              <Translate contentKey="global.field.id">ID</Translate>
+            </span>
+          </dt>
+          <dd>{territorioEntity.id}</dd>
           <dt>
             <span id="nome">
               <Translate contentKey="cidhaApp.territorio.nome">Nome</Translate>
@@ -32,7 +37,7 @@ export const TerritorioDetail = (props: ITerritorioDetailProps) => {
           </dt>
           <dd>{territorioEntity.nome}</dd>
         </dl>
-        <Button tag={Link} to="/territorio" replace color="info">
+        <Button tag={Link} to="/territorio" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" />{' '}
           <span className="d-none d-md-inline">
             <Translate contentKey="entity.action.back">Back</Translate>

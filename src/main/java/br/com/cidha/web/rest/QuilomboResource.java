@@ -1,14 +1,16 @@
 package br.com.cidha.web.rest;
 
 import br.com.cidha.domain.Quilombo;
-import br.com.cidha.service.QuilomboService;
-import br.com.cidha.web.rest.errors.BadRequestAlertException;
-import br.com.cidha.service.dto.QuilomboCriteria;
+import br.com.cidha.repository.QuilomboRepository;
 import br.com.cidha.service.QuilomboQueryService;
-
-import io.github.jhipster.web.util.HeaderUtil;
-import io.github.jhipster.web.util.PaginationUtil;
-import io.github.jhipster.web.util.ResponseUtil;
+import br.com.cidha.service.QuilomboService;
+import br.com.cidha.service.criteria.QuilomboCriteria;
+import br.com.cidha.web.rest.errors.BadRequestAlertException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,14 +18,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import tech.jhipster.web.util.HeaderUtil;
+import tech.jhipster.web.util.PaginationUtil;
+import tech.jhipster.web.util.ResponseUtil;
 
 /**
  * REST controller for managing {@link br.com.cidha.domain.Quilombo}.
@@ -41,10 +41,17 @@ public class QuilomboResource {
 
     private final QuilomboService quilomboService;
 
+    private final QuilomboRepository quilomboRepository;
+
     private final QuilomboQueryService quilomboQueryService;
 
-    public QuilomboResource(QuilomboService quilomboService, QuilomboQueryService quilomboQueryService) {
+    public QuilomboResource(
+        QuilomboService quilomboService,
+        QuilomboRepository quilomboRepository,
+        QuilomboQueryService quilomboQueryService
+    ) {
         this.quilomboService = quilomboService;
+        this.quilomboRepository = quilomboRepository;
         this.quilomboQueryService = quilomboQueryService;
     }
 
@@ -62,30 +69,80 @@ public class QuilomboResource {
             throw new BadRequestAlertException("A new quilombo cannot already have an ID", ENTITY_NAME, "idexists");
         }
         Quilombo result = quilomboService.save(quilombo);
-        return ResponseEntity.created(new URI("/api/quilombos/" + result.getId()))
+        return ResponseEntity
+            .created(new URI("/api/quilombos/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
 
     /**
-     * {@code PUT  /quilombos} : Updates an existing quilombo.
+     * {@code PUT  /quilombos/:id} : Updates an existing quilombo.
      *
+     * @param id the id of the quilombo to save.
      * @param quilombo the quilombo to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated quilombo,
      * or with status {@code 400 (Bad Request)} if the quilombo is not valid,
      * or with status {@code 500 (Internal Server Error)} if the quilombo couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/quilombos")
-    public ResponseEntity<Quilombo> updateQuilombo(@RequestBody Quilombo quilombo) throws URISyntaxException {
-        log.debug("REST request to update Quilombo : {}", quilombo);
+    @PutMapping("/quilombos/{id}")
+    public ResponseEntity<Quilombo> updateQuilombo(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody Quilombo quilombo
+    ) throws URISyntaxException {
+        log.debug("REST request to update Quilombo : {}, {}", id, quilombo);
         if (quilombo.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+        if (!Objects.equals(id, quilombo.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!quilomboRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
         Quilombo result = quilomboService.save(quilombo);
-        return ResponseEntity.ok()
+        return ResponseEntity
+            .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, quilombo.getId().toString()))
             .body(result);
+    }
+
+    /**
+     * {@code PATCH  /quilombos/:id} : Partial updates given fields of an existing quilombo, field will ignore if it is null
+     *
+     * @param id the id of the quilombo to save.
+     * @param quilombo the quilombo to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated quilombo,
+     * or with status {@code 400 (Bad Request)} if the quilombo is not valid,
+     * or with status {@code 404 (Not Found)} if the quilombo is not found,
+     * or with status {@code 500 (Internal Server Error)} if the quilombo couldn't be updated.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PatchMapping(value = "/quilombos/{id}", consumes = "application/merge-patch+json")
+    public ResponseEntity<Quilombo> partialUpdateQuilombo(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody Quilombo quilombo
+    ) throws URISyntaxException {
+        log.debug("REST request to partial update Quilombo partially : {}, {}", id, quilombo);
+        if (quilombo.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        if (!Objects.equals(id, quilombo.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!quilomboRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
+        Optional<Quilombo> result = quilomboService.partialUpdate(quilombo);
+
+        return ResponseUtil.wrapOrNotFound(
+            result,
+            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, quilombo.getId().toString())
+        );
     }
 
     /**
@@ -138,6 +195,9 @@ public class QuilomboResource {
     public ResponseEntity<Void> deleteQuilombo(@PathVariable Long id) {
         log.debug("REST request to delete Quilombo : {}", id);
         quilomboService.delete(id);
-        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
+        return ResponseEntity
+            .noContent()
+            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
+            .build();
     }
 }

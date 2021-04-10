@@ -11,6 +11,7 @@ export const ACTION_TYPES = {
   FETCH_PROCESSOCONFLITO: 'processoConflito/FETCH_PROCESSOCONFLITO',
   CREATE_PROCESSOCONFLITO: 'processoConflito/CREATE_PROCESSOCONFLITO',
   UPDATE_PROCESSOCONFLITO: 'processoConflito/UPDATE_PROCESSOCONFLITO',
+  PARTIAL_UPDATE_PROCESSOCONFLITO: 'processoConflito/PARTIAL_UPDATE_PROCESSOCONFLITO',
   DELETE_PROCESSOCONFLITO: 'processoConflito/DELETE_PROCESSOCONFLITO',
   SET_BLOB: 'processoConflito/SET_BLOB',
   RESET: 'processoConflito/RESET',
@@ -43,6 +44,7 @@ export default (state: ProcessoConflitoState = initialState, action): ProcessoCo
     case REQUEST(ACTION_TYPES.CREATE_PROCESSOCONFLITO):
     case REQUEST(ACTION_TYPES.UPDATE_PROCESSOCONFLITO):
     case REQUEST(ACTION_TYPES.DELETE_PROCESSOCONFLITO):
+    case REQUEST(ACTION_TYPES.PARTIAL_UPDATE_PROCESSOCONFLITO):
       return {
         ...state,
         errorMessage: null,
@@ -53,6 +55,7 @@ export default (state: ProcessoConflitoState = initialState, action): ProcessoCo
     case FAILURE(ACTION_TYPES.FETCH_PROCESSOCONFLITO):
     case FAILURE(ACTION_TYPES.CREATE_PROCESSOCONFLITO):
     case FAILURE(ACTION_TYPES.UPDATE_PROCESSOCONFLITO):
+    case FAILURE(ACTION_TYPES.PARTIAL_UPDATE_PROCESSOCONFLITO):
     case FAILURE(ACTION_TYPES.DELETE_PROCESSOCONFLITO):
       return {
         ...state,
@@ -76,6 +79,7 @@ export default (state: ProcessoConflitoState = initialState, action): ProcessoCo
       };
     case SUCCESS(ACTION_TYPES.CREATE_PROCESSOCONFLITO):
     case SUCCESS(ACTION_TYPES.UPDATE_PROCESSOCONFLITO):
+    case SUCCESS(ACTION_TYPES.PARTIAL_UPDATE_PROCESSOCONFLITO):
       return {
         ...state,
         updating: false,
@@ -141,7 +145,15 @@ export const createEntity: ICrudPutAction<IProcessoConflito> = entity => async d
 export const updateEntity: ICrudPutAction<IProcessoConflito> = entity => async dispatch => {
   const result = await dispatch({
     type: ACTION_TYPES.UPDATE_PROCESSOCONFLITO,
-    payload: axios.put(apiUrl, cleanEntity(entity)),
+    payload: axios.put(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
+  });
+  return result;
+};
+
+export const partialUpdate: ICrudPutAction<IProcessoConflito> = entity => async dispatch => {
+  const result = await dispatch({
+    type: ACTION_TYPES.PARTIAL_UPDATE_PROCESSOCONFLITO,
+    payload: axios.patch(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
   });
   return result;
 };

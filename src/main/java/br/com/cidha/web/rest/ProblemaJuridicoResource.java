@@ -1,14 +1,16 @@
 package br.com.cidha.web.rest;
 
 import br.com.cidha.domain.ProblemaJuridico;
-import br.com.cidha.service.ProblemaJuridicoService;
-import br.com.cidha.web.rest.errors.BadRequestAlertException;
-import br.com.cidha.service.dto.ProblemaJuridicoCriteria;
+import br.com.cidha.repository.ProblemaJuridicoRepository;
 import br.com.cidha.service.ProblemaJuridicoQueryService;
-
-import io.github.jhipster.web.util.HeaderUtil;
-import io.github.jhipster.web.util.PaginationUtil;
-import io.github.jhipster.web.util.ResponseUtil;
+import br.com.cidha.service.ProblemaJuridicoService;
+import br.com.cidha.service.criteria.ProblemaJuridicoCriteria;
+import br.com.cidha.web.rest.errors.BadRequestAlertException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,14 +18,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import tech.jhipster.web.util.HeaderUtil;
+import tech.jhipster.web.util.PaginationUtil;
+import tech.jhipster.web.util.ResponseUtil;
 
 /**
  * REST controller for managing {@link br.com.cidha.domain.ProblemaJuridico}.
@@ -41,10 +41,17 @@ public class ProblemaJuridicoResource {
 
     private final ProblemaJuridicoService problemaJuridicoService;
 
+    private final ProblemaJuridicoRepository problemaJuridicoRepository;
+
     private final ProblemaJuridicoQueryService problemaJuridicoQueryService;
 
-    public ProblemaJuridicoResource(ProblemaJuridicoService problemaJuridicoService, ProblemaJuridicoQueryService problemaJuridicoQueryService) {
+    public ProblemaJuridicoResource(
+        ProblemaJuridicoService problemaJuridicoService,
+        ProblemaJuridicoRepository problemaJuridicoRepository,
+        ProblemaJuridicoQueryService problemaJuridicoQueryService
+    ) {
         this.problemaJuridicoService = problemaJuridicoService;
+        this.problemaJuridicoRepository = problemaJuridicoRepository;
         this.problemaJuridicoQueryService = problemaJuridicoQueryService;
     }
 
@@ -56,36 +63,87 @@ public class ProblemaJuridicoResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/problema-juridicos")
-    public ResponseEntity<ProblemaJuridico> createProblemaJuridico(@RequestBody ProblemaJuridico problemaJuridico) throws URISyntaxException {
+    public ResponseEntity<ProblemaJuridico> createProblemaJuridico(@RequestBody ProblemaJuridico problemaJuridico)
+        throws URISyntaxException {
         log.debug("REST request to save ProblemaJuridico : {}", problemaJuridico);
         if (problemaJuridico.getId() != null) {
             throw new BadRequestAlertException("A new problemaJuridico cannot already have an ID", ENTITY_NAME, "idexists");
         }
         ProblemaJuridico result = problemaJuridicoService.save(problemaJuridico);
-        return ResponseEntity.created(new URI("/api/problema-juridicos/" + result.getId()))
+        return ResponseEntity
+            .created(new URI("/api/problema-juridicos/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
 
     /**
-     * {@code PUT  /problema-juridicos} : Updates an existing problemaJuridico.
+     * {@code PUT  /problema-juridicos/:id} : Updates an existing problemaJuridico.
      *
+     * @param id the id of the problemaJuridico to save.
      * @param problemaJuridico the problemaJuridico to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated problemaJuridico,
      * or with status {@code 400 (Bad Request)} if the problemaJuridico is not valid,
      * or with status {@code 500 (Internal Server Error)} if the problemaJuridico couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/problema-juridicos")
-    public ResponseEntity<ProblemaJuridico> updateProblemaJuridico(@RequestBody ProblemaJuridico problemaJuridico) throws URISyntaxException {
-        log.debug("REST request to update ProblemaJuridico : {}", problemaJuridico);
+    @PutMapping("/problema-juridicos/{id}")
+    public ResponseEntity<ProblemaJuridico> updateProblemaJuridico(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody ProblemaJuridico problemaJuridico
+    ) throws URISyntaxException {
+        log.debug("REST request to update ProblemaJuridico : {}, {}", id, problemaJuridico);
         if (problemaJuridico.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+        if (!Objects.equals(id, problemaJuridico.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!problemaJuridicoRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
         ProblemaJuridico result = problemaJuridicoService.save(problemaJuridico);
-        return ResponseEntity.ok()
+        return ResponseEntity
+            .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, problemaJuridico.getId().toString()))
             .body(result);
+    }
+
+    /**
+     * {@code PATCH  /problema-juridicos/:id} : Partial updates given fields of an existing problemaJuridico, field will ignore if it is null
+     *
+     * @param id the id of the problemaJuridico to save.
+     * @param problemaJuridico the problemaJuridico to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated problemaJuridico,
+     * or with status {@code 400 (Bad Request)} if the problemaJuridico is not valid,
+     * or with status {@code 404 (Not Found)} if the problemaJuridico is not found,
+     * or with status {@code 500 (Internal Server Error)} if the problemaJuridico couldn't be updated.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PatchMapping(value = "/problema-juridicos/{id}", consumes = "application/merge-patch+json")
+    public ResponseEntity<ProblemaJuridico> partialUpdateProblemaJuridico(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody ProblemaJuridico problemaJuridico
+    ) throws URISyntaxException {
+        log.debug("REST request to partial update ProblemaJuridico partially : {}, {}", id, problemaJuridico);
+        if (problemaJuridico.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        if (!Objects.equals(id, problemaJuridico.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!problemaJuridicoRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
+        Optional<ProblemaJuridico> result = problemaJuridicoService.partialUpdate(problemaJuridico);
+
+        return ResponseUtil.wrapOrNotFound(
+            result,
+            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, problemaJuridico.getId().toString())
+        );
     }
 
     /**
@@ -138,6 +196,9 @@ public class ProblemaJuridicoResource {
     public ResponseEntity<Void> deleteProblemaJuridico(@PathVariable Long id) {
         log.debug("REST request to delete ProblemaJuridico : {}", id);
         problemaJuridicoService.delete(id);
-        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
+        return ResponseEntity
+            .noContent()
+            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
+            .build();
     }
 }

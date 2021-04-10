@@ -2,15 +2,13 @@ package br.com.cidha.service;
 
 import br.com.cidha.domain.UnidadeConservacao;
 import br.com.cidha.repository.UnidadeConservacaoRepository;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 /**
  * Service Implementation for managing {@link UnidadeConservacao}.
@@ -39,6 +37,29 @@ public class UnidadeConservacaoService {
     }
 
     /**
+     * Partially update a unidadeConservacao.
+     *
+     * @param unidadeConservacao the entity to update partially.
+     * @return the persisted entity.
+     */
+    public Optional<UnidadeConservacao> partialUpdate(UnidadeConservacao unidadeConservacao) {
+        log.debug("Request to partially update UnidadeConservacao : {}", unidadeConservacao);
+
+        return unidadeConservacaoRepository
+            .findById(unidadeConservacao.getId())
+            .map(
+                existingUnidadeConservacao -> {
+                    if (unidadeConservacao.getDescricao() != null) {
+                        existingUnidadeConservacao.setDescricao(unidadeConservacao.getDescricao());
+                    }
+
+                    return existingUnidadeConservacao;
+                }
+            )
+            .map(unidadeConservacaoRepository::save);
+    }
+
+    /**
      * Get all the unidadeConservacaos.
      *
      * @param pageable the pagination information.
@@ -49,7 +70,6 @@ public class UnidadeConservacaoService {
         log.debug("Request to get all UnidadeConservacaos");
         return unidadeConservacaoRepository.findAll(pageable);
     }
-
 
     /**
      * Get one unidadeConservacao by id.

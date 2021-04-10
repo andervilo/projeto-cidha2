@@ -3,6 +3,7 @@
     "embargoDeclaracaoAgravo": {
       "home": {
         "title": "Embargo Declaracao Agravos",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Embargo Declaracao Agravo",
         "createOrEditLabel": "Criar ou editar Embargo Declaracao Agravo",
         "notFound": "Nenhum Embargo Declaracao Agravo encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Embargo Declaracao Agravo"
       },
+      "id": "ID",
       "descricao": "Descricao",
       "processo": "Processo"
     }

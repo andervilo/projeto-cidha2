@@ -1,24 +1,23 @@
 package br.com.cidha.repository;
 
 import br.com.cidha.domain.TerraIndigena;
-
+import java.util.List;
+import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.Optional;
-
 /**
- * Spring Data  repository for the TerraIndigena entity.
+ * Spring Data SQL repository for the TerraIndigena entity.
  */
 @Repository
 public interface TerraIndigenaRepository extends JpaRepository<TerraIndigena, Long>, JpaSpecificationExecutor<TerraIndigena> {
-
-    @Query(value = "select distinct terraIndigena from TerraIndigena terraIndigena left join fetch terraIndigena.etnias",
-        countQuery = "select count(distinct terraIndigena) from TerraIndigena terraIndigena")
+    @Query(
+        value = "select distinct terraIndigena from TerraIndigena terraIndigena left join fetch terraIndigena.etnias",
+        countQuery = "select count(distinct terraIndigena) from TerraIndigena terraIndigena"
+    )
     Page<TerraIndigena> findAllWithEagerRelationships(Pageable pageable);
 
     @Query("select distinct terraIndigena from TerraIndigena terraIndigena left join fetch terraIndigena.etnias")

@@ -1,40 +1,48 @@
 package br.com.cidha.web.rest;
 
-import br.com.cidha.CidhaApp;
-import br.com.cidha.domain.Processo;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.hasItem;
+import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
+import br.com.cidha.IntegrationTest;
+import br.com.cidha.domain.AtividadeExploracaoIlegal;
+import br.com.cidha.domain.Comarca;
 import br.com.cidha.domain.ConcessaoLiminar;
 import br.com.cidha.domain.ConcessaoLiminarCassada;
-import br.com.cidha.domain.EmbargoRespRe;
-import br.com.cidha.domain.EmbargoDeclaracaoAgravo;
 import br.com.cidha.domain.EmbargoDeclaracao;
+import br.com.cidha.domain.EmbargoDeclaracaoAgravo;
 import br.com.cidha.domain.EmbargoRecursoEspecial;
+import br.com.cidha.domain.EmbargoRespRe;
+import br.com.cidha.domain.EnvolvidosConflitoLitigio;
+import br.com.cidha.domain.Municipio;
+import br.com.cidha.domain.ParteInteresssada;
+import br.com.cidha.domain.ProblemaJuridico;
+import br.com.cidha.domain.Processo;
+import br.com.cidha.domain.ProcessoConflito;
+import br.com.cidha.domain.Quilombo;
+import br.com.cidha.domain.Relator;
+import br.com.cidha.domain.TerraIndigena;
+import br.com.cidha.domain.Territorio;
 import br.com.cidha.domain.TipoDecisao;
 import br.com.cidha.domain.TipoEmpreendimento;
-import br.com.cidha.domain.Comarca;
-import br.com.cidha.domain.Quilombo;
-import br.com.cidha.domain.Municipio;
-import br.com.cidha.domain.Territorio;
-import br.com.cidha.domain.AtividadeExploracaoIlegal;
 import br.com.cidha.domain.UnidadeConservacao;
-import br.com.cidha.domain.EnvolvidosConflitoLitigio;
-import br.com.cidha.domain.TerraIndigena;
-import br.com.cidha.domain.ProcessoConflito;
-import br.com.cidha.domain.ParteInteresssada;
-import br.com.cidha.domain.Relator;
-import br.com.cidha.domain.ProblemaJuridico;
 import br.com.cidha.repository.ProcessoRepository;
 import br.com.cidha.service.ProcessoService;
-import br.com.cidha.service.dto.ProcessoCriteria;
-import br.com.cidha.service.ProcessoQueryService;
-
+import br.com.cidha.service.criteria.ProcessoCriteria;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
+import javax.persistence.EntityManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
@@ -42,24 +50,15 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Base64Utils;
-import javax.persistence.EntityManager;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.hasItem;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Integration tests for the {@link ProcessoResource} REST controller.
  */
-@SpringBootTest(classes = CidhaApp.class)
+@IntegrationTest
 @ExtendWith(MockitoExtension.class)
 @AutoConfigureMockMvc
 @WithMockUser
-public class ProcessoResourceIT {
+class ProcessoResourceIT {
 
     private static final String DEFAULT_OFICIO = "AAAAAAAAAA";
     private static final String UPDATED_OFICIO = "BBBBBBBBBB";
@@ -97,6 +96,12 @@ public class ProcessoResourceIT {
     private static final String DEFAULT_APELACAO = "AAAAAAAAAA";
     private static final String UPDATED_APELACAO = "BBBBBBBBBB";
 
+    private static final String ENTITY_API_URL = "/api/processos";
+    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+
+    private static Random random = new Random();
+    private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
+
     @Autowired
     private ProcessoRepository processoRepository;
 
@@ -105,12 +110,6 @@ public class ProcessoResourceIT {
 
     @Mock
     private ProcessoService processoServiceMock;
-
-    @Autowired
-    private ProcessoService processoService;
-
-    @Autowired
-    private ProcessoQueryService processoQueryService;
 
     @Autowired
     private EntityManager em;
@@ -142,6 +141,7 @@ public class ProcessoResourceIT {
             .apelacao(DEFAULT_APELACAO);
         return processo;
     }
+
     /**
      * Create an updated entity for this test.
      *
@@ -172,12 +172,11 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void createProcesso() throws Exception {
+    void createProcesso() throws Exception {
         int databaseSizeBeforeCreate = processoRepository.findAll().size();
         // Create the Processo
-        restProcessoMockMvc.perform(post("/api/processos")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(processo)))
+        restProcessoMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(processo)))
             .andExpect(status().isCreated());
 
         // Validate the Processo in the database
@@ -191,25 +190,27 @@ public class ProcessoResourceIT {
         assertThat(testProcesso.getSubsecaoJudiciaria()).isEqualTo(DEFAULT_SUBSECAO_JUDICIARIA);
         assertThat(testProcesso.getTurmaTrf1()).isEqualTo(DEFAULT_TURMA_TRF_1);
         assertThat(testProcesso.getNumeroProcessoAdministrativo()).isEqualTo(DEFAULT_NUMERO_PROCESSO_ADMINISTRATIVO);
-        assertThat(testProcesso.getNumeroProcessoJudicialPrimeiraInstancia()).isEqualTo(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA);
-        assertThat(testProcesso.getNumeroProcessoJudicialPrimeiraInstanciaLink()).isEqualTo(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK);
-        assertThat(testProcesso.getNumeroProcessoJudicialPrimeiraInstanciaObservacoes()).isEqualTo(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_OBSERVACOES);
-        assertThat(testProcesso.isParecer()).isEqualTo(DEFAULT_PARECER);
+        assertThat(testProcesso.getNumeroProcessoJudicialPrimeiraInstancia())
+            .isEqualTo(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA);
+        assertThat(testProcesso.getNumeroProcessoJudicialPrimeiraInstanciaLink())
+            .isEqualTo(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK);
+        assertThat(testProcesso.getNumeroProcessoJudicialPrimeiraInstanciaObservacoes())
+            .isEqualTo(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_OBSERVACOES);
+        assertThat(testProcesso.getParecer()).isEqualTo(DEFAULT_PARECER);
         assertThat(testProcesso.getApelacao()).isEqualTo(DEFAULT_APELACAO);
     }
 
     @Test
     @Transactional
-    public void createProcessoWithExistingId() throws Exception {
-        int databaseSizeBeforeCreate = processoRepository.findAll().size();
-
+    void createProcessoWithExistingId() throws Exception {
         // Create the Processo with an existing ID
         processo.setId(1L);
 
+        int databaseSizeBeforeCreate = processoRepository.findAll().size();
+
         // An entity with an existing ID cannot be created, so this API call must fail
-        restProcessoMockMvc.perform(post("/api/processos")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(processo)))
+        restProcessoMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(processo)))
             .andExpect(status().isBadRequest());
 
         // Validate the Processo in the database
@@ -217,15 +218,15 @@ public class ProcessoResourceIT {
         assertThat(processoList).hasSize(databaseSizeBeforeCreate);
     }
 
-
     @Test
     @Transactional
-    public void getAllProcessos() throws Exception {
+    void getAllProcessos() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
         // Get all the processoList
-        restProcessoMockMvc.perform(get("/api/processos?sort=id,desc"))
+        restProcessoMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(processo.getId().intValue())))
@@ -236,41 +237,49 @@ public class ProcessoResourceIT {
             .andExpect(jsonPath("$.[*].subsecaoJudiciaria").value(hasItem(DEFAULT_SUBSECAO_JUDICIARIA)))
             .andExpect(jsonPath("$.[*].turmaTrf1").value(hasItem(DEFAULT_TURMA_TRF_1)))
             .andExpect(jsonPath("$.[*].numeroProcessoAdministrativo").value(hasItem(DEFAULT_NUMERO_PROCESSO_ADMINISTRATIVO)))
-            .andExpect(jsonPath("$.[*].numeroProcessoJudicialPrimeiraInstancia").value(hasItem(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA)))
-            .andExpect(jsonPath("$.[*].numeroProcessoJudicialPrimeiraInstanciaLink").value(hasItem(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK)))
-            .andExpect(jsonPath("$.[*].numeroProcessoJudicialPrimeiraInstanciaObservacoes").value(hasItem(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_OBSERVACOES.toString())))
+            .andExpect(
+                jsonPath("$.[*].numeroProcessoJudicialPrimeiraInstancia")
+                    .value(hasItem(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA))
+            )
+            .andExpect(
+                jsonPath("$.[*].numeroProcessoJudicialPrimeiraInstanciaLink")
+                    .value(hasItem(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK))
+            )
+            .andExpect(
+                jsonPath("$.[*].numeroProcessoJudicialPrimeiraInstanciaObservacoes")
+                    .value(hasItem(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_OBSERVACOES.toString()))
+            )
             .andExpect(jsonPath("$.[*].parecer").value(hasItem(DEFAULT_PARECER.booleanValue())))
             .andExpect(jsonPath("$.[*].apelacao").value(hasItem(DEFAULT_APELACAO)));
     }
-    
-    @SuppressWarnings({"unchecked"})
-    public void getAllProcessosWithEagerRelationshipsIsEnabled() throws Exception {
+
+    @SuppressWarnings({ "unchecked" })
+    void getAllProcessosWithEagerRelationshipsIsEnabled() throws Exception {
         when(processoServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
 
-        restProcessoMockMvc.perform(get("/api/processos?eagerload=true"))
-            .andExpect(status().isOk());
+        restProcessoMockMvc.perform(get(ENTITY_API_URL + "?eagerload=true")).andExpect(status().isOk());
 
         verify(processoServiceMock, times(1)).findAllWithEagerRelationships(any());
     }
 
-    @SuppressWarnings({"unchecked"})
-    public void getAllProcessosWithEagerRelationshipsIsNotEnabled() throws Exception {
+    @SuppressWarnings({ "unchecked" })
+    void getAllProcessosWithEagerRelationshipsIsNotEnabled() throws Exception {
         when(processoServiceMock.findAllWithEagerRelationships(any())).thenReturn(new PageImpl(new ArrayList<>()));
 
-        restProcessoMockMvc.perform(get("/api/processos?eagerload=true"))
-            .andExpect(status().isOk());
+        restProcessoMockMvc.perform(get(ENTITY_API_URL + "?eagerload=true")).andExpect(status().isOk());
 
         verify(processoServiceMock, times(1)).findAllWithEagerRelationships(any());
     }
 
     @Test
     @Transactional
-    public void getProcesso() throws Exception {
+    void getProcesso() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
         // Get the processo
-        restProcessoMockMvc.perform(get("/api/processos/{id}", processo.getId()))
+        restProcessoMockMvc
+            .perform(get(ENTITY_API_URL_ID, processo.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(processo.getId().intValue()))
@@ -282,16 +291,20 @@ public class ProcessoResourceIT {
             .andExpect(jsonPath("$.turmaTrf1").value(DEFAULT_TURMA_TRF_1))
             .andExpect(jsonPath("$.numeroProcessoAdministrativo").value(DEFAULT_NUMERO_PROCESSO_ADMINISTRATIVO))
             .andExpect(jsonPath("$.numeroProcessoJudicialPrimeiraInstancia").value(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA))
-            .andExpect(jsonPath("$.numeroProcessoJudicialPrimeiraInstanciaLink").value(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK))
-            .andExpect(jsonPath("$.numeroProcessoJudicialPrimeiraInstanciaObservacoes").value(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_OBSERVACOES.toString()))
+            .andExpect(
+                jsonPath("$.numeroProcessoJudicialPrimeiraInstanciaLink").value(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK)
+            )
+            .andExpect(
+                jsonPath("$.numeroProcessoJudicialPrimeiraInstanciaObservacoes")
+                    .value(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_OBSERVACOES.toString())
+            )
             .andExpect(jsonPath("$.parecer").value(DEFAULT_PARECER.booleanValue()))
             .andExpect(jsonPath("$.apelacao").value(DEFAULT_APELACAO));
     }
 
-
     @Test
     @Transactional
-    public void getProcessosByIdFiltering() throws Exception {
+    void getProcessosByIdFiltering() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -307,10 +320,9 @@ public class ProcessoResourceIT {
         defaultProcessoShouldNotBeFound("id.lessThan=" + id);
     }
 
-
     @Test
     @Transactional
-    public void getAllProcessosByOficioIsEqualToSomething() throws Exception {
+    void getAllProcessosByOficioIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -323,7 +335,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosByOficioIsNotEqualToSomething() throws Exception {
+    void getAllProcessosByOficioIsNotEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -336,7 +348,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosByOficioIsInShouldWork() throws Exception {
+    void getAllProcessosByOficioIsInShouldWork() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -349,7 +361,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosByOficioIsNullOrNotNull() throws Exception {
+    void getAllProcessosByOficioIsNullOrNotNull() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -359,9 +371,10 @@ public class ProcessoResourceIT {
         // Get all the processoList where oficio is null
         defaultProcessoShouldNotBeFound("oficio.specified=false");
     }
-                @Test
+
+    @Test
     @Transactional
-    public void getAllProcessosByOficioContainsSomething() throws Exception {
+    void getAllProcessosByOficioContainsSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -374,7 +387,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosByOficioNotContainsSomething() throws Exception {
+    void getAllProcessosByOficioNotContainsSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -385,10 +398,9 @@ public class ProcessoResourceIT {
         defaultProcessoShouldBeFound("oficio.doesNotContain=" + UPDATED_OFICIO);
     }
 
-
     @Test
     @Transactional
-    public void getAllProcessosByLinkUnicoIsEqualToSomething() throws Exception {
+    void getAllProcessosByLinkUnicoIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -401,7 +413,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosByLinkUnicoIsNotEqualToSomething() throws Exception {
+    void getAllProcessosByLinkUnicoIsNotEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -414,7 +426,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosByLinkUnicoIsInShouldWork() throws Exception {
+    void getAllProcessosByLinkUnicoIsInShouldWork() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -427,7 +439,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosByLinkUnicoIsNullOrNotNull() throws Exception {
+    void getAllProcessosByLinkUnicoIsNullOrNotNull() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -437,9 +449,10 @@ public class ProcessoResourceIT {
         // Get all the processoList where linkUnico is null
         defaultProcessoShouldNotBeFound("linkUnico.specified=false");
     }
-                @Test
+
+    @Test
     @Transactional
-    public void getAllProcessosByLinkUnicoContainsSomething() throws Exception {
+    void getAllProcessosByLinkUnicoContainsSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -452,7 +465,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosByLinkUnicoNotContainsSomething() throws Exception {
+    void getAllProcessosByLinkUnicoNotContainsSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -463,10 +476,9 @@ public class ProcessoResourceIT {
         defaultProcessoShouldBeFound("linkUnico.doesNotContain=" + UPDATED_LINK_UNICO);
     }
 
-
     @Test
     @Transactional
-    public void getAllProcessosByLinkTrfIsEqualToSomething() throws Exception {
+    void getAllProcessosByLinkTrfIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -479,7 +491,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosByLinkTrfIsNotEqualToSomething() throws Exception {
+    void getAllProcessosByLinkTrfIsNotEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -492,7 +504,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosByLinkTrfIsInShouldWork() throws Exception {
+    void getAllProcessosByLinkTrfIsInShouldWork() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -505,7 +517,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosByLinkTrfIsNullOrNotNull() throws Exception {
+    void getAllProcessosByLinkTrfIsNullOrNotNull() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -515,9 +527,10 @@ public class ProcessoResourceIT {
         // Get all the processoList where linkTrf is null
         defaultProcessoShouldNotBeFound("linkTrf.specified=false");
     }
-                @Test
+
+    @Test
     @Transactional
-    public void getAllProcessosByLinkTrfContainsSomething() throws Exception {
+    void getAllProcessosByLinkTrfContainsSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -530,7 +543,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosByLinkTrfNotContainsSomething() throws Exception {
+    void getAllProcessosByLinkTrfNotContainsSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -541,10 +554,9 @@ public class ProcessoResourceIT {
         defaultProcessoShouldBeFound("linkTrf.doesNotContain=" + UPDATED_LINK_TRF);
     }
 
-
     @Test
     @Transactional
-    public void getAllProcessosBySubsecaoJudiciariaIsEqualToSomething() throws Exception {
+    void getAllProcessosBySubsecaoJudiciariaIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -557,7 +569,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosBySubsecaoJudiciariaIsNotEqualToSomething() throws Exception {
+    void getAllProcessosBySubsecaoJudiciariaIsNotEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -570,7 +582,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosBySubsecaoJudiciariaIsInShouldWork() throws Exception {
+    void getAllProcessosBySubsecaoJudiciariaIsInShouldWork() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -583,7 +595,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosBySubsecaoJudiciariaIsNullOrNotNull() throws Exception {
+    void getAllProcessosBySubsecaoJudiciariaIsNullOrNotNull() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -593,9 +605,10 @@ public class ProcessoResourceIT {
         // Get all the processoList where subsecaoJudiciaria is null
         defaultProcessoShouldNotBeFound("subsecaoJudiciaria.specified=false");
     }
-                @Test
+
+    @Test
     @Transactional
-    public void getAllProcessosBySubsecaoJudiciariaContainsSomething() throws Exception {
+    void getAllProcessosBySubsecaoJudiciariaContainsSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -608,7 +621,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosBySubsecaoJudiciariaNotContainsSomething() throws Exception {
+    void getAllProcessosBySubsecaoJudiciariaNotContainsSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -619,10 +632,9 @@ public class ProcessoResourceIT {
         defaultProcessoShouldBeFound("subsecaoJudiciaria.doesNotContain=" + UPDATED_SUBSECAO_JUDICIARIA);
     }
 
-
     @Test
     @Transactional
-    public void getAllProcessosByTurmaTrf1IsEqualToSomething() throws Exception {
+    void getAllProcessosByTurmaTrf1IsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -635,7 +647,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosByTurmaTrf1IsNotEqualToSomething() throws Exception {
+    void getAllProcessosByTurmaTrf1IsNotEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -648,7 +660,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosByTurmaTrf1IsInShouldWork() throws Exception {
+    void getAllProcessosByTurmaTrf1IsInShouldWork() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -661,7 +673,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosByTurmaTrf1IsNullOrNotNull() throws Exception {
+    void getAllProcessosByTurmaTrf1IsNullOrNotNull() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -671,9 +683,10 @@ public class ProcessoResourceIT {
         // Get all the processoList where turmaTrf1 is null
         defaultProcessoShouldNotBeFound("turmaTrf1.specified=false");
     }
-                @Test
+
+    @Test
     @Transactional
-    public void getAllProcessosByTurmaTrf1ContainsSomething() throws Exception {
+    void getAllProcessosByTurmaTrf1ContainsSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -686,7 +699,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosByTurmaTrf1NotContainsSomething() throws Exception {
+    void getAllProcessosByTurmaTrf1NotContainsSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -697,10 +710,9 @@ public class ProcessoResourceIT {
         defaultProcessoShouldBeFound("turmaTrf1.doesNotContain=" + UPDATED_TURMA_TRF_1);
     }
 
-
     @Test
     @Transactional
-    public void getAllProcessosByNumeroProcessoAdministrativoIsEqualToSomething() throws Exception {
+    void getAllProcessosByNumeroProcessoAdministrativoIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -713,7 +725,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosByNumeroProcessoAdministrativoIsNotEqualToSomething() throws Exception {
+    void getAllProcessosByNumeroProcessoAdministrativoIsNotEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -726,12 +738,14 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosByNumeroProcessoAdministrativoIsInShouldWork() throws Exception {
+    void getAllProcessosByNumeroProcessoAdministrativoIsInShouldWork() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
         // Get all the processoList where numeroProcessoAdministrativo in DEFAULT_NUMERO_PROCESSO_ADMINISTRATIVO or UPDATED_NUMERO_PROCESSO_ADMINISTRATIVO
-        defaultProcessoShouldBeFound("numeroProcessoAdministrativo.in=" + DEFAULT_NUMERO_PROCESSO_ADMINISTRATIVO + "," + UPDATED_NUMERO_PROCESSO_ADMINISTRATIVO);
+        defaultProcessoShouldBeFound(
+            "numeroProcessoAdministrativo.in=" + DEFAULT_NUMERO_PROCESSO_ADMINISTRATIVO + "," + UPDATED_NUMERO_PROCESSO_ADMINISTRATIVO
+        );
 
         // Get all the processoList where numeroProcessoAdministrativo equals to UPDATED_NUMERO_PROCESSO_ADMINISTRATIVO
         defaultProcessoShouldNotBeFound("numeroProcessoAdministrativo.in=" + UPDATED_NUMERO_PROCESSO_ADMINISTRATIVO);
@@ -739,7 +753,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosByNumeroProcessoAdministrativoIsNullOrNotNull() throws Exception {
+    void getAllProcessosByNumeroProcessoAdministrativoIsNullOrNotNull() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -749,9 +763,10 @@ public class ProcessoResourceIT {
         // Get all the processoList where numeroProcessoAdministrativo is null
         defaultProcessoShouldNotBeFound("numeroProcessoAdministrativo.specified=false");
     }
-                @Test
+
+    @Test
     @Transactional
-    public void getAllProcessosByNumeroProcessoAdministrativoContainsSomething() throws Exception {
+    void getAllProcessosByNumeroProcessoAdministrativoContainsSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -764,7 +779,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosByNumeroProcessoAdministrativoNotContainsSomething() throws Exception {
+    void getAllProcessosByNumeroProcessoAdministrativoNotContainsSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -775,49 +790,63 @@ public class ProcessoResourceIT {
         defaultProcessoShouldBeFound("numeroProcessoAdministrativo.doesNotContain=" + UPDATED_NUMERO_PROCESSO_ADMINISTRATIVO);
     }
 
-
     @Test
     @Transactional
-    public void getAllProcessosByNumeroProcessoJudicialPrimeiraInstanciaIsEqualToSomething() throws Exception {
+    void getAllProcessosByNumeroProcessoJudicialPrimeiraInstanciaIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
         // Get all the processoList where numeroProcessoJudicialPrimeiraInstancia equals to DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA
-        defaultProcessoShouldBeFound("numeroProcessoJudicialPrimeiraInstancia.equals=" + DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA);
+        defaultProcessoShouldBeFound(
+            "numeroProcessoJudicialPrimeiraInstancia.equals=" + DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA
+        );
 
         // Get all the processoList where numeroProcessoJudicialPrimeiraInstancia equals to UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA
-        defaultProcessoShouldNotBeFound("numeroProcessoJudicialPrimeiraInstancia.equals=" + UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA);
+        defaultProcessoShouldNotBeFound(
+            "numeroProcessoJudicialPrimeiraInstancia.equals=" + UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA
+        );
     }
 
     @Test
     @Transactional
-    public void getAllProcessosByNumeroProcessoJudicialPrimeiraInstanciaIsNotEqualToSomething() throws Exception {
+    void getAllProcessosByNumeroProcessoJudicialPrimeiraInstanciaIsNotEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
         // Get all the processoList where numeroProcessoJudicialPrimeiraInstancia not equals to DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA
-        defaultProcessoShouldNotBeFound("numeroProcessoJudicialPrimeiraInstancia.notEquals=" + DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA);
+        defaultProcessoShouldNotBeFound(
+            "numeroProcessoJudicialPrimeiraInstancia.notEquals=" + DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA
+        );
 
         // Get all the processoList where numeroProcessoJudicialPrimeiraInstancia not equals to UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA
-        defaultProcessoShouldBeFound("numeroProcessoJudicialPrimeiraInstancia.notEquals=" + UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA);
+        defaultProcessoShouldBeFound(
+            "numeroProcessoJudicialPrimeiraInstancia.notEquals=" + UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA
+        );
     }
 
     @Test
     @Transactional
-    public void getAllProcessosByNumeroProcessoJudicialPrimeiraInstanciaIsInShouldWork() throws Exception {
+    void getAllProcessosByNumeroProcessoJudicialPrimeiraInstanciaIsInShouldWork() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
         // Get all the processoList where numeroProcessoJudicialPrimeiraInstancia in DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA or UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA
-        defaultProcessoShouldBeFound("numeroProcessoJudicialPrimeiraInstancia.in=" + DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA + "," + UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA);
+        defaultProcessoShouldBeFound(
+            "numeroProcessoJudicialPrimeiraInstancia.in=" +
+            DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA +
+            "," +
+            UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA
+        );
 
         // Get all the processoList where numeroProcessoJudicialPrimeiraInstancia equals to UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA
-        defaultProcessoShouldNotBeFound("numeroProcessoJudicialPrimeiraInstancia.in=" + UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA);
+        defaultProcessoShouldNotBeFound(
+            "numeroProcessoJudicialPrimeiraInstancia.in=" + UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA
+        );
     }
 
     @Test
     @Transactional
-    public void getAllProcessosByNumeroProcessoJudicialPrimeiraInstanciaIsNullOrNotNull() throws Exception {
+    void getAllProcessosByNumeroProcessoJudicialPrimeiraInstanciaIsNullOrNotNull() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -827,75 +856,98 @@ public class ProcessoResourceIT {
         // Get all the processoList where numeroProcessoJudicialPrimeiraInstancia is null
         defaultProcessoShouldNotBeFound("numeroProcessoJudicialPrimeiraInstancia.specified=false");
     }
-                @Test
+
+    @Test
     @Transactional
-    public void getAllProcessosByNumeroProcessoJudicialPrimeiraInstanciaContainsSomething() throws Exception {
+    void getAllProcessosByNumeroProcessoJudicialPrimeiraInstanciaContainsSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
         // Get all the processoList where numeroProcessoJudicialPrimeiraInstancia contains DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA
-        defaultProcessoShouldBeFound("numeroProcessoJudicialPrimeiraInstancia.contains=" + DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA);
+        defaultProcessoShouldBeFound(
+            "numeroProcessoJudicialPrimeiraInstancia.contains=" + DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA
+        );
 
         // Get all the processoList where numeroProcessoJudicialPrimeiraInstancia contains UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA
-        defaultProcessoShouldNotBeFound("numeroProcessoJudicialPrimeiraInstancia.contains=" + UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA);
+        defaultProcessoShouldNotBeFound(
+            "numeroProcessoJudicialPrimeiraInstancia.contains=" + UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA
+        );
     }
 
     @Test
     @Transactional
-    public void getAllProcessosByNumeroProcessoJudicialPrimeiraInstanciaNotContainsSomething() throws Exception {
+    void getAllProcessosByNumeroProcessoJudicialPrimeiraInstanciaNotContainsSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
         // Get all the processoList where numeroProcessoJudicialPrimeiraInstancia does not contain DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA
-        defaultProcessoShouldNotBeFound("numeroProcessoJudicialPrimeiraInstancia.doesNotContain=" + DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA);
+        defaultProcessoShouldNotBeFound(
+            "numeroProcessoJudicialPrimeiraInstancia.doesNotContain=" + DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA
+        );
 
         // Get all the processoList where numeroProcessoJudicialPrimeiraInstancia does not contain UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA
-        defaultProcessoShouldBeFound("numeroProcessoJudicialPrimeiraInstancia.doesNotContain=" + UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA);
+        defaultProcessoShouldBeFound(
+            "numeroProcessoJudicialPrimeiraInstancia.doesNotContain=" + UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA
+        );
     }
-
 
     @Test
     @Transactional
-    public void getAllProcessosByNumeroProcessoJudicialPrimeiraInstanciaLinkIsEqualToSomething() throws Exception {
+    void getAllProcessosByNumeroProcessoJudicialPrimeiraInstanciaLinkIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
         // Get all the processoList where numeroProcessoJudicialPrimeiraInstanciaLink equals to DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK
-        defaultProcessoShouldBeFound("numeroProcessoJudicialPrimeiraInstanciaLink.equals=" + DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK);
+        defaultProcessoShouldBeFound(
+            "numeroProcessoJudicialPrimeiraInstanciaLink.equals=" + DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK
+        );
 
         // Get all the processoList where numeroProcessoJudicialPrimeiraInstanciaLink equals to UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK
-        defaultProcessoShouldNotBeFound("numeroProcessoJudicialPrimeiraInstanciaLink.equals=" + UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK);
+        defaultProcessoShouldNotBeFound(
+            "numeroProcessoJudicialPrimeiraInstanciaLink.equals=" + UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK
+        );
     }
 
     @Test
     @Transactional
-    public void getAllProcessosByNumeroProcessoJudicialPrimeiraInstanciaLinkIsNotEqualToSomething() throws Exception {
+    void getAllProcessosByNumeroProcessoJudicialPrimeiraInstanciaLinkIsNotEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
         // Get all the processoList where numeroProcessoJudicialPrimeiraInstanciaLink not equals to DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK
-        defaultProcessoShouldNotBeFound("numeroProcessoJudicialPrimeiraInstanciaLink.notEquals=" + DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK);
+        defaultProcessoShouldNotBeFound(
+            "numeroProcessoJudicialPrimeiraInstanciaLink.notEquals=" + DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK
+        );
 
         // Get all the processoList where numeroProcessoJudicialPrimeiraInstanciaLink not equals to UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK
-        defaultProcessoShouldBeFound("numeroProcessoJudicialPrimeiraInstanciaLink.notEquals=" + UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK);
+        defaultProcessoShouldBeFound(
+            "numeroProcessoJudicialPrimeiraInstanciaLink.notEquals=" + UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK
+        );
     }
 
     @Test
     @Transactional
-    public void getAllProcessosByNumeroProcessoJudicialPrimeiraInstanciaLinkIsInShouldWork() throws Exception {
+    void getAllProcessosByNumeroProcessoJudicialPrimeiraInstanciaLinkIsInShouldWork() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
         // Get all the processoList where numeroProcessoJudicialPrimeiraInstanciaLink in DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK or UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK
-        defaultProcessoShouldBeFound("numeroProcessoJudicialPrimeiraInstanciaLink.in=" + DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK + "," + UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK);
+        defaultProcessoShouldBeFound(
+            "numeroProcessoJudicialPrimeiraInstanciaLink.in=" +
+            DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK +
+            "," +
+            UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK
+        );
 
         // Get all the processoList where numeroProcessoJudicialPrimeiraInstanciaLink equals to UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK
-        defaultProcessoShouldNotBeFound("numeroProcessoJudicialPrimeiraInstanciaLink.in=" + UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK);
+        defaultProcessoShouldNotBeFound(
+            "numeroProcessoJudicialPrimeiraInstanciaLink.in=" + UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK
+        );
     }
 
     @Test
     @Transactional
-    public void getAllProcessosByNumeroProcessoJudicialPrimeiraInstanciaLinkIsNullOrNotNull() throws Exception {
+    void getAllProcessosByNumeroProcessoJudicialPrimeiraInstanciaLinkIsNullOrNotNull() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -905,36 +957,44 @@ public class ProcessoResourceIT {
         // Get all the processoList where numeroProcessoJudicialPrimeiraInstanciaLink is null
         defaultProcessoShouldNotBeFound("numeroProcessoJudicialPrimeiraInstanciaLink.specified=false");
     }
-                @Test
+
+    @Test
     @Transactional
-    public void getAllProcessosByNumeroProcessoJudicialPrimeiraInstanciaLinkContainsSomething() throws Exception {
+    void getAllProcessosByNumeroProcessoJudicialPrimeiraInstanciaLinkContainsSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
         // Get all the processoList where numeroProcessoJudicialPrimeiraInstanciaLink contains DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK
-        defaultProcessoShouldBeFound("numeroProcessoJudicialPrimeiraInstanciaLink.contains=" + DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK);
+        defaultProcessoShouldBeFound(
+            "numeroProcessoJudicialPrimeiraInstanciaLink.contains=" + DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK
+        );
 
         // Get all the processoList where numeroProcessoJudicialPrimeiraInstanciaLink contains UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK
-        defaultProcessoShouldNotBeFound("numeroProcessoJudicialPrimeiraInstanciaLink.contains=" + UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK);
+        defaultProcessoShouldNotBeFound(
+            "numeroProcessoJudicialPrimeiraInstanciaLink.contains=" + UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK
+        );
     }
 
     @Test
     @Transactional
-    public void getAllProcessosByNumeroProcessoJudicialPrimeiraInstanciaLinkNotContainsSomething() throws Exception {
+    void getAllProcessosByNumeroProcessoJudicialPrimeiraInstanciaLinkNotContainsSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
         // Get all the processoList where numeroProcessoJudicialPrimeiraInstanciaLink does not contain DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK
-        defaultProcessoShouldNotBeFound("numeroProcessoJudicialPrimeiraInstanciaLink.doesNotContain=" + DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK);
+        defaultProcessoShouldNotBeFound(
+            "numeroProcessoJudicialPrimeiraInstanciaLink.doesNotContain=" + DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK
+        );
 
         // Get all the processoList where numeroProcessoJudicialPrimeiraInstanciaLink does not contain UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK
-        defaultProcessoShouldBeFound("numeroProcessoJudicialPrimeiraInstanciaLink.doesNotContain=" + UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK);
+        defaultProcessoShouldBeFound(
+            "numeroProcessoJudicialPrimeiraInstanciaLink.doesNotContain=" + UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK
+        );
     }
-
 
     @Test
     @Transactional
-    public void getAllProcessosByParecerIsEqualToSomething() throws Exception {
+    void getAllProcessosByParecerIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -947,7 +1007,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosByParecerIsNotEqualToSomething() throws Exception {
+    void getAllProcessosByParecerIsNotEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -960,7 +1020,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosByParecerIsInShouldWork() throws Exception {
+    void getAllProcessosByParecerIsInShouldWork() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -973,7 +1033,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosByParecerIsNullOrNotNull() throws Exception {
+    void getAllProcessosByParecerIsNullOrNotNull() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -986,7 +1046,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosByApelacaoIsEqualToSomething() throws Exception {
+    void getAllProcessosByApelacaoIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -999,7 +1059,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosByApelacaoIsNotEqualToSomething() throws Exception {
+    void getAllProcessosByApelacaoIsNotEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -1012,7 +1072,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosByApelacaoIsInShouldWork() throws Exception {
+    void getAllProcessosByApelacaoIsInShouldWork() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -1025,7 +1085,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosByApelacaoIsNullOrNotNull() throws Exception {
+    void getAllProcessosByApelacaoIsNullOrNotNull() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -1035,9 +1095,10 @@ public class ProcessoResourceIT {
         // Get all the processoList where apelacao is null
         defaultProcessoShouldNotBeFound("apelacao.specified=false");
     }
-                @Test
+
+    @Test
     @Transactional
-    public void getAllProcessosByApelacaoContainsSomething() throws Exception {
+    void getAllProcessosByApelacaoContainsSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -1050,7 +1111,7 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getAllProcessosByApelacaoNotContainsSomething() throws Exception {
+    void getAllProcessosByApelacaoNotContainsSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
 
@@ -1061,10 +1122,9 @@ public class ProcessoResourceIT {
         defaultProcessoShouldBeFound("apelacao.doesNotContain=" + UPDATED_APELACAO);
     }
 
-
     @Test
     @Transactional
-    public void getAllProcessosByConcessaoLiminarIsEqualToSomething() throws Exception {
+    void getAllProcessosByConcessaoLiminarIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
         ConcessaoLiminar concessaoLiminar = ConcessaoLiminarResourceIT.createEntity(em);
@@ -1077,14 +1137,13 @@ public class ProcessoResourceIT {
         // Get all the processoList where concessaoLiminar equals to concessaoLiminarId
         defaultProcessoShouldBeFound("concessaoLiminarId.equals=" + concessaoLiminarId);
 
-        // Get all the processoList where concessaoLiminar equals to concessaoLiminarId + 1
+        // Get all the processoList where concessaoLiminar equals to (concessaoLiminarId + 1)
         defaultProcessoShouldNotBeFound("concessaoLiminarId.equals=" + (concessaoLiminarId + 1));
     }
 
-
     @Test
     @Transactional
-    public void getAllProcessosByConcessaoLiminarCassadaIsEqualToSomething() throws Exception {
+    void getAllProcessosByConcessaoLiminarCassadaIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
         ConcessaoLiminarCassada concessaoLiminarCassada = ConcessaoLiminarCassadaResourceIT.createEntity(em);
@@ -1097,14 +1156,13 @@ public class ProcessoResourceIT {
         // Get all the processoList where concessaoLiminarCassada equals to concessaoLiminarCassadaId
         defaultProcessoShouldBeFound("concessaoLiminarCassadaId.equals=" + concessaoLiminarCassadaId);
 
-        // Get all the processoList where concessaoLiminarCassada equals to concessaoLiminarCassadaId + 1
+        // Get all the processoList where concessaoLiminarCassada equals to (concessaoLiminarCassadaId + 1)
         defaultProcessoShouldNotBeFound("concessaoLiminarCassadaId.equals=" + (concessaoLiminarCassadaId + 1));
     }
 
-
     @Test
     @Transactional
-    public void getAllProcessosByEmbargoRespReIsEqualToSomething() throws Exception {
+    void getAllProcessosByEmbargoRespReIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
         EmbargoRespRe embargoRespRe = EmbargoRespReResourceIT.createEntity(em);
@@ -1117,14 +1175,13 @@ public class ProcessoResourceIT {
         // Get all the processoList where embargoRespRe equals to embargoRespReId
         defaultProcessoShouldBeFound("embargoRespReId.equals=" + embargoRespReId);
 
-        // Get all the processoList where embargoRespRe equals to embargoRespReId + 1
+        // Get all the processoList where embargoRespRe equals to (embargoRespReId + 1)
         defaultProcessoShouldNotBeFound("embargoRespReId.equals=" + (embargoRespReId + 1));
     }
 
-
     @Test
     @Transactional
-    public void getAllProcessosByEmbargoDeclaracaoAgravoIsEqualToSomething() throws Exception {
+    void getAllProcessosByEmbargoDeclaracaoAgravoIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
         EmbargoDeclaracaoAgravo embargoDeclaracaoAgravo = EmbargoDeclaracaoAgravoResourceIT.createEntity(em);
@@ -1137,14 +1194,13 @@ public class ProcessoResourceIT {
         // Get all the processoList where embargoDeclaracaoAgravo equals to embargoDeclaracaoAgravoId
         defaultProcessoShouldBeFound("embargoDeclaracaoAgravoId.equals=" + embargoDeclaracaoAgravoId);
 
-        // Get all the processoList where embargoDeclaracaoAgravo equals to embargoDeclaracaoAgravoId + 1
+        // Get all the processoList where embargoDeclaracaoAgravo equals to (embargoDeclaracaoAgravoId + 1)
         defaultProcessoShouldNotBeFound("embargoDeclaracaoAgravoId.equals=" + (embargoDeclaracaoAgravoId + 1));
     }
 
-
     @Test
     @Transactional
-    public void getAllProcessosByEmbargoDeclaracaoIsEqualToSomething() throws Exception {
+    void getAllProcessosByEmbargoDeclaracaoIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
         EmbargoDeclaracao embargoDeclaracao = EmbargoDeclaracaoResourceIT.createEntity(em);
@@ -1157,14 +1213,13 @@ public class ProcessoResourceIT {
         // Get all the processoList where embargoDeclaracao equals to embargoDeclaracaoId
         defaultProcessoShouldBeFound("embargoDeclaracaoId.equals=" + embargoDeclaracaoId);
 
-        // Get all the processoList where embargoDeclaracao equals to embargoDeclaracaoId + 1
+        // Get all the processoList where embargoDeclaracao equals to (embargoDeclaracaoId + 1)
         defaultProcessoShouldNotBeFound("embargoDeclaracaoId.equals=" + (embargoDeclaracaoId + 1));
     }
 
-
     @Test
     @Transactional
-    public void getAllProcessosByEmbargoRecursoEspecialIsEqualToSomething() throws Exception {
+    void getAllProcessosByEmbargoRecursoEspecialIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
         EmbargoRecursoEspecial embargoRecursoEspecial = EmbargoRecursoEspecialResourceIT.createEntity(em);
@@ -1177,14 +1232,13 @@ public class ProcessoResourceIT {
         // Get all the processoList where embargoRecursoEspecial equals to embargoRecursoEspecialId
         defaultProcessoShouldBeFound("embargoRecursoEspecialId.equals=" + embargoRecursoEspecialId);
 
-        // Get all the processoList where embargoRecursoEspecial equals to embargoRecursoEspecialId + 1
+        // Get all the processoList where embargoRecursoEspecial equals to (embargoRecursoEspecialId + 1)
         defaultProcessoShouldNotBeFound("embargoRecursoEspecialId.equals=" + (embargoRecursoEspecialId + 1));
     }
 
-
     @Test
     @Transactional
-    public void getAllProcessosByTipoDecisaoIsEqualToSomething() throws Exception {
+    void getAllProcessosByTipoDecisaoIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
         TipoDecisao tipoDecisao = TipoDecisaoResourceIT.createEntity(em);
@@ -1197,14 +1251,13 @@ public class ProcessoResourceIT {
         // Get all the processoList where tipoDecisao equals to tipoDecisaoId
         defaultProcessoShouldBeFound("tipoDecisaoId.equals=" + tipoDecisaoId);
 
-        // Get all the processoList where tipoDecisao equals to tipoDecisaoId + 1
+        // Get all the processoList where tipoDecisao equals to (tipoDecisaoId + 1)
         defaultProcessoShouldNotBeFound("tipoDecisaoId.equals=" + (tipoDecisaoId + 1));
     }
 
-
     @Test
     @Transactional
-    public void getAllProcessosByTipoEmpreendimentoIsEqualToSomething() throws Exception {
+    void getAllProcessosByTipoEmpreendimentoIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
         TipoEmpreendimento tipoEmpreendimento = TipoEmpreendimentoResourceIT.createEntity(em);
@@ -1217,14 +1270,13 @@ public class ProcessoResourceIT {
         // Get all the processoList where tipoEmpreendimento equals to tipoEmpreendimentoId
         defaultProcessoShouldBeFound("tipoEmpreendimentoId.equals=" + tipoEmpreendimentoId);
 
-        // Get all the processoList where tipoEmpreendimento equals to tipoEmpreendimentoId + 1
+        // Get all the processoList where tipoEmpreendimento equals to (tipoEmpreendimentoId + 1)
         defaultProcessoShouldNotBeFound("tipoEmpreendimentoId.equals=" + (tipoEmpreendimentoId + 1));
     }
 
-
     @Test
     @Transactional
-    public void getAllProcessosByComarcaIsEqualToSomething() throws Exception {
+    void getAllProcessosByComarcaIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
         Comarca comarca = ComarcaResourceIT.createEntity(em);
@@ -1237,14 +1289,13 @@ public class ProcessoResourceIT {
         // Get all the processoList where comarca equals to comarcaId
         defaultProcessoShouldBeFound("comarcaId.equals=" + comarcaId);
 
-        // Get all the processoList where comarca equals to comarcaId + 1
+        // Get all the processoList where comarca equals to (comarcaId + 1)
         defaultProcessoShouldNotBeFound("comarcaId.equals=" + (comarcaId + 1));
     }
 
-
     @Test
     @Transactional
-    public void getAllProcessosByQuilomboIsEqualToSomething() throws Exception {
+    void getAllProcessosByQuilomboIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
         Quilombo quilombo = QuilomboResourceIT.createEntity(em);
@@ -1257,14 +1308,13 @@ public class ProcessoResourceIT {
         // Get all the processoList where quilombo equals to quilomboId
         defaultProcessoShouldBeFound("quilomboId.equals=" + quilomboId);
 
-        // Get all the processoList where quilombo equals to quilomboId + 1
+        // Get all the processoList where quilombo equals to (quilomboId + 1)
         defaultProcessoShouldNotBeFound("quilomboId.equals=" + (quilomboId + 1));
     }
 
-
     @Test
     @Transactional
-    public void getAllProcessosByMunicipioIsEqualToSomething() throws Exception {
+    void getAllProcessosByMunicipioIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
         Municipio municipio = MunicipioResourceIT.createEntity(em);
@@ -1277,14 +1327,13 @@ public class ProcessoResourceIT {
         // Get all the processoList where municipio equals to municipioId
         defaultProcessoShouldBeFound("municipioId.equals=" + municipioId);
 
-        // Get all the processoList where municipio equals to municipioId + 1
+        // Get all the processoList where municipio equals to (municipioId + 1)
         defaultProcessoShouldNotBeFound("municipioId.equals=" + (municipioId + 1));
     }
 
-
     @Test
     @Transactional
-    public void getAllProcessosByTerritorioIsEqualToSomething() throws Exception {
+    void getAllProcessosByTerritorioIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
         Territorio territorio = TerritorioResourceIT.createEntity(em);
@@ -1297,14 +1346,13 @@ public class ProcessoResourceIT {
         // Get all the processoList where territorio equals to territorioId
         defaultProcessoShouldBeFound("territorioId.equals=" + territorioId);
 
-        // Get all the processoList where territorio equals to territorioId + 1
+        // Get all the processoList where territorio equals to (territorioId + 1)
         defaultProcessoShouldNotBeFound("territorioId.equals=" + (territorioId + 1));
     }
 
-
     @Test
     @Transactional
-    public void getAllProcessosByAtividadeExploracaoIlegalIsEqualToSomething() throws Exception {
+    void getAllProcessosByAtividadeExploracaoIlegalIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
         AtividadeExploracaoIlegal atividadeExploracaoIlegal = AtividadeExploracaoIlegalResourceIT.createEntity(em);
@@ -1317,14 +1365,13 @@ public class ProcessoResourceIT {
         // Get all the processoList where atividadeExploracaoIlegal equals to atividadeExploracaoIlegalId
         defaultProcessoShouldBeFound("atividadeExploracaoIlegalId.equals=" + atividadeExploracaoIlegalId);
 
-        // Get all the processoList where atividadeExploracaoIlegal equals to atividadeExploracaoIlegalId + 1
+        // Get all the processoList where atividadeExploracaoIlegal equals to (atividadeExploracaoIlegalId + 1)
         defaultProcessoShouldNotBeFound("atividadeExploracaoIlegalId.equals=" + (atividadeExploracaoIlegalId + 1));
     }
 
-
     @Test
     @Transactional
-    public void getAllProcessosByUnidadeConservacaoIsEqualToSomething() throws Exception {
+    void getAllProcessosByUnidadeConservacaoIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
         UnidadeConservacao unidadeConservacao = UnidadeConservacaoResourceIT.createEntity(em);
@@ -1337,14 +1384,13 @@ public class ProcessoResourceIT {
         // Get all the processoList where unidadeConservacao equals to unidadeConservacaoId
         defaultProcessoShouldBeFound("unidadeConservacaoId.equals=" + unidadeConservacaoId);
 
-        // Get all the processoList where unidadeConservacao equals to unidadeConservacaoId + 1
+        // Get all the processoList where unidadeConservacao equals to (unidadeConservacaoId + 1)
         defaultProcessoShouldNotBeFound("unidadeConservacaoId.equals=" + (unidadeConservacaoId + 1));
     }
 
-
     @Test
     @Transactional
-    public void getAllProcessosByEnvolvidosConflitoLitigioIsEqualToSomething() throws Exception {
+    void getAllProcessosByEnvolvidosConflitoLitigioIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
         EnvolvidosConflitoLitigio envolvidosConflitoLitigio = EnvolvidosConflitoLitigioResourceIT.createEntity(em);
@@ -1357,14 +1403,13 @@ public class ProcessoResourceIT {
         // Get all the processoList where envolvidosConflitoLitigio equals to envolvidosConflitoLitigioId
         defaultProcessoShouldBeFound("envolvidosConflitoLitigioId.equals=" + envolvidosConflitoLitigioId);
 
-        // Get all the processoList where envolvidosConflitoLitigio equals to envolvidosConflitoLitigioId + 1
+        // Get all the processoList where envolvidosConflitoLitigio equals to (envolvidosConflitoLitigioId + 1)
         defaultProcessoShouldNotBeFound("envolvidosConflitoLitigioId.equals=" + (envolvidosConflitoLitigioId + 1));
     }
 
-
     @Test
     @Transactional
-    public void getAllProcessosByTerraIndigenaIsEqualToSomething() throws Exception {
+    void getAllProcessosByTerraIndigenaIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
         TerraIndigena terraIndigena = TerraIndigenaResourceIT.createEntity(em);
@@ -1377,14 +1422,13 @@ public class ProcessoResourceIT {
         // Get all the processoList where terraIndigena equals to terraIndigenaId
         defaultProcessoShouldBeFound("terraIndigenaId.equals=" + terraIndigenaId);
 
-        // Get all the processoList where terraIndigena equals to terraIndigenaId + 1
+        // Get all the processoList where terraIndigena equals to (terraIndigenaId + 1)
         defaultProcessoShouldNotBeFound("terraIndigenaId.equals=" + (terraIndigenaId + 1));
     }
 
-
     @Test
     @Transactional
-    public void getAllProcessosByProcessoConflitoIsEqualToSomething() throws Exception {
+    void getAllProcessosByProcessoConflitoIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
         ProcessoConflito processoConflito = ProcessoConflitoResourceIT.createEntity(em);
@@ -1397,14 +1441,13 @@ public class ProcessoResourceIT {
         // Get all the processoList where processoConflito equals to processoConflitoId
         defaultProcessoShouldBeFound("processoConflitoId.equals=" + processoConflitoId);
 
-        // Get all the processoList where processoConflito equals to processoConflitoId + 1
+        // Get all the processoList where processoConflito equals to (processoConflitoId + 1)
         defaultProcessoShouldNotBeFound("processoConflitoId.equals=" + (processoConflitoId + 1));
     }
 
-
     @Test
     @Transactional
-    public void getAllProcessosByParteInteresssadaIsEqualToSomething() throws Exception {
+    void getAllProcessosByParteInteresssadaIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
         ParteInteresssada parteInteresssada = ParteInteresssadaResourceIT.createEntity(em);
@@ -1417,14 +1460,13 @@ public class ProcessoResourceIT {
         // Get all the processoList where parteInteresssada equals to parteInteresssadaId
         defaultProcessoShouldBeFound("parteInteresssadaId.equals=" + parteInteresssadaId);
 
-        // Get all the processoList where parteInteresssada equals to parteInteresssadaId + 1
+        // Get all the processoList where parteInteresssada equals to (parteInteresssadaId + 1)
         defaultProcessoShouldNotBeFound("parteInteresssadaId.equals=" + (parteInteresssadaId + 1));
     }
 
-
     @Test
     @Transactional
-    public void getAllProcessosByRelatorIsEqualToSomething() throws Exception {
+    void getAllProcessosByRelatorIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
         Relator relator = RelatorResourceIT.createEntity(em);
@@ -1437,14 +1479,13 @@ public class ProcessoResourceIT {
         // Get all the processoList where relator equals to relatorId
         defaultProcessoShouldBeFound("relatorId.equals=" + relatorId);
 
-        // Get all the processoList where relator equals to relatorId + 1
+        // Get all the processoList where relator equals to (relatorId + 1)
         defaultProcessoShouldNotBeFound("relatorId.equals=" + (relatorId + 1));
     }
 
-
     @Test
     @Transactional
-    public void getAllProcessosByProblemaJuridicoIsEqualToSomething() throws Exception {
+    void getAllProcessosByProblemaJuridicoIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
         ProblemaJuridico problemaJuridico = ProblemaJuridicoResourceIT.createEntity(em);
@@ -1457,7 +1498,7 @@ public class ProcessoResourceIT {
         // Get all the processoList where problemaJuridico equals to problemaJuridicoId
         defaultProcessoShouldBeFound("problemaJuridicoId.equals=" + problemaJuridicoId);
 
-        // Get all the processoList where problemaJuridico equals to problemaJuridicoId + 1
+        // Get all the processoList where problemaJuridico equals to (problemaJuridicoId + 1)
         defaultProcessoShouldNotBeFound("problemaJuridicoId.equals=" + (problemaJuridicoId + 1));
     }
 
@@ -1465,7 +1506,8 @@ public class ProcessoResourceIT {
      * Executes the search, and checks that the default entity is returned.
      */
     private void defaultProcessoShouldBeFound(String filter) throws Exception {
-        restProcessoMockMvc.perform(get("/api/processos?sort=id,desc&" + filter))
+        restProcessoMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(processo.getId().intValue())))
@@ -1476,14 +1518,24 @@ public class ProcessoResourceIT {
             .andExpect(jsonPath("$.[*].subsecaoJudiciaria").value(hasItem(DEFAULT_SUBSECAO_JUDICIARIA)))
             .andExpect(jsonPath("$.[*].turmaTrf1").value(hasItem(DEFAULT_TURMA_TRF_1)))
             .andExpect(jsonPath("$.[*].numeroProcessoAdministrativo").value(hasItem(DEFAULT_NUMERO_PROCESSO_ADMINISTRATIVO)))
-            .andExpect(jsonPath("$.[*].numeroProcessoJudicialPrimeiraInstancia").value(hasItem(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA)))
-            .andExpect(jsonPath("$.[*].numeroProcessoJudicialPrimeiraInstanciaLink").value(hasItem(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK)))
-            .andExpect(jsonPath("$.[*].numeroProcessoJudicialPrimeiraInstanciaObservacoes").value(hasItem(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_OBSERVACOES.toString())))
+            .andExpect(
+                jsonPath("$.[*].numeroProcessoJudicialPrimeiraInstancia")
+                    .value(hasItem(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA))
+            )
+            .andExpect(
+                jsonPath("$.[*].numeroProcessoJudicialPrimeiraInstanciaLink")
+                    .value(hasItem(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK))
+            )
+            .andExpect(
+                jsonPath("$.[*].numeroProcessoJudicialPrimeiraInstanciaObservacoes")
+                    .value(hasItem(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_OBSERVACOES.toString()))
+            )
             .andExpect(jsonPath("$.[*].parecer").value(hasItem(DEFAULT_PARECER.booleanValue())))
             .andExpect(jsonPath("$.[*].apelacao").value(hasItem(DEFAULT_APELACAO)));
 
         // Check, that the count call also returns 1
-        restProcessoMockMvc.perform(get("/api/processos/count?sort=id,desc&" + filter))
+        restProcessoMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("1"));
@@ -1493,14 +1545,16 @@ public class ProcessoResourceIT {
      * Executes the search, and checks that the default entity is not returned.
      */
     private void defaultProcessoShouldNotBeFound(String filter) throws Exception {
-        restProcessoMockMvc.perform(get("/api/processos?sort=id,desc&" + filter))
+        restProcessoMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$").isEmpty());
 
         // Check, that the count call also returns 0
-        restProcessoMockMvc.perform(get("/api/processos/count?sort=id,desc&" + filter))
+        restProcessoMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("0"));
@@ -1508,17 +1562,16 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void getNonExistingProcesso() throws Exception {
+    void getNonExistingProcesso() throws Exception {
         // Get the processo
-        restProcessoMockMvc.perform(get("/api/processos/{id}", Long.MAX_VALUE))
-            .andExpect(status().isNotFound());
+        restProcessoMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
     @Test
     @Transactional
-    public void updateProcesso() throws Exception {
+    void putNewProcesso() throws Exception {
         // Initialize the database
-        processoService.save(processo);
+        processoRepository.saveAndFlush(processo);
 
         int databaseSizeBeforeUpdate = processoRepository.findAll().size();
 
@@ -1540,9 +1593,12 @@ public class ProcessoResourceIT {
             .parecer(UPDATED_PARECER)
             .apelacao(UPDATED_APELACAO);
 
-        restProcessoMockMvc.perform(put("/api/processos")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(updatedProcesso)))
+        restProcessoMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, updatedProcesso.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(updatedProcesso))
+            )
             .andExpect(status().isOk());
 
         // Validate the Processo in the database
@@ -1556,22 +1612,29 @@ public class ProcessoResourceIT {
         assertThat(testProcesso.getSubsecaoJudiciaria()).isEqualTo(UPDATED_SUBSECAO_JUDICIARIA);
         assertThat(testProcesso.getTurmaTrf1()).isEqualTo(UPDATED_TURMA_TRF_1);
         assertThat(testProcesso.getNumeroProcessoAdministrativo()).isEqualTo(UPDATED_NUMERO_PROCESSO_ADMINISTRATIVO);
-        assertThat(testProcesso.getNumeroProcessoJudicialPrimeiraInstancia()).isEqualTo(UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA);
-        assertThat(testProcesso.getNumeroProcessoJudicialPrimeiraInstanciaLink()).isEqualTo(UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK);
-        assertThat(testProcesso.getNumeroProcessoJudicialPrimeiraInstanciaObservacoes()).isEqualTo(UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_OBSERVACOES);
-        assertThat(testProcesso.isParecer()).isEqualTo(UPDATED_PARECER);
+        assertThat(testProcesso.getNumeroProcessoJudicialPrimeiraInstancia())
+            .isEqualTo(UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA);
+        assertThat(testProcesso.getNumeroProcessoJudicialPrimeiraInstanciaLink())
+            .isEqualTo(UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK);
+        assertThat(testProcesso.getNumeroProcessoJudicialPrimeiraInstanciaObservacoes())
+            .isEqualTo(UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_OBSERVACOES);
+        assertThat(testProcesso.getParecer()).isEqualTo(UPDATED_PARECER);
         assertThat(testProcesso.getApelacao()).isEqualTo(UPDATED_APELACAO);
     }
 
     @Test
     @Transactional
-    public void updateNonExistingProcesso() throws Exception {
+    void putNonExistingProcesso() throws Exception {
         int databaseSizeBeforeUpdate = processoRepository.findAll().size();
+        processo.setId(count.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restProcessoMockMvc.perform(put("/api/processos")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(processo)))
+        restProcessoMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, processo.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(processo))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the Processo in the database
@@ -1581,15 +1644,213 @@ public class ProcessoResourceIT {
 
     @Test
     @Transactional
-    public void deleteProcesso() throws Exception {
+    void putWithIdMismatchProcesso() throws Exception {
+        int databaseSizeBeforeUpdate = processoRepository.findAll().size();
+        processo.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restProcessoMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(processo))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the Processo in the database
+        List<Processo> processoList = processoRepository.findAll();
+        assertThat(processoList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void putWithMissingIdPathParamProcesso() throws Exception {
+        int databaseSizeBeforeUpdate = processoRepository.findAll().size();
+        processo.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restProcessoMockMvc
+            .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(processo)))
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the Processo in the database
+        List<Processo> processoList = processoRepository.findAll();
+        assertThat(processoList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void partialUpdateProcessoWithPatch() throws Exception {
         // Initialize the database
-        processoService.save(processo);
+        processoRepository.saveAndFlush(processo);
+
+        int databaseSizeBeforeUpdate = processoRepository.findAll().size();
+
+        // Update the processo using partial update
+        Processo partialUpdatedProcesso = new Processo();
+        partialUpdatedProcesso.setId(processo.getId());
+
+        partialUpdatedProcesso
+            .oficio(UPDATED_OFICIO)
+            .linkUnico(UPDATED_LINK_UNICO)
+            .linkTrf(UPDATED_LINK_TRF)
+            .subsecaoJudiciaria(UPDATED_SUBSECAO_JUDICIARIA)
+            .turmaTrf1(UPDATED_TURMA_TRF_1)
+            .numeroProcessoAdministrativo(UPDATED_NUMERO_PROCESSO_ADMINISTRATIVO)
+            .numeroProcessoJudicialPrimeiraInstanciaLink(UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK)
+            .apelacao(UPDATED_APELACAO);
+
+        restProcessoMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedProcesso.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedProcesso))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the Processo in the database
+        List<Processo> processoList = processoRepository.findAll();
+        assertThat(processoList).hasSize(databaseSizeBeforeUpdate);
+        Processo testProcesso = processoList.get(processoList.size() - 1);
+        assertThat(testProcesso.getOficio()).isEqualTo(UPDATED_OFICIO);
+        assertThat(testProcesso.getAssunto()).isEqualTo(DEFAULT_ASSUNTO);
+        assertThat(testProcesso.getLinkUnico()).isEqualTo(UPDATED_LINK_UNICO);
+        assertThat(testProcesso.getLinkTrf()).isEqualTo(UPDATED_LINK_TRF);
+        assertThat(testProcesso.getSubsecaoJudiciaria()).isEqualTo(UPDATED_SUBSECAO_JUDICIARIA);
+        assertThat(testProcesso.getTurmaTrf1()).isEqualTo(UPDATED_TURMA_TRF_1);
+        assertThat(testProcesso.getNumeroProcessoAdministrativo()).isEqualTo(UPDATED_NUMERO_PROCESSO_ADMINISTRATIVO);
+        assertThat(testProcesso.getNumeroProcessoJudicialPrimeiraInstancia())
+            .isEqualTo(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA);
+        assertThat(testProcesso.getNumeroProcessoJudicialPrimeiraInstanciaLink())
+            .isEqualTo(UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK);
+        assertThat(testProcesso.getNumeroProcessoJudicialPrimeiraInstanciaObservacoes())
+            .isEqualTo(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_OBSERVACOES);
+        assertThat(testProcesso.getParecer()).isEqualTo(DEFAULT_PARECER);
+        assertThat(testProcesso.getApelacao()).isEqualTo(UPDATED_APELACAO);
+    }
+
+    @Test
+    @Transactional
+    void fullUpdateProcessoWithPatch() throws Exception {
+        // Initialize the database
+        processoRepository.saveAndFlush(processo);
+
+        int databaseSizeBeforeUpdate = processoRepository.findAll().size();
+
+        // Update the processo using partial update
+        Processo partialUpdatedProcesso = new Processo();
+        partialUpdatedProcesso.setId(processo.getId());
+
+        partialUpdatedProcesso
+            .oficio(UPDATED_OFICIO)
+            .assunto(UPDATED_ASSUNTO)
+            .linkUnico(UPDATED_LINK_UNICO)
+            .linkTrf(UPDATED_LINK_TRF)
+            .subsecaoJudiciaria(UPDATED_SUBSECAO_JUDICIARIA)
+            .turmaTrf1(UPDATED_TURMA_TRF_1)
+            .numeroProcessoAdministrativo(UPDATED_NUMERO_PROCESSO_ADMINISTRATIVO)
+            .numeroProcessoJudicialPrimeiraInstancia(UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA)
+            .numeroProcessoJudicialPrimeiraInstanciaLink(UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK)
+            .numeroProcessoJudicialPrimeiraInstanciaObservacoes(UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_OBSERVACOES)
+            .parecer(UPDATED_PARECER)
+            .apelacao(UPDATED_APELACAO);
+
+        restProcessoMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedProcesso.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedProcesso))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the Processo in the database
+        List<Processo> processoList = processoRepository.findAll();
+        assertThat(processoList).hasSize(databaseSizeBeforeUpdate);
+        Processo testProcesso = processoList.get(processoList.size() - 1);
+        assertThat(testProcesso.getOficio()).isEqualTo(UPDATED_OFICIO);
+        assertThat(testProcesso.getAssunto()).isEqualTo(UPDATED_ASSUNTO);
+        assertThat(testProcesso.getLinkUnico()).isEqualTo(UPDATED_LINK_UNICO);
+        assertThat(testProcesso.getLinkTrf()).isEqualTo(UPDATED_LINK_TRF);
+        assertThat(testProcesso.getSubsecaoJudiciaria()).isEqualTo(UPDATED_SUBSECAO_JUDICIARIA);
+        assertThat(testProcesso.getTurmaTrf1()).isEqualTo(UPDATED_TURMA_TRF_1);
+        assertThat(testProcesso.getNumeroProcessoAdministrativo()).isEqualTo(UPDATED_NUMERO_PROCESSO_ADMINISTRATIVO);
+        assertThat(testProcesso.getNumeroProcessoJudicialPrimeiraInstancia())
+            .isEqualTo(UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA);
+        assertThat(testProcesso.getNumeroProcessoJudicialPrimeiraInstanciaLink())
+            .isEqualTo(UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK);
+        assertThat(testProcesso.getNumeroProcessoJudicialPrimeiraInstanciaObservacoes())
+            .isEqualTo(UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_OBSERVACOES);
+        assertThat(testProcesso.getParecer()).isEqualTo(UPDATED_PARECER);
+        assertThat(testProcesso.getApelacao()).isEqualTo(UPDATED_APELACAO);
+    }
+
+    @Test
+    @Transactional
+    void patchNonExistingProcesso() throws Exception {
+        int databaseSizeBeforeUpdate = processoRepository.findAll().size();
+        processo.setId(count.incrementAndGet());
+
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
+        restProcessoMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, processo.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(processo))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the Processo in the database
+        List<Processo> processoList = processoRepository.findAll();
+        assertThat(processoList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithIdMismatchProcesso() throws Exception {
+        int databaseSizeBeforeUpdate = processoRepository.findAll().size();
+        processo.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restProcessoMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(processo))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the Processo in the database
+        List<Processo> processoList = processoRepository.findAll();
+        assertThat(processoList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithMissingIdPathParamProcesso() throws Exception {
+        int databaseSizeBeforeUpdate = processoRepository.findAll().size();
+        processo.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restProcessoMockMvc
+            .perform(patch(ENTITY_API_URL).contentType("application/merge-patch+json").content(TestUtil.convertObjectToJsonBytes(processo)))
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the Processo in the database
+        List<Processo> processoList = processoRepository.findAll();
+        assertThat(processoList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void deleteProcesso() throws Exception {
+        // Initialize the database
+        processoRepository.saveAndFlush(processo);
 
         int databaseSizeBeforeDelete = processoRepository.findAll().size();
 
         // Delete the processo
-        restProcessoMockMvc.perform(delete("/api/processos/{id}", processo.getId())
-            .accept(MediaType.APPLICATION_JSON))
+        restProcessoMockMvc
+            .perform(delete(ENTITY_API_URL_ID, processo.getId()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col, Label } from 'reactstrap';
 import { AvFeedback, AvForm, AvGroup, AvInput, AvField } from 'availity-reactstrap-validation';
-import { Translate, translate, ICrudGetAction, ICrudGetAllAction, setFileData, byteSize, ICrudPutAction } from 'react-jhipster';
+import { setFileData, byteSize, Translate, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
@@ -17,8 +17,7 @@ import { mapIdList } from 'app/shared/util/entity-utils';
 export interface IJurisprudenciaUpdateProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
 
 export const JurisprudenciaUpdate = (props: IJurisprudenciaUpdateProps) => {
-  const [problemaJuridicoId, setProblemaJuridicoId] = useState('0');
-  const [isNew, setIsNew] = useState(!props.match.params || !props.match.params.id);
+  const [isNew] = useState(!props.match.params || !props.match.params.id);
 
   const { jurisprudenciaEntity, problemaJuridicos, loading, updating } = props;
 
@@ -71,7 +70,7 @@ export const JurisprudenciaUpdate = (props: IJurisprudenciaUpdateProps) => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="cidhaApp.jurisprudencia.home.createOrEditLabel">
+          <h2 id="cidhaApp.jurisprudencia.home.createOrEditLabel" data-cy="JurisprudenciaCreateUpdateHeading">
             <Translate contentKey="cidhaApp.jurisprudencia.home.createOrEditLabel">Create or edit a Jurisprudencia</Translate>
           </h2>
         </Col>
@@ -94,19 +93,34 @@ export const JurisprudenciaUpdate = (props: IJurisprudenciaUpdateProps) => {
                 <Label id="jurisprudenciaCitadaDescricaoLabel" for="jurisprudencia-jurisprudenciaCitadaDescricao">
                   <Translate contentKey="cidhaApp.jurisprudencia.jurisprudenciaCitadaDescricao">Jurisprudencia Citada Descricao</Translate>
                 </Label>
-                <AvInput id="jurisprudencia-jurisprudenciaCitadaDescricao" type="textarea" name="jurisprudenciaCitadaDescricao" />
+                <AvInput
+                  id="jurisprudencia-jurisprudenciaCitadaDescricao"
+                  data-cy="jurisprudenciaCitadaDescricao"
+                  type="textarea"
+                  name="jurisprudenciaCitadaDescricao"
+                />
               </AvGroup>
               <AvGroup>
                 <Label id="folhasJurisprudenciaCitadaLabel" for="jurisprudencia-folhasJurisprudenciaCitada">
                   <Translate contentKey="cidhaApp.jurisprudencia.folhasJurisprudenciaCitada">Folhas Jurisprudencia Citada</Translate>
                 </Label>
-                <AvField id="jurisprudencia-folhasJurisprudenciaCitada" type="text" name="folhasJurisprudenciaCitada" />
+                <AvField
+                  id="jurisprudencia-folhasJurisprudenciaCitada"
+                  data-cy="folhasJurisprudenciaCitada"
+                  type="text"
+                  name="folhasJurisprudenciaCitada"
+                />
               </AvGroup>
               <AvGroup>
                 <Label id="jurisprudenciaSugeridaLabel" for="jurisprudencia-jurisprudenciaSugerida">
                   <Translate contentKey="cidhaApp.jurisprudencia.jurisprudenciaSugerida">Jurisprudencia Sugerida</Translate>
                 </Label>
-                <AvInput id="jurisprudencia-jurisprudenciaSugerida" type="textarea" name="jurisprudenciaSugerida" />
+                <AvInput
+                  id="jurisprudencia-jurisprudenciaSugerida"
+                  data-cy="jurisprudenciaSugerida"
+                  type="textarea"
+                  name="jurisprudenciaSugerida"
+                />
               </AvGroup>
               <Button tag={Link} id="cancel-save" to="/jurisprudencia" replace color="info">
                 <FontAwesomeIcon icon="arrow-left" />
@@ -116,7 +130,7 @@ export const JurisprudenciaUpdate = (props: IJurisprudenciaUpdateProps) => {
                 </span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp;
                 <Translate contentKey="entity.action.save">Save</Translate>

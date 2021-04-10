@@ -1,14 +1,12 @@
 package br.com.cidha.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
-import javax.persistence.*;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.*;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /**
  * A ParteInteresssada.
@@ -33,14 +31,41 @@ public class ParteInteresssada implements Serializable {
 
     @ManyToMany
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JoinTable(name = "parte_interesssada_representante_legal",
-               joinColumns = @JoinColumn(name = "parte_interesssada_id", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name = "representante_legal_id", referencedColumnName = "id"))
+    @JoinTable(
+        name = "rel_parte_interesssada__representante_legal",
+        joinColumns = @JoinColumn(name = "parte_interesssada_id"),
+        inverseJoinColumns = @JoinColumn(name = "representante_legal_id")
+    )
+    @JsonIgnoreProperties(value = { "tipoRepresentante", "processoConflitos" }, allowSetters = true)
     private Set<RepresentanteLegal> representanteLegals = new HashSet<>();
 
     @ManyToMany(mappedBy = "parteInteresssadas")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnore
+    @JsonIgnoreProperties(
+        value = {
+            "concessaoLiminars",
+            "concessaoLiminarCassadas",
+            "embargoRespRes",
+            "embargoDeclaracaoAgravos",
+            "embargoDeclaracaos",
+            "embargoRecursoEspecials",
+            "tipoDecisao",
+            "tipoEmpreendimento",
+            "comarcas",
+            "quilombos",
+            "municipios",
+            "territorios",
+            "atividadeExploracaoIlegals",
+            "unidadeConservacaos",
+            "envolvidosConflitoLitigios",
+            "terraIndigenas",
+            "processoConflitos",
+            "parteInteresssadas",
+            "relators",
+            "problemaJuridicos",
+        },
+        allowSetters = true
+    )
     private Set<Processo> processos = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -52,8 +77,13 @@ public class ParteInteresssada implements Serializable {
         this.id = id;
     }
 
+    public ParteInteresssada id(Long id) {
+        this.id = id;
+        return this;
+    }
+
     public String getNome() {
-        return nome;
+        return this.nome;
     }
 
     public ParteInteresssada nome(String nome) {
@@ -66,7 +96,7 @@ public class ParteInteresssada implements Serializable {
     }
 
     public String getClassificacao() {
-        return classificacao;
+        return this.classificacao;
     }
 
     public ParteInteresssada classificacao(String classificacao) {
@@ -79,11 +109,11 @@ public class ParteInteresssada implements Serializable {
     }
 
     public Set<RepresentanteLegal> getRepresentanteLegals() {
-        return representanteLegals;
+        return this.representanteLegals;
     }
 
     public ParteInteresssada representanteLegals(Set<RepresentanteLegal> representanteLegals) {
-        this.representanteLegals = representanteLegals;
+        this.setRepresentanteLegals(representanteLegals);
         return this;
     }
 
@@ -104,11 +134,11 @@ public class ParteInteresssada implements Serializable {
     }
 
     public Set<Processo> getProcessos() {
-        return processos;
+        return this.processos;
     }
 
     public ParteInteresssada processos(Set<Processo> processos) {
-        this.processos = processos;
+        this.setProcessos(processos);
         return this;
     }
 
@@ -125,8 +155,15 @@ public class ParteInteresssada implements Serializable {
     }
 
     public void setProcessos(Set<Processo> processos) {
+        if (this.processos != null) {
+            this.processos.forEach(i -> i.removeParteInteresssada(this));
+        }
+        if (processos != null) {
+            processos.forEach(i -> i.addParteInteresssada(this));
+        }
         this.processos = processos;
     }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -142,7 +179,8 @@ public class ParteInteresssada implements Serializable {
 
     @Override
     public int hashCode() {
-        return 31;
+        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        return getClass().hashCode();
     }
 
     // prettier-ignore

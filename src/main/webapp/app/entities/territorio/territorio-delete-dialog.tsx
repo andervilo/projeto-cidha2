@@ -2,10 +2,9 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
-import { Translate, ICrudGetAction, ICrudDeleteAction } from 'react-jhipster';
+import { Translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { ITerritorio } from 'app/shared/model/territorio.model';
 import { IRootState } from 'app/shared/reducers';
 import { getEntity, deleteEntity } from './territorio.reducer';
 
@@ -33,7 +32,7 @@ export const TerritorioDeleteDialog = (props: ITerritorioDeleteDialogProps) => {
   const { territorioEntity } = props;
   return (
     <Modal isOpen toggle={handleClose}>
-      <ModalHeader toggle={handleClose}>
+      <ModalHeader toggle={handleClose} data-cy="territorioDeleteDialogHeading">
         <Translate contentKey="entity.delete.title">Confirm delete operation</Translate>
       </ModalHeader>
       <ModalBody id="cidhaApp.territorio.delete.question">
@@ -47,7 +46,7 @@ export const TerritorioDeleteDialog = (props: ITerritorioDeleteDialogProps) => {
           &nbsp;
           <Translate contentKey="entity.action.cancel">Cancel</Translate>
         </Button>
-        <Button id="jhi-confirm-delete-territorio" color="danger" onClick={confirmDelete}>
+        <Button id="jhi-confirm-delete-territorio" data-cy="entityConfirmDeleteButton" color="danger" onClick={confirmDelete}>
           <FontAwesomeIcon icon="trash" />
           &nbsp;
           <Translate contentKey="entity.action.delete">Delete</Translate>

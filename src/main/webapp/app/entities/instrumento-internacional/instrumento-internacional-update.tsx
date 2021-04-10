@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col, Label } from 'reactstrap';
 import { AvFeedback, AvForm, AvGroup, AvInput, AvField } from 'availity-reactstrap-validation';
-import { Translate, translate, ICrudGetAction, ICrudGetAllAction, setFileData, byteSize, ICrudPutAction } from 'react-jhipster';
+import { setFileData, byteSize, Translate, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
@@ -17,8 +17,7 @@ import { mapIdList } from 'app/shared/util/entity-utils';
 export interface IInstrumentoInternacionalUpdateProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
 
 export const InstrumentoInternacionalUpdate = (props: IInstrumentoInternacionalUpdateProps) => {
-  const [problemaJuridicoId, setProblemaJuridicoId] = useState('0');
-  const [isNew, setIsNew] = useState(!props.match.params || !props.match.params.id);
+  const [isNew] = useState(!props.match.params || !props.match.params.id);
 
   const { instrumentoInternacionalEntity, problemaJuridicos, loading, updating } = props;
 
@@ -71,7 +70,7 @@ export const InstrumentoInternacionalUpdate = (props: IInstrumentoInternacionalU
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="cidhaApp.instrumentoInternacional.home.createOrEditLabel">
+          <h2 id="cidhaApp.instrumentoInternacional.home.createOrEditLabel" data-cy="InstrumentoInternacionalCreateUpdateHeading">
             <Translate contentKey="cidhaApp.instrumentoInternacional.home.createOrEditLabel">
               Create or edit a InstrumentoInternacional
             </Translate>
@@ -103,6 +102,7 @@ export const InstrumentoInternacionalUpdate = (props: IInstrumentoInternacionalU
                 </Label>
                 <AvInput
                   id="instrumento-internacional-instrumentoInternacionalCitadoDescricao"
+                  data-cy="instrumentoInternacionalCitadoDescricao"
                   type="textarea"
                   name="instrumentoInternacionalCitadoDescricao"
                 />
@@ -113,7 +113,12 @@ export const InstrumentoInternacionalUpdate = (props: IInstrumentoInternacionalU
                     Folhas Instrumento Internacional
                   </Translate>
                 </Label>
-                <AvField id="instrumento-internacional-folhasInstrumentoInternacional" type="text" name="folhasInstrumentoInternacional" />
+                <AvField
+                  id="instrumento-internacional-folhasInstrumentoInternacional"
+                  data-cy="folhasInstrumentoInternacional"
+                  type="text"
+                  name="folhasInstrumentoInternacional"
+                />
               </AvGroup>
               <AvGroup>
                 <Label id="instrumentoInternacionalSugeridoLabel" for="instrumento-internacional-instrumentoInternacionalSugerido">
@@ -123,6 +128,7 @@ export const InstrumentoInternacionalUpdate = (props: IInstrumentoInternacionalU
                 </Label>
                 <AvInput
                   id="instrumento-internacional-instrumentoInternacionalSugerido"
+                  data-cy="instrumentoInternacionalSugerido"
                   type="textarea"
                   name="instrumentoInternacionalSugerido"
                 />
@@ -135,7 +141,7 @@ export const InstrumentoInternacionalUpdate = (props: IInstrumentoInternacionalU
                 </span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp;
                 <Translate contentKey="entity.action.save">Save</Translate>

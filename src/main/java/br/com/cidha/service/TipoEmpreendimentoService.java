@@ -2,15 +2,13 @@ package br.com.cidha.service;
 
 import br.com.cidha.domain.TipoEmpreendimento;
 import br.com.cidha.repository.TipoEmpreendimentoRepository;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 /**
  * Service Implementation for managing {@link TipoEmpreendimento}.
@@ -39,6 +37,29 @@ public class TipoEmpreendimentoService {
     }
 
     /**
+     * Partially update a tipoEmpreendimento.
+     *
+     * @param tipoEmpreendimento the entity to update partially.
+     * @return the persisted entity.
+     */
+    public Optional<TipoEmpreendimento> partialUpdate(TipoEmpreendimento tipoEmpreendimento) {
+        log.debug("Request to partially update TipoEmpreendimento : {}", tipoEmpreendimento);
+
+        return tipoEmpreendimentoRepository
+            .findById(tipoEmpreendimento.getId())
+            .map(
+                existingTipoEmpreendimento -> {
+                    if (tipoEmpreendimento.getDescricao() != null) {
+                        existingTipoEmpreendimento.setDescricao(tipoEmpreendimento.getDescricao());
+                    }
+
+                    return existingTipoEmpreendimento;
+                }
+            )
+            .map(tipoEmpreendimentoRepository::save);
+    }
+
+    /**
      * Get all the tipoEmpreendimentos.
      *
      * @param pageable the pagination information.
@@ -49,7 +70,6 @@ public class TipoEmpreendimentoService {
         log.debug("Request to get all TipoEmpreendimentos");
         return tipoEmpreendimentoRepository.findAll(pageable);
     }
-
 
     /**
      * Get one tipoEmpreendimento by id.

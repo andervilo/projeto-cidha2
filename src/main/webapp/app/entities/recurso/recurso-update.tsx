@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col, Label } from 'reactstrap';
 import { AvFeedback, AvForm, AvGroup, AvInput, AvField } from 'availity-reactstrap-validation';
-import { Translate, translate, ICrudGetAction, ICrudGetAllAction, setFileData, byteSize, ICrudPutAction } from 'react-jhipster';
+import { setFileData, byteSize, Translate, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
@@ -21,10 +21,7 @@ import { mapIdList } from 'app/shared/util/entity-utils';
 export interface IRecursoUpdateProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
 
 export const RecursoUpdate = (props: IRecursoUpdateProps) => {
-  const [tipoRecursoId, setTipoRecursoId] = useState('0');
-  const [opcaoRecursoId, setOpcaoRecursoId] = useState('0');
-  const [processoId, setProcessoId] = useState('0');
-  const [isNew, setIsNew] = useState(!props.match.params || !props.match.params.id);
+  const [isNew] = useState(!props.match.params || !props.match.params.id);
 
   const { recursoEntity, tipoRecursos, opcaoRecursos, processos, loading, updating } = props;
 
@@ -65,6 +62,9 @@ export const RecursoUpdate = (props: IRecursoUpdateProps) => {
       const entity = {
         ...recursoEntity,
         ...values,
+        tipoRecurso: tipoRecursos.find(it => it.id.toString() === values.tipoRecursoId.toString()),
+        opcaoRecurso: opcaoRecursos.find(it => it.id.toString() === values.opcaoRecursoId.toString()),
+        processo: processos.find(it => it.id.toString() === values.processoId.toString()),
       };
 
       if (isNew) {
@@ -79,7 +79,7 @@ export const RecursoUpdate = (props: IRecursoUpdateProps) => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="cidhaApp.recurso.home.createOrEditLabel">
+          <h2 id="cidhaApp.recurso.home.createOrEditLabel" data-cy="RecursoCreateUpdateHeading">
             <Translate contentKey="cidhaApp.recurso.home.createOrEditLabel">Create or edit a Recurso</Translate>
           </h2>
         </Col>
@@ -102,13 +102,13 @@ export const RecursoUpdate = (props: IRecursoUpdateProps) => {
                 <Label id="observacoesLabel" for="recurso-observacoes">
                   <Translate contentKey="cidhaApp.recurso.observacoes">Observacoes</Translate>
                 </Label>
-                <AvInput id="recurso-observacoes" type="textarea" name="observacoes" />
+                <AvInput id="recurso-observacoes" data-cy="observacoes" type="textarea" name="observacoes" />
               </AvGroup>
               <AvGroup>
                 <Label for="recurso-tipoRecurso">
                   <Translate contentKey="cidhaApp.recurso.tipoRecurso">Tipo Recurso</Translate>
                 </Label>
-                <AvInput id="recurso-tipoRecurso" type="select" className="form-control" name="tipoRecurso.id">
+                <AvInput id="recurso-tipoRecurso" data-cy="tipoRecurso" type="select" className="form-control" name="tipoRecursoId">
                   <option value="" key="0" />
                   {tipoRecursos
                     ? tipoRecursos.map(otherEntity => (
@@ -123,7 +123,7 @@ export const RecursoUpdate = (props: IRecursoUpdateProps) => {
                 <Label for="recurso-opcaoRecurso">
                   <Translate contentKey="cidhaApp.recurso.opcaoRecurso">Opcao Recurso</Translate>
                 </Label>
-                <AvInput id="recurso-opcaoRecurso" type="select" className="form-control" name="opcaoRecurso.id">
+                <AvInput id="recurso-opcaoRecurso" data-cy="opcaoRecurso" type="select" className="form-control" name="opcaoRecursoId">
                   <option value="" key="0" />
                   {opcaoRecursos
                     ? opcaoRecursos.map(otherEntity => (
@@ -138,7 +138,7 @@ export const RecursoUpdate = (props: IRecursoUpdateProps) => {
                 <Label for="recurso-processo">
                   <Translate contentKey="cidhaApp.recurso.processo">Processo</Translate>
                 </Label>
-                <AvInput id="recurso-processo" type="select" className="form-control" name="processo.id">
+                <AvInput id="recurso-processo" data-cy="processo" type="select" className="form-control" name="processoId">
                   <option value="" key="0" />
                   {processos
                     ? processos.map(otherEntity => (
@@ -157,7 +157,7 @@ export const RecursoUpdate = (props: IRecursoUpdateProps) => {
                 </span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp;
                 <Translate contentKey="entity.action.save">Save</Translate>

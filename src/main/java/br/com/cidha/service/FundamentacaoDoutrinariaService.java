@@ -2,15 +2,13 @@ package br.com.cidha.service;
 
 import br.com.cidha.domain.FundamentacaoDoutrinaria;
 import br.com.cidha.repository.FundamentacaoDoutrinariaRepository;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 /**
  * Service Implementation for managing {@link FundamentacaoDoutrinaria}.
@@ -39,6 +37,41 @@ public class FundamentacaoDoutrinariaService {
     }
 
     /**
+     * Partially update a fundamentacaoDoutrinaria.
+     *
+     * @param fundamentacaoDoutrinaria the entity to update partially.
+     * @return the persisted entity.
+     */
+    public Optional<FundamentacaoDoutrinaria> partialUpdate(FundamentacaoDoutrinaria fundamentacaoDoutrinaria) {
+        log.debug("Request to partially update FundamentacaoDoutrinaria : {}", fundamentacaoDoutrinaria);
+
+        return fundamentacaoDoutrinariaRepository
+            .findById(fundamentacaoDoutrinaria.getId())
+            .map(
+                existingFundamentacaoDoutrinaria -> {
+                    if (fundamentacaoDoutrinaria.getFundamentacaoDoutrinariaCitada() != null) {
+                        existingFundamentacaoDoutrinaria.setFundamentacaoDoutrinariaCitada(
+                            fundamentacaoDoutrinaria.getFundamentacaoDoutrinariaCitada()
+                        );
+                    }
+                    if (fundamentacaoDoutrinaria.getFolhasFundamentacaoDoutrinaria() != null) {
+                        existingFundamentacaoDoutrinaria.setFolhasFundamentacaoDoutrinaria(
+                            fundamentacaoDoutrinaria.getFolhasFundamentacaoDoutrinaria()
+                        );
+                    }
+                    if (fundamentacaoDoutrinaria.getFundamentacaoDoutrinariaSugerida() != null) {
+                        existingFundamentacaoDoutrinaria.setFundamentacaoDoutrinariaSugerida(
+                            fundamentacaoDoutrinaria.getFundamentacaoDoutrinariaSugerida()
+                        );
+                    }
+
+                    return existingFundamentacaoDoutrinaria;
+                }
+            )
+            .map(fundamentacaoDoutrinariaRepository::save);
+    }
+
+    /**
      * Get all the fundamentacaoDoutrinarias.
      *
      * @param pageable the pagination information.
@@ -49,7 +82,6 @@ public class FundamentacaoDoutrinariaService {
         log.debug("Request to get all FundamentacaoDoutrinarias");
         return fundamentacaoDoutrinariaRepository.findAll(pageable);
     }
-
 
     /**
      * Get one fundamentacaoDoutrinaria by id.

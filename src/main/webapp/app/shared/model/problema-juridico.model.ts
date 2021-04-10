@@ -6,13 +6,13 @@ import { IProcesso } from 'app/shared/model/processo.model';
 
 export interface IProblemaJuridico {
   id?: number;
-  prolemaJuridicoRespondido?: any;
-  folhasProblemaJuridico?: string;
-  fundamentacaoDoutrinarias?: IFundamentacaoDoutrinaria[];
-  jurisprudencias?: IJurisprudencia[];
-  fundamentacaoLegals?: IFundamentacaoLegal[];
-  instrumentoInternacionals?: IInstrumentoInternacional[];
-  processos?: IProcesso[];
+  prolemaJuridicoRespondido?: string | null;
+  folhasProblemaJuridico?: string | null;
+  fundamentacaoDoutrinarias?: IFundamentacaoDoutrinaria[] | null;
+  jurisprudencias?: IJurisprudencia[] | null;
+  fundamentacaoLegals?: IFundamentacaoLegal[] | null;
+  instrumentoInternacionals?: IInstrumentoInternacional[] | null;
+  processos?: IProcesso[] | null;
 }
 
 export const defaultValue: Readonly<IProblemaJuridico> = {};

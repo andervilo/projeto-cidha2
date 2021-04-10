@@ -1,15 +1,12 @@
 package br.com.cidha.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
-import javax.persistence.*;
-
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.*;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /**
  * A RepresentanteLegal.
@@ -30,12 +27,11 @@ public class RepresentanteLegal implements Serializable {
     private String nome;
 
     @ManyToOne
-    @JsonIgnoreProperties(value = "representanteLegals", allowSetters = true)
     private TipoRepresentante tipoRepresentante;
 
     @ManyToMany(mappedBy = "representanteLegals")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnore
+    @JsonIgnoreProperties(value = { "representanteLegals", "processos" }, allowSetters = true)
     private Set<ParteInteresssada> processoConflitos = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -47,8 +43,13 @@ public class RepresentanteLegal implements Serializable {
         this.id = id;
     }
 
+    public RepresentanteLegal id(Long id) {
+        this.id = id;
+        return this;
+    }
+
     public String getNome() {
-        return nome;
+        return this.nome;
     }
 
     public RepresentanteLegal nome(String nome) {
@@ -61,11 +62,11 @@ public class RepresentanteLegal implements Serializable {
     }
 
     public TipoRepresentante getTipoRepresentante() {
-        return tipoRepresentante;
+        return this.tipoRepresentante;
     }
 
     public RepresentanteLegal tipoRepresentante(TipoRepresentante tipoRepresentante) {
-        this.tipoRepresentante = tipoRepresentante;
+        this.setTipoRepresentante(tipoRepresentante);
         return this;
     }
 
@@ -74,11 +75,11 @@ public class RepresentanteLegal implements Serializable {
     }
 
     public Set<ParteInteresssada> getProcessoConflitos() {
-        return processoConflitos;
+        return this.processoConflitos;
     }
 
     public RepresentanteLegal processoConflitos(Set<ParteInteresssada> parteInteresssadas) {
-        this.processoConflitos = parteInteresssadas;
+        this.setProcessoConflitos(parteInteresssadas);
         return this;
     }
 
@@ -95,8 +96,15 @@ public class RepresentanteLegal implements Serializable {
     }
 
     public void setProcessoConflitos(Set<ParteInteresssada> parteInteresssadas) {
+        if (this.processoConflitos != null) {
+            this.processoConflitos.forEach(i -> i.removeRepresentanteLegal(this));
+        }
+        if (parteInteresssadas != null) {
+            parteInteresssadas.forEach(i -> i.addRepresentanteLegal(this));
+        }
         this.processoConflitos = parteInteresssadas;
     }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -112,7 +120,8 @@ public class RepresentanteLegal implements Serializable {
 
     @Override
     public int hashCode() {
-        return 31;
+        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        return getClass().hashCode();
     }
 
     // prettier-ignore

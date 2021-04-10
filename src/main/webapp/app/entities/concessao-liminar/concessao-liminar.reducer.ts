@@ -11,6 +11,7 @@ export const ACTION_TYPES = {
   FETCH_CONCESSAOLIMINAR: 'concessaoLiminar/FETCH_CONCESSAOLIMINAR',
   CREATE_CONCESSAOLIMINAR: 'concessaoLiminar/CREATE_CONCESSAOLIMINAR',
   UPDATE_CONCESSAOLIMINAR: 'concessaoLiminar/UPDATE_CONCESSAOLIMINAR',
+  PARTIAL_UPDATE_CONCESSAOLIMINAR: 'concessaoLiminar/PARTIAL_UPDATE_CONCESSAOLIMINAR',
   DELETE_CONCESSAOLIMINAR: 'concessaoLiminar/DELETE_CONCESSAOLIMINAR',
   RESET: 'concessaoLiminar/RESET',
 };
@@ -42,6 +43,7 @@ export default (state: ConcessaoLiminarState = initialState, action): ConcessaoL
     case REQUEST(ACTION_TYPES.CREATE_CONCESSAOLIMINAR):
     case REQUEST(ACTION_TYPES.UPDATE_CONCESSAOLIMINAR):
     case REQUEST(ACTION_TYPES.DELETE_CONCESSAOLIMINAR):
+    case REQUEST(ACTION_TYPES.PARTIAL_UPDATE_CONCESSAOLIMINAR):
       return {
         ...state,
         errorMessage: null,
@@ -52,6 +54,7 @@ export default (state: ConcessaoLiminarState = initialState, action): ConcessaoL
     case FAILURE(ACTION_TYPES.FETCH_CONCESSAOLIMINAR):
     case FAILURE(ACTION_TYPES.CREATE_CONCESSAOLIMINAR):
     case FAILURE(ACTION_TYPES.UPDATE_CONCESSAOLIMINAR):
+    case FAILURE(ACTION_TYPES.PARTIAL_UPDATE_CONCESSAOLIMINAR):
     case FAILURE(ACTION_TYPES.DELETE_CONCESSAOLIMINAR):
       return {
         ...state,
@@ -75,6 +78,7 @@ export default (state: ConcessaoLiminarState = initialState, action): ConcessaoL
       };
     case SUCCESS(ACTION_TYPES.CREATE_CONCESSAOLIMINAR):
     case SUCCESS(ACTION_TYPES.UPDATE_CONCESSAOLIMINAR):
+    case SUCCESS(ACTION_TYPES.PARTIAL_UPDATE_CONCESSAOLIMINAR):
       return {
         ...state,
         updating: false,
@@ -129,7 +133,15 @@ export const createEntity: ICrudPutAction<IConcessaoLiminar> = entity => async d
 export const updateEntity: ICrudPutAction<IConcessaoLiminar> = entity => async dispatch => {
   const result = await dispatch({
     type: ACTION_TYPES.UPDATE_CONCESSAOLIMINAR,
-    payload: axios.put(apiUrl, cleanEntity(entity)),
+    payload: axios.put(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
+  });
+  return result;
+};
+
+export const partialUpdate: ICrudPutAction<IConcessaoLiminar> = entity => async dispatch => {
+  const result = await dispatch({
+    type: ACTION_TYPES.PARTIAL_UPDATE_CONCESSAOLIMINAR,
+    payload: axios.patch(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
   });
   return result;
 };

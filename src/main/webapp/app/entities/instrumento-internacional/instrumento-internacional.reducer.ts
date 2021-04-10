@@ -11,6 +11,7 @@ export const ACTION_TYPES = {
   FETCH_INSTRUMENTOINTERNACIONAL: 'instrumentoInternacional/FETCH_INSTRUMENTOINTERNACIONAL',
   CREATE_INSTRUMENTOINTERNACIONAL: 'instrumentoInternacional/CREATE_INSTRUMENTOINTERNACIONAL',
   UPDATE_INSTRUMENTOINTERNACIONAL: 'instrumentoInternacional/UPDATE_INSTRUMENTOINTERNACIONAL',
+  PARTIAL_UPDATE_INSTRUMENTOINTERNACIONAL: 'instrumentoInternacional/PARTIAL_UPDATE_INSTRUMENTOINTERNACIONAL',
   DELETE_INSTRUMENTOINTERNACIONAL: 'instrumentoInternacional/DELETE_INSTRUMENTOINTERNACIONAL',
   SET_BLOB: 'instrumentoInternacional/SET_BLOB',
   RESET: 'instrumentoInternacional/RESET',
@@ -43,6 +44,7 @@ export default (state: InstrumentoInternacionalState = initialState, action): In
     case REQUEST(ACTION_TYPES.CREATE_INSTRUMENTOINTERNACIONAL):
     case REQUEST(ACTION_TYPES.UPDATE_INSTRUMENTOINTERNACIONAL):
     case REQUEST(ACTION_TYPES.DELETE_INSTRUMENTOINTERNACIONAL):
+    case REQUEST(ACTION_TYPES.PARTIAL_UPDATE_INSTRUMENTOINTERNACIONAL):
       return {
         ...state,
         errorMessage: null,
@@ -53,6 +55,7 @@ export default (state: InstrumentoInternacionalState = initialState, action): In
     case FAILURE(ACTION_TYPES.FETCH_INSTRUMENTOINTERNACIONAL):
     case FAILURE(ACTION_TYPES.CREATE_INSTRUMENTOINTERNACIONAL):
     case FAILURE(ACTION_TYPES.UPDATE_INSTRUMENTOINTERNACIONAL):
+    case FAILURE(ACTION_TYPES.PARTIAL_UPDATE_INSTRUMENTOINTERNACIONAL):
     case FAILURE(ACTION_TYPES.DELETE_INSTRUMENTOINTERNACIONAL):
       return {
         ...state,
@@ -76,6 +79,7 @@ export default (state: InstrumentoInternacionalState = initialState, action): In
       };
     case SUCCESS(ACTION_TYPES.CREATE_INSTRUMENTOINTERNACIONAL):
     case SUCCESS(ACTION_TYPES.UPDATE_INSTRUMENTOINTERNACIONAL):
+    case SUCCESS(ACTION_TYPES.PARTIAL_UPDATE_INSTRUMENTOINTERNACIONAL):
       return {
         ...state,
         updating: false,
@@ -141,7 +145,15 @@ export const createEntity: ICrudPutAction<IInstrumentoInternacional> = entity =>
 export const updateEntity: ICrudPutAction<IInstrumentoInternacional> = entity => async dispatch => {
   const result = await dispatch({
     type: ACTION_TYPES.UPDATE_INSTRUMENTOINTERNACIONAL,
-    payload: axios.put(apiUrl, cleanEntity(entity)),
+    payload: axios.put(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
+  });
+  return result;
+};
+
+export const partialUpdate: ICrudPutAction<IInstrumentoInternacional> = entity => async dispatch => {
+  const result = await dispatch({
+    type: ACTION_TYPES.PARTIAL_UPDATE_INSTRUMENTOINTERNACIONAL,
+    payload: axios.patch(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
   });
   return result;
 };

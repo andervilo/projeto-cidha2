@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col, Label } from 'reactstrap';
 import { AvFeedback, AvForm, AvGroup, AvInput, AvField } from 'availity-reactstrap-validation';
-import { Translate, translate, ICrudGetAction, ICrudGetAllAction, ICrudPutAction } from 'react-jhipster';
+import { Translate, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
@@ -17,8 +17,7 @@ import { mapIdList } from 'app/shared/util/entity-utils';
 export interface IAtividadeExploracaoIlegalUpdateProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
 
 export const AtividadeExploracaoIlegalUpdate = (props: IAtividadeExploracaoIlegalUpdateProps) => {
-  const [processoId, setProcessoId] = useState('0');
-  const [isNew, setIsNew] = useState(!props.match.params || !props.match.params.id);
+  const [isNew] = useState(!props.match.params || !props.match.params.id);
 
   const { atividadeExploracaoIlegalEntity, processos, loading, updating } = props;
 
@@ -61,7 +60,7 @@ export const AtividadeExploracaoIlegalUpdate = (props: IAtividadeExploracaoIlega
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="cidhaApp.atividadeExploracaoIlegal.home.createOrEditLabel">
+          <h2 id="cidhaApp.atividadeExploracaoIlegal.home.createOrEditLabel" data-cy="AtividadeExploracaoIlegalCreateUpdateHeading">
             <Translate contentKey="cidhaApp.atividadeExploracaoIlegal.home.createOrEditLabel">
               Create or edit a AtividadeExploracaoIlegal
             </Translate>
@@ -86,7 +85,7 @@ export const AtividadeExploracaoIlegalUpdate = (props: IAtividadeExploracaoIlega
                 <Label id="descricaoLabel" for="atividade-exploracao-ilegal-descricao">
                   <Translate contentKey="cidhaApp.atividadeExploracaoIlegal.descricao">Descricao</Translate>
                 </Label>
-                <AvField id="atividade-exploracao-ilegal-descricao" type="text" name="descricao" />
+                <AvField id="atividade-exploracao-ilegal-descricao" data-cy="descricao" type="text" name="descricao" />
               </AvGroup>
               <Button tag={Link} id="cancel-save" to="/atividade-exploracao-ilegal" replace color="info">
                 <FontAwesomeIcon icon="arrow-left" />
@@ -96,7 +95,7 @@ export const AtividadeExploracaoIlegalUpdate = (props: IAtividadeExploracaoIlega
                 </span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp;
                 <Translate contentKey="entity.action.save">Save</Translate>

@@ -1,9 +1,11 @@
 package br.com.cidha.service;
 
+import br.com.cidha.domain.*; // for static metamodels
+import br.com.cidha.domain.EtniaIndigena;
+import br.com.cidha.repository.EtniaIndigenaRepository;
+import br.com.cidha.service.criteria.EtniaIndigenaCriteria;
 import java.util.List;
-
 import javax.persistence.criteria.JoinType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -11,13 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import io.github.jhipster.service.QueryService;
-
-import br.com.cidha.domain.EtniaIndigena;
-import br.com.cidha.domain.*; // for static metamodels
-import br.com.cidha.repository.EtniaIndigenaRepository;
-import br.com.cidha.service.dto.EtniaIndigenaCriteria;
+import tech.jhipster.service.QueryService;
 
 /**
  * Service for executing complex queries for {@link EtniaIndigena} entities in the database.
@@ -89,8 +85,13 @@ public class EtniaIndigenaQueryService extends QueryService<EtniaIndigena> {
                 specification = specification.and(buildStringSpecification(criteria.getNome(), EtniaIndigena_.nome));
             }
             if (criteria.getTerraIndigenaId() != null) {
-                specification = specification.and(buildSpecification(criteria.getTerraIndigenaId(),
-                    root -> root.join(EtniaIndigena_.terraIndigenas, JoinType.LEFT).get(TerraIndigena_.id)));
+                specification =
+                    specification.and(
+                        buildSpecification(
+                            criteria.getTerraIndigenaId(),
+                            root -> root.join(EtniaIndigena_.terraIndigenas, JoinType.LEFT).get(TerraIndigena_.id)
+                        )
+                    );
             }
         }
         return specification;

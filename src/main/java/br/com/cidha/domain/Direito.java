@@ -1,15 +1,13 @@
 package br.com.cidha.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Type;
-
-import javax.persistence.*;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.*;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Type;
 
 /**
  * A Direito.
@@ -33,7 +31,7 @@ public class Direito implements Serializable {
 
     @ManyToMany(mappedBy = "direitos")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnore
+    @JsonIgnoreProperties(value = { "conflitos", "direitos", "processos" }, allowSetters = true)
     private Set<ProcessoConflito> processoConflitos = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -45,8 +43,13 @@ public class Direito implements Serializable {
         this.id = id;
     }
 
+    public Direito id(Long id) {
+        this.id = id;
+        return this;
+    }
+
     public String getDescricao() {
-        return descricao;
+        return this.descricao;
     }
 
     public Direito descricao(String descricao) {
@@ -59,11 +62,11 @@ public class Direito implements Serializable {
     }
 
     public Set<ProcessoConflito> getProcessoConflitos() {
-        return processoConflitos;
+        return this.processoConflitos;
     }
 
     public Direito processoConflitos(Set<ProcessoConflito> processoConflitos) {
-        this.processoConflitos = processoConflitos;
+        this.setProcessoConflitos(processoConflitos);
         return this;
     }
 
@@ -80,8 +83,15 @@ public class Direito implements Serializable {
     }
 
     public void setProcessoConflitos(Set<ProcessoConflito> processoConflitos) {
+        if (this.processoConflitos != null) {
+            this.processoConflitos.forEach(i -> i.removeDireito(this));
+        }
+        if (processoConflitos != null) {
+            processoConflitos.forEach(i -> i.addDireito(this));
+        }
         this.processoConflitos = processoConflitos;
     }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -97,7 +107,8 @@ public class Direito implements Serializable {
 
     @Override
     public int hashCode() {
-        return 31;
+        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        return getClass().hashCode();
     }
 
     // prettier-ignore

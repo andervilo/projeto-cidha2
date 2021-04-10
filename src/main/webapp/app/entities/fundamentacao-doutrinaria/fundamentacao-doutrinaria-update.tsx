@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col, Label } from 'reactstrap';
 import { AvFeedback, AvForm, AvGroup, AvInput, AvField } from 'availity-reactstrap-validation';
-import { Translate, translate, ICrudGetAction, ICrudGetAllAction, setFileData, byteSize, ICrudPutAction } from 'react-jhipster';
+import { setFileData, byteSize, Translate, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
@@ -17,8 +17,7 @@ import { mapIdList } from 'app/shared/util/entity-utils';
 export interface IFundamentacaoDoutrinariaUpdateProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
 
 export const FundamentacaoDoutrinariaUpdate = (props: IFundamentacaoDoutrinariaUpdateProps) => {
-  const [problemaJuridicoId, setProblemaJuridicoId] = useState('0');
-  const [isNew, setIsNew] = useState(!props.match.params || !props.match.params.id);
+  const [isNew] = useState(!props.match.params || !props.match.params.id);
 
   const { fundamentacaoDoutrinariaEntity, problemaJuridicos, loading, updating } = props;
 
@@ -71,7 +70,7 @@ export const FundamentacaoDoutrinariaUpdate = (props: IFundamentacaoDoutrinariaU
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="cidhaApp.fundamentacaoDoutrinaria.home.createOrEditLabel">
+          <h2 id="cidhaApp.fundamentacaoDoutrinaria.home.createOrEditLabel" data-cy="FundamentacaoDoutrinariaCreateUpdateHeading">
             <Translate contentKey="cidhaApp.fundamentacaoDoutrinaria.home.createOrEditLabel">
               Create or edit a FundamentacaoDoutrinaria
             </Translate>
@@ -100,6 +99,7 @@ export const FundamentacaoDoutrinariaUpdate = (props: IFundamentacaoDoutrinariaU
                 </Label>
                 <AvInput
                   id="fundamentacao-doutrinaria-fundamentacaoDoutrinariaCitada"
+                  data-cy="fundamentacaoDoutrinariaCitada"
                   type="textarea"
                   name="fundamentacaoDoutrinariaCitada"
                 />
@@ -110,7 +110,12 @@ export const FundamentacaoDoutrinariaUpdate = (props: IFundamentacaoDoutrinariaU
                     Folhas Fundamentacao Doutrinaria
                   </Translate>
                 </Label>
-                <AvField id="fundamentacao-doutrinaria-folhasFundamentacaoDoutrinaria" type="text" name="folhasFundamentacaoDoutrinaria" />
+                <AvField
+                  id="fundamentacao-doutrinaria-folhasFundamentacaoDoutrinaria"
+                  data-cy="folhasFundamentacaoDoutrinaria"
+                  type="text"
+                  name="folhasFundamentacaoDoutrinaria"
+                />
               </AvGroup>
               <AvGroup>
                 <Label id="fundamentacaoDoutrinariaSugeridaLabel" for="fundamentacao-doutrinaria-fundamentacaoDoutrinariaSugerida">
@@ -120,6 +125,7 @@ export const FundamentacaoDoutrinariaUpdate = (props: IFundamentacaoDoutrinariaU
                 </Label>
                 <AvInput
                   id="fundamentacao-doutrinaria-fundamentacaoDoutrinariaSugerida"
+                  data-cy="fundamentacaoDoutrinariaSugerida"
                   type="textarea"
                   name="fundamentacaoDoutrinariaSugerida"
                 />
@@ -132,7 +138,7 @@ export const FundamentacaoDoutrinariaUpdate = (props: IFundamentacaoDoutrinariaU
                 </span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp;
                 <Translate contentKey="entity.action.save">Save</Translate>

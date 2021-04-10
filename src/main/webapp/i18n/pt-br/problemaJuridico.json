@@ -3,6 +3,7 @@
     "problemaJuridico": {
       "home": {
         "title": "Problema Juridicos",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Problema Juridico",
         "createOrEditLabel": "Criar ou editar Problema Juridico",
         "notFound": "Nenhum Problema Juridico encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Problema Juridico"
       },
+      "id": "ID",
       "prolemaJuridicoRespondido": "Prolema Juridico Respondido",
       "folhasProblemaJuridico": "Folhas Problema Juridico",
       "fundamentacaoDoutrinaria": "Fundamentacao Doutrinaria",

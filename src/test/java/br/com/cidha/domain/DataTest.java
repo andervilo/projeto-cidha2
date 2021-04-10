@@ -1,13 +1,14 @@
 package br.com.cidha.domain;
 
-import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
-import br.com.cidha.web.rest.TestUtil;
 
-public class DataTest {
+import br.com.cidha.web.rest.TestUtil;
+import org.junit.jupiter.api.Test;
+
+class DataTest {
 
     @Test
-    public void equalsVerifier() throws Exception {
+    void equalsVerifier() throws Exception {
         TestUtil.equalsVerifier(Data.class);
         Data data1 = new Data();
         data1.setId(1L);

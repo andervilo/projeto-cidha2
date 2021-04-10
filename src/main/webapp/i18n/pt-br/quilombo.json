@@ -3,6 +3,7 @@
     "quilombo": {
       "home": {
         "title": "Quilombos",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Quilombo",
         "createOrEditLabel": "Criar ou editar Quilombo",
         "notFound": "Nenhum Quilombo encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Quilombo"
       },
+      "id": "ID",
       "nome": "Nome",
       "processo": "Processo"
     }

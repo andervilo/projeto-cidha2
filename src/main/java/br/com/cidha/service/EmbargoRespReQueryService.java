@@ -1,9 +1,11 @@
 package br.com.cidha.service;
 
+import br.com.cidha.domain.*; // for static metamodels
+import br.com.cidha.domain.EmbargoRespRe;
+import br.com.cidha.repository.EmbargoRespReRepository;
+import br.com.cidha.service.criteria.EmbargoRespReCriteria;
 import java.util.List;
-
 import javax.persistence.criteria.JoinType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -11,13 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import io.github.jhipster.service.QueryService;
-
-import br.com.cidha.domain.EmbargoRespRe;
-import br.com.cidha.domain.*; // for static metamodels
-import br.com.cidha.repository.EmbargoRespReRepository;
-import br.com.cidha.service.dto.EmbargoRespReCriteria;
+import tech.jhipster.service.QueryService;
 
 /**
  * Service for executing complex queries for {@link EmbargoRespRe} entities in the database.
@@ -89,8 +85,13 @@ public class EmbargoRespReQueryService extends QueryService<EmbargoRespRe> {
                 specification = specification.and(buildStringSpecification(criteria.getDescricao(), EmbargoRespRe_.descricao));
             }
             if (criteria.getProcessoId() != null) {
-                specification = specification.and(buildSpecification(criteria.getProcessoId(),
-                    root -> root.join(EmbargoRespRe_.processo, JoinType.LEFT).get(Processo_.id)));
+                specification =
+                    specification.and(
+                        buildSpecification(
+                            criteria.getProcessoId(),
+                            root -> root.join(EmbargoRespRe_.processo, JoinType.LEFT).get(Processo_.id)
+                        )
+                    );
             }
         }
         return specification;

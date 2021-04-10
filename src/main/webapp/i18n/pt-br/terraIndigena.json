@@ -3,6 +3,7 @@
     "terraIndigena": {
       "home": {
         "title": "Terra Indigenas",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Terra Indigena",
         "createOrEditLabel": "Criar ou editar Terra Indigena",
         "notFound": "Nenhum Terra Indigena encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Terra Indigena"
       },
+      "id": "ID",
       "descricao": "Descricao",
       "etnia": "Etnia",
       "processo": "Processo"

@@ -1,38 +1,36 @@
 package br.com.cidha.web.rest;
 
-import br.com.cidha.CidhaApp;
-import br.com.cidha.domain.FundamentacaoLegal;
-import br.com.cidha.domain.ProblemaJuridico;
-import br.com.cidha.repository.FundamentacaoLegalRepository;
-import br.com.cidha.service.FundamentacaoLegalService;
-import br.com.cidha.service.dto.FundamentacaoLegalCriteria;
-import br.com.cidha.service.FundamentacaoLegalQueryService;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.Base64Utils;
-import javax.persistence.EntityManager;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import br.com.cidha.IntegrationTest;
+import br.com.cidha.domain.FundamentacaoLegal;
+import br.com.cidha.domain.ProblemaJuridico;
+import br.com.cidha.repository.FundamentacaoLegalRepository;
+import br.com.cidha.service.criteria.FundamentacaoLegalCriteria;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
+import javax.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Base64Utils;
+
 /**
  * Integration tests for the {@link FundamentacaoLegalResource} REST controller.
  */
-@SpringBootTest(classes = CidhaApp.class)
+@IntegrationTest
 @AutoConfigureMockMvc
 @WithMockUser
-public class FundamentacaoLegalResourceIT {
+class FundamentacaoLegalResourceIT {
 
     private static final String DEFAULT_FUNDAMENTACAO_LEGAL = "AAAAAAAAAA";
     private static final String UPDATED_FUNDAMENTACAO_LEGAL = "BBBBBBBBBB";
@@ -43,14 +41,14 @@ public class FundamentacaoLegalResourceIT {
     private static final String DEFAULT_FUNDAMENTACAO_LEGAL_SUGERIDA = "AAAAAAAAAA";
     private static final String UPDATED_FUNDAMENTACAO_LEGAL_SUGERIDA = "BBBBBBBBBB";
 
+    private static final String ENTITY_API_URL = "/api/fundamentacao-legals";
+    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+
+    private static Random random = new Random();
+    private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
+
     @Autowired
     private FundamentacaoLegalRepository fundamentacaoLegalRepository;
-
-    @Autowired
-    private FundamentacaoLegalService fundamentacaoLegalService;
-
-    @Autowired
-    private FundamentacaoLegalQueryService fundamentacaoLegalQueryService;
 
     @Autowired
     private EntityManager em;
@@ -73,6 +71,7 @@ public class FundamentacaoLegalResourceIT {
             .fundamentacaoLegalSugerida(DEFAULT_FUNDAMENTACAO_LEGAL_SUGERIDA);
         return fundamentacaoLegal;
     }
+
     /**
      * Create an updated entity for this test.
      *
@@ -94,12 +93,13 @@ public class FundamentacaoLegalResourceIT {
 
     @Test
     @Transactional
-    public void createFundamentacaoLegal() throws Exception {
+    void createFundamentacaoLegal() throws Exception {
         int databaseSizeBeforeCreate = fundamentacaoLegalRepository.findAll().size();
         // Create the FundamentacaoLegal
-        restFundamentacaoLegalMockMvc.perform(post("/api/fundamentacao-legals")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(fundamentacaoLegal)))
+        restFundamentacaoLegalMockMvc
+            .perform(
+                post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(fundamentacaoLegal))
+            )
             .andExpect(status().isCreated());
 
         // Validate the FundamentacaoLegal in the database
@@ -113,16 +113,17 @@ public class FundamentacaoLegalResourceIT {
 
     @Test
     @Transactional
-    public void createFundamentacaoLegalWithExistingId() throws Exception {
-        int databaseSizeBeforeCreate = fundamentacaoLegalRepository.findAll().size();
-
+    void createFundamentacaoLegalWithExistingId() throws Exception {
         // Create the FundamentacaoLegal with an existing ID
         fundamentacaoLegal.setId(1L);
 
+        int databaseSizeBeforeCreate = fundamentacaoLegalRepository.findAll().size();
+
         // An entity with an existing ID cannot be created, so this API call must fail
-        restFundamentacaoLegalMockMvc.perform(post("/api/fundamentacao-legals")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(fundamentacaoLegal)))
+        restFundamentacaoLegalMockMvc
+            .perform(
+                post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(fundamentacaoLegal))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the FundamentacaoLegal in the database
@@ -130,15 +131,15 @@ public class FundamentacaoLegalResourceIT {
         assertThat(fundamentacaoLegalList).hasSize(databaseSizeBeforeCreate);
     }
 
-
     @Test
     @Transactional
-    public void getAllFundamentacaoLegals() throws Exception {
+    void getAllFundamentacaoLegals() throws Exception {
         // Initialize the database
         fundamentacaoLegalRepository.saveAndFlush(fundamentacaoLegal);
 
         // Get all the fundamentacaoLegalList
-        restFundamentacaoLegalMockMvc.perform(get("/api/fundamentacao-legals?sort=id,desc"))
+        restFundamentacaoLegalMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(fundamentacaoLegal.getId().intValue())))
@@ -146,15 +147,16 @@ public class FundamentacaoLegalResourceIT {
             .andExpect(jsonPath("$.[*].folhasFundamentacaoLegal").value(hasItem(DEFAULT_FOLHAS_FUNDAMENTACAO_LEGAL)))
             .andExpect(jsonPath("$.[*].fundamentacaoLegalSugerida").value(hasItem(DEFAULT_FUNDAMENTACAO_LEGAL_SUGERIDA.toString())));
     }
-    
+
     @Test
     @Transactional
-    public void getFundamentacaoLegal() throws Exception {
+    void getFundamentacaoLegal() throws Exception {
         // Initialize the database
         fundamentacaoLegalRepository.saveAndFlush(fundamentacaoLegal);
 
         // Get the fundamentacaoLegal
-        restFundamentacaoLegalMockMvc.perform(get("/api/fundamentacao-legals/{id}", fundamentacaoLegal.getId()))
+        restFundamentacaoLegalMockMvc
+            .perform(get(ENTITY_API_URL_ID, fundamentacaoLegal.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(fundamentacaoLegal.getId().intValue()))
@@ -163,10 +165,9 @@ public class FundamentacaoLegalResourceIT {
             .andExpect(jsonPath("$.fundamentacaoLegalSugerida").value(DEFAULT_FUNDAMENTACAO_LEGAL_SUGERIDA.toString()));
     }
 
-
     @Test
     @Transactional
-    public void getFundamentacaoLegalsByIdFiltering() throws Exception {
+    void getFundamentacaoLegalsByIdFiltering() throws Exception {
         // Initialize the database
         fundamentacaoLegalRepository.saveAndFlush(fundamentacaoLegal);
 
@@ -182,10 +183,9 @@ public class FundamentacaoLegalResourceIT {
         defaultFundamentacaoLegalShouldNotBeFound("id.lessThan=" + id);
     }
 
-
     @Test
     @Transactional
-    public void getAllFundamentacaoLegalsByFolhasFundamentacaoLegalIsEqualToSomething() throws Exception {
+    void getAllFundamentacaoLegalsByFolhasFundamentacaoLegalIsEqualToSomething() throws Exception {
         // Initialize the database
         fundamentacaoLegalRepository.saveAndFlush(fundamentacaoLegal);
 
@@ -198,7 +198,7 @@ public class FundamentacaoLegalResourceIT {
 
     @Test
     @Transactional
-    public void getAllFundamentacaoLegalsByFolhasFundamentacaoLegalIsNotEqualToSomething() throws Exception {
+    void getAllFundamentacaoLegalsByFolhasFundamentacaoLegalIsNotEqualToSomething() throws Exception {
         // Initialize the database
         fundamentacaoLegalRepository.saveAndFlush(fundamentacaoLegal);
 
@@ -211,12 +211,14 @@ public class FundamentacaoLegalResourceIT {
 
     @Test
     @Transactional
-    public void getAllFundamentacaoLegalsByFolhasFundamentacaoLegalIsInShouldWork() throws Exception {
+    void getAllFundamentacaoLegalsByFolhasFundamentacaoLegalIsInShouldWork() throws Exception {
         // Initialize the database
         fundamentacaoLegalRepository.saveAndFlush(fundamentacaoLegal);
 
         // Get all the fundamentacaoLegalList where folhasFundamentacaoLegal in DEFAULT_FOLHAS_FUNDAMENTACAO_LEGAL or UPDATED_FOLHAS_FUNDAMENTACAO_LEGAL
-        defaultFundamentacaoLegalShouldBeFound("folhasFundamentacaoLegal.in=" + DEFAULT_FOLHAS_FUNDAMENTACAO_LEGAL + "," + UPDATED_FOLHAS_FUNDAMENTACAO_LEGAL);
+        defaultFundamentacaoLegalShouldBeFound(
+            "folhasFundamentacaoLegal.in=" + DEFAULT_FOLHAS_FUNDAMENTACAO_LEGAL + "," + UPDATED_FOLHAS_FUNDAMENTACAO_LEGAL
+        );
 
         // Get all the fundamentacaoLegalList where folhasFundamentacaoLegal equals to UPDATED_FOLHAS_FUNDAMENTACAO_LEGAL
         defaultFundamentacaoLegalShouldNotBeFound("folhasFundamentacaoLegal.in=" + UPDATED_FOLHAS_FUNDAMENTACAO_LEGAL);
@@ -224,7 +226,7 @@ public class FundamentacaoLegalResourceIT {
 
     @Test
     @Transactional
-    public void getAllFundamentacaoLegalsByFolhasFundamentacaoLegalIsNullOrNotNull() throws Exception {
+    void getAllFundamentacaoLegalsByFolhasFundamentacaoLegalIsNullOrNotNull() throws Exception {
         // Initialize the database
         fundamentacaoLegalRepository.saveAndFlush(fundamentacaoLegal);
 
@@ -234,9 +236,10 @@ public class FundamentacaoLegalResourceIT {
         // Get all the fundamentacaoLegalList where folhasFundamentacaoLegal is null
         defaultFundamentacaoLegalShouldNotBeFound("folhasFundamentacaoLegal.specified=false");
     }
-                @Test
+
+    @Test
     @Transactional
-    public void getAllFundamentacaoLegalsByFolhasFundamentacaoLegalContainsSomething() throws Exception {
+    void getAllFundamentacaoLegalsByFolhasFundamentacaoLegalContainsSomething() throws Exception {
         // Initialize the database
         fundamentacaoLegalRepository.saveAndFlush(fundamentacaoLegal);
 
@@ -249,7 +252,7 @@ public class FundamentacaoLegalResourceIT {
 
     @Test
     @Transactional
-    public void getAllFundamentacaoLegalsByFolhasFundamentacaoLegalNotContainsSomething() throws Exception {
+    void getAllFundamentacaoLegalsByFolhasFundamentacaoLegalNotContainsSomething() throws Exception {
         // Initialize the database
         fundamentacaoLegalRepository.saveAndFlush(fundamentacaoLegal);
 
@@ -260,10 +263,9 @@ public class FundamentacaoLegalResourceIT {
         defaultFundamentacaoLegalShouldBeFound("folhasFundamentacaoLegal.doesNotContain=" + UPDATED_FOLHAS_FUNDAMENTACAO_LEGAL);
     }
 
-
     @Test
     @Transactional
-    public void getAllFundamentacaoLegalsByProblemaJuridicoIsEqualToSomething() throws Exception {
+    void getAllFundamentacaoLegalsByProblemaJuridicoIsEqualToSomething() throws Exception {
         // Initialize the database
         fundamentacaoLegalRepository.saveAndFlush(fundamentacaoLegal);
         ProblemaJuridico problemaJuridico = ProblemaJuridicoResourceIT.createEntity(em);
@@ -276,7 +278,7 @@ public class FundamentacaoLegalResourceIT {
         // Get all the fundamentacaoLegalList where problemaJuridico equals to problemaJuridicoId
         defaultFundamentacaoLegalShouldBeFound("problemaJuridicoId.equals=" + problemaJuridicoId);
 
-        // Get all the fundamentacaoLegalList where problemaJuridico equals to problemaJuridicoId + 1
+        // Get all the fundamentacaoLegalList where problemaJuridico equals to (problemaJuridicoId + 1)
         defaultFundamentacaoLegalShouldNotBeFound("problemaJuridicoId.equals=" + (problemaJuridicoId + 1));
     }
 
@@ -284,7 +286,8 @@ public class FundamentacaoLegalResourceIT {
      * Executes the search, and checks that the default entity is returned.
      */
     private void defaultFundamentacaoLegalShouldBeFound(String filter) throws Exception {
-        restFundamentacaoLegalMockMvc.perform(get("/api/fundamentacao-legals?sort=id,desc&" + filter))
+        restFundamentacaoLegalMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(fundamentacaoLegal.getId().intValue())))
@@ -293,7 +296,8 @@ public class FundamentacaoLegalResourceIT {
             .andExpect(jsonPath("$.[*].fundamentacaoLegalSugerida").value(hasItem(DEFAULT_FUNDAMENTACAO_LEGAL_SUGERIDA.toString())));
 
         // Check, that the count call also returns 1
-        restFundamentacaoLegalMockMvc.perform(get("/api/fundamentacao-legals/count?sort=id,desc&" + filter))
+        restFundamentacaoLegalMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("1"));
@@ -303,14 +307,16 @@ public class FundamentacaoLegalResourceIT {
      * Executes the search, and checks that the default entity is not returned.
      */
     private void defaultFundamentacaoLegalShouldNotBeFound(String filter) throws Exception {
-        restFundamentacaoLegalMockMvc.perform(get("/api/fundamentacao-legals?sort=id,desc&" + filter))
+        restFundamentacaoLegalMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$").isEmpty());
 
         // Check, that the count call also returns 0
-        restFundamentacaoLegalMockMvc.perform(get("/api/fundamentacao-legals/count?sort=id,desc&" + filter))
+        restFundamentacaoLegalMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("0"));
@@ -318,17 +324,16 @@ public class FundamentacaoLegalResourceIT {
 
     @Test
     @Transactional
-    public void getNonExistingFundamentacaoLegal() throws Exception {
+    void getNonExistingFundamentacaoLegal() throws Exception {
         // Get the fundamentacaoLegal
-        restFundamentacaoLegalMockMvc.perform(get("/api/fundamentacao-legals/{id}", Long.MAX_VALUE))
-            .andExpect(status().isNotFound());
+        restFundamentacaoLegalMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
     @Test
     @Transactional
-    public void updateFundamentacaoLegal() throws Exception {
+    void putNewFundamentacaoLegal() throws Exception {
         // Initialize the database
-        fundamentacaoLegalService.save(fundamentacaoLegal);
+        fundamentacaoLegalRepository.saveAndFlush(fundamentacaoLegal);
 
         int databaseSizeBeforeUpdate = fundamentacaoLegalRepository.findAll().size();
 
@@ -341,9 +346,12 @@ public class FundamentacaoLegalResourceIT {
             .folhasFundamentacaoLegal(UPDATED_FOLHAS_FUNDAMENTACAO_LEGAL)
             .fundamentacaoLegalSugerida(UPDATED_FUNDAMENTACAO_LEGAL_SUGERIDA);
 
-        restFundamentacaoLegalMockMvc.perform(put("/api/fundamentacao-legals")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(updatedFundamentacaoLegal)))
+        restFundamentacaoLegalMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, updatedFundamentacaoLegal.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(updatedFundamentacaoLegal))
+            )
             .andExpect(status().isOk());
 
         // Validate the FundamentacaoLegal in the database
@@ -357,13 +365,17 @@ public class FundamentacaoLegalResourceIT {
 
     @Test
     @Transactional
-    public void updateNonExistingFundamentacaoLegal() throws Exception {
+    void putNonExistingFundamentacaoLegal() throws Exception {
         int databaseSizeBeforeUpdate = fundamentacaoLegalRepository.findAll().size();
+        fundamentacaoLegal.setId(count.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restFundamentacaoLegalMockMvc.perform(put("/api/fundamentacao-legals")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(fundamentacaoLegal)))
+        restFundamentacaoLegalMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, fundamentacaoLegal.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(fundamentacaoLegal))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the FundamentacaoLegal in the database
@@ -373,15 +385,176 @@ public class FundamentacaoLegalResourceIT {
 
     @Test
     @Transactional
-    public void deleteFundamentacaoLegal() throws Exception {
+    void putWithIdMismatchFundamentacaoLegal() throws Exception {
+        int databaseSizeBeforeUpdate = fundamentacaoLegalRepository.findAll().size();
+        fundamentacaoLegal.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restFundamentacaoLegalMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(fundamentacaoLegal))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the FundamentacaoLegal in the database
+        List<FundamentacaoLegal> fundamentacaoLegalList = fundamentacaoLegalRepository.findAll();
+        assertThat(fundamentacaoLegalList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void putWithMissingIdPathParamFundamentacaoLegal() throws Exception {
+        int databaseSizeBeforeUpdate = fundamentacaoLegalRepository.findAll().size();
+        fundamentacaoLegal.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restFundamentacaoLegalMockMvc
+            .perform(
+                put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(fundamentacaoLegal))
+            )
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the FundamentacaoLegal in the database
+        List<FundamentacaoLegal> fundamentacaoLegalList = fundamentacaoLegalRepository.findAll();
+        assertThat(fundamentacaoLegalList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void partialUpdateFundamentacaoLegalWithPatch() throws Exception {
         // Initialize the database
-        fundamentacaoLegalService.save(fundamentacaoLegal);
+        fundamentacaoLegalRepository.saveAndFlush(fundamentacaoLegal);
+
+        int databaseSizeBeforeUpdate = fundamentacaoLegalRepository.findAll().size();
+
+        // Update the fundamentacaoLegal using partial update
+        FundamentacaoLegal partialUpdatedFundamentacaoLegal = new FundamentacaoLegal();
+        partialUpdatedFundamentacaoLegal.setId(fundamentacaoLegal.getId());
+
+        restFundamentacaoLegalMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedFundamentacaoLegal.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedFundamentacaoLegal))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the FundamentacaoLegal in the database
+        List<FundamentacaoLegal> fundamentacaoLegalList = fundamentacaoLegalRepository.findAll();
+        assertThat(fundamentacaoLegalList).hasSize(databaseSizeBeforeUpdate);
+        FundamentacaoLegal testFundamentacaoLegal = fundamentacaoLegalList.get(fundamentacaoLegalList.size() - 1);
+        assertThat(testFundamentacaoLegal.getFundamentacaoLegal()).isEqualTo(DEFAULT_FUNDAMENTACAO_LEGAL);
+        assertThat(testFundamentacaoLegal.getFolhasFundamentacaoLegal()).isEqualTo(DEFAULT_FOLHAS_FUNDAMENTACAO_LEGAL);
+        assertThat(testFundamentacaoLegal.getFundamentacaoLegalSugerida()).isEqualTo(DEFAULT_FUNDAMENTACAO_LEGAL_SUGERIDA);
+    }
+
+    @Test
+    @Transactional
+    void fullUpdateFundamentacaoLegalWithPatch() throws Exception {
+        // Initialize the database
+        fundamentacaoLegalRepository.saveAndFlush(fundamentacaoLegal);
+
+        int databaseSizeBeforeUpdate = fundamentacaoLegalRepository.findAll().size();
+
+        // Update the fundamentacaoLegal using partial update
+        FundamentacaoLegal partialUpdatedFundamentacaoLegal = new FundamentacaoLegal();
+        partialUpdatedFundamentacaoLegal.setId(fundamentacaoLegal.getId());
+
+        partialUpdatedFundamentacaoLegal
+            .fundamentacaoLegal(UPDATED_FUNDAMENTACAO_LEGAL)
+            .folhasFundamentacaoLegal(UPDATED_FOLHAS_FUNDAMENTACAO_LEGAL)
+            .fundamentacaoLegalSugerida(UPDATED_FUNDAMENTACAO_LEGAL_SUGERIDA);
+
+        restFundamentacaoLegalMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedFundamentacaoLegal.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedFundamentacaoLegal))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the FundamentacaoLegal in the database
+        List<FundamentacaoLegal> fundamentacaoLegalList = fundamentacaoLegalRepository.findAll();
+        assertThat(fundamentacaoLegalList).hasSize(databaseSizeBeforeUpdate);
+        FundamentacaoLegal testFundamentacaoLegal = fundamentacaoLegalList.get(fundamentacaoLegalList.size() - 1);
+        assertThat(testFundamentacaoLegal.getFundamentacaoLegal()).isEqualTo(UPDATED_FUNDAMENTACAO_LEGAL);
+        assertThat(testFundamentacaoLegal.getFolhasFundamentacaoLegal()).isEqualTo(UPDATED_FOLHAS_FUNDAMENTACAO_LEGAL);
+        assertThat(testFundamentacaoLegal.getFundamentacaoLegalSugerida()).isEqualTo(UPDATED_FUNDAMENTACAO_LEGAL_SUGERIDA);
+    }
+
+    @Test
+    @Transactional
+    void patchNonExistingFundamentacaoLegal() throws Exception {
+        int databaseSizeBeforeUpdate = fundamentacaoLegalRepository.findAll().size();
+        fundamentacaoLegal.setId(count.incrementAndGet());
+
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
+        restFundamentacaoLegalMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, fundamentacaoLegal.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(fundamentacaoLegal))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the FundamentacaoLegal in the database
+        List<FundamentacaoLegal> fundamentacaoLegalList = fundamentacaoLegalRepository.findAll();
+        assertThat(fundamentacaoLegalList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithIdMismatchFundamentacaoLegal() throws Exception {
+        int databaseSizeBeforeUpdate = fundamentacaoLegalRepository.findAll().size();
+        fundamentacaoLegal.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restFundamentacaoLegalMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(fundamentacaoLegal))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the FundamentacaoLegal in the database
+        List<FundamentacaoLegal> fundamentacaoLegalList = fundamentacaoLegalRepository.findAll();
+        assertThat(fundamentacaoLegalList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithMissingIdPathParamFundamentacaoLegal() throws Exception {
+        int databaseSizeBeforeUpdate = fundamentacaoLegalRepository.findAll().size();
+        fundamentacaoLegal.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restFundamentacaoLegalMockMvc
+            .perform(
+                patch(ENTITY_API_URL)
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(fundamentacaoLegal))
+            )
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the FundamentacaoLegal in the database
+        List<FundamentacaoLegal> fundamentacaoLegalList = fundamentacaoLegalRepository.findAll();
+        assertThat(fundamentacaoLegalList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void deleteFundamentacaoLegal() throws Exception {
+        // Initialize the database
+        fundamentacaoLegalRepository.saveAndFlush(fundamentacaoLegal);
 
         int databaseSizeBeforeDelete = fundamentacaoLegalRepository.findAll().size();
 
         // Delete the fundamentacaoLegal
-        restFundamentacaoLegalMockMvc.perform(delete("/api/fundamentacao-legals/{id}", fundamentacaoLegal.getId())
-            .accept(MediaType.APPLICATION_JSON))
+        restFundamentacaoLegalMockMvc
+            .perform(delete(ENTITY_API_URL_ID, fundamentacaoLegal.getId()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item

@@ -11,6 +11,7 @@ export const ACTION_TYPES = {
   FETCH_ETNIAINDIGENA: 'etniaIndigena/FETCH_ETNIAINDIGENA',
   CREATE_ETNIAINDIGENA: 'etniaIndigena/CREATE_ETNIAINDIGENA',
   UPDATE_ETNIAINDIGENA: 'etniaIndigena/UPDATE_ETNIAINDIGENA',
+  PARTIAL_UPDATE_ETNIAINDIGENA: 'etniaIndigena/PARTIAL_UPDATE_ETNIAINDIGENA',
   DELETE_ETNIAINDIGENA: 'etniaIndigena/DELETE_ETNIAINDIGENA',
   RESET: 'etniaIndigena/RESET',
 };
@@ -42,6 +43,7 @@ export default (state: EtniaIndigenaState = initialState, action): EtniaIndigena
     case REQUEST(ACTION_TYPES.CREATE_ETNIAINDIGENA):
     case REQUEST(ACTION_TYPES.UPDATE_ETNIAINDIGENA):
     case REQUEST(ACTION_TYPES.DELETE_ETNIAINDIGENA):
+    case REQUEST(ACTION_TYPES.PARTIAL_UPDATE_ETNIAINDIGENA):
       return {
         ...state,
         errorMessage: null,
@@ -52,6 +54,7 @@ export default (state: EtniaIndigenaState = initialState, action): EtniaIndigena
     case FAILURE(ACTION_TYPES.FETCH_ETNIAINDIGENA):
     case FAILURE(ACTION_TYPES.CREATE_ETNIAINDIGENA):
     case FAILURE(ACTION_TYPES.UPDATE_ETNIAINDIGENA):
+    case FAILURE(ACTION_TYPES.PARTIAL_UPDATE_ETNIAINDIGENA):
     case FAILURE(ACTION_TYPES.DELETE_ETNIAINDIGENA):
       return {
         ...state,
@@ -75,6 +78,7 @@ export default (state: EtniaIndigenaState = initialState, action): EtniaIndigena
       };
     case SUCCESS(ACTION_TYPES.CREATE_ETNIAINDIGENA):
     case SUCCESS(ACTION_TYPES.UPDATE_ETNIAINDIGENA):
+    case SUCCESS(ACTION_TYPES.PARTIAL_UPDATE_ETNIAINDIGENA):
       return {
         ...state,
         updating: false,
@@ -129,7 +133,15 @@ export const createEntity: ICrudPutAction<IEtniaIndigena> = entity => async disp
 export const updateEntity: ICrudPutAction<IEtniaIndigena> = entity => async dispatch => {
   const result = await dispatch({
     type: ACTION_TYPES.UPDATE_ETNIAINDIGENA,
-    payload: axios.put(apiUrl, cleanEntity(entity)),
+    payload: axios.put(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
+  });
+  return result;
+};
+
+export const partialUpdate: ICrudPutAction<IEtniaIndigena> = entity => async dispatch => {
+  const result = await dispatch({
+    type: ACTION_TYPES.PARTIAL_UPDATE_ETNIAINDIGENA,
+    payload: axios.patch(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
   });
   return result;
 };

@@ -2,10 +2,9 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
-import { Translate, ICrudGetAction, ICrudDeleteAction } from 'react-jhipster';
+import { Translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { IConflito } from 'app/shared/model/conflito.model';
 import { IRootState } from 'app/shared/reducers';
 import { getEntity, deleteEntity } from './conflito.reducer';
 
@@ -33,7 +32,7 @@ export const ConflitoDeleteDialog = (props: IConflitoDeleteDialogProps) => {
   const { conflitoEntity } = props;
   return (
     <Modal isOpen toggle={handleClose}>
-      <ModalHeader toggle={handleClose}>
+      <ModalHeader toggle={handleClose} data-cy="conflitoDeleteDialogHeading">
         <Translate contentKey="entity.delete.title">Confirm delete operation</Translate>
       </ModalHeader>
       <ModalBody id="cidhaApp.conflito.delete.question">
@@ -47,7 +46,7 @@ export const ConflitoDeleteDialog = (props: IConflitoDeleteDialogProps) => {
           &nbsp;
           <Translate contentKey="entity.action.cancel">Cancel</Translate>
         </Button>
-        <Button id="jhi-confirm-delete-conflito" color="danger" onClick={confirmDelete}>
+        <Button id="jhi-confirm-delete-conflito" data-cy="entityConfirmDeleteButton" color="danger" onClick={confirmDelete}>
           <FontAwesomeIcon icon="trash" />
           &nbsp;
           <Translate contentKey="entity.action.delete">Delete</Translate>

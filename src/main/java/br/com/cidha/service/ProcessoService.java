@@ -2,15 +2,13 @@ package br.com.cidha.service;
 
 import br.com.cidha.domain.Processo;
 import br.com.cidha.repository.ProcessoRepository;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 /**
  * Service Implementation for managing {@link Processo}.
@@ -39,6 +37,66 @@ public class ProcessoService {
     }
 
     /**
+     * Partially update a processo.
+     *
+     * @param processo the entity to update partially.
+     * @return the persisted entity.
+     */
+    public Optional<Processo> partialUpdate(Processo processo) {
+        log.debug("Request to partially update Processo : {}", processo);
+
+        return processoRepository
+            .findById(processo.getId())
+            .map(
+                existingProcesso -> {
+                    if (processo.getOficio() != null) {
+                        existingProcesso.setOficio(processo.getOficio());
+                    }
+                    if (processo.getAssunto() != null) {
+                        existingProcesso.setAssunto(processo.getAssunto());
+                    }
+                    if (processo.getLinkUnico() != null) {
+                        existingProcesso.setLinkUnico(processo.getLinkUnico());
+                    }
+                    if (processo.getLinkTrf() != null) {
+                        existingProcesso.setLinkTrf(processo.getLinkTrf());
+                    }
+                    if (processo.getSubsecaoJudiciaria() != null) {
+                        existingProcesso.setSubsecaoJudiciaria(processo.getSubsecaoJudiciaria());
+                    }
+                    if (processo.getTurmaTrf1() != null) {
+                        existingProcesso.setTurmaTrf1(processo.getTurmaTrf1());
+                    }
+                    if (processo.getNumeroProcessoAdministrativo() != null) {
+                        existingProcesso.setNumeroProcessoAdministrativo(processo.getNumeroProcessoAdministrativo());
+                    }
+                    if (processo.getNumeroProcessoJudicialPrimeiraInstancia() != null) {
+                        existingProcesso.setNumeroProcessoJudicialPrimeiraInstancia(processo.getNumeroProcessoJudicialPrimeiraInstancia());
+                    }
+                    if (processo.getNumeroProcessoJudicialPrimeiraInstanciaLink() != null) {
+                        existingProcesso.setNumeroProcessoJudicialPrimeiraInstanciaLink(
+                            processo.getNumeroProcessoJudicialPrimeiraInstanciaLink()
+                        );
+                    }
+                    if (processo.getNumeroProcessoJudicialPrimeiraInstanciaObservacoes() != null) {
+                        existingProcesso.setNumeroProcessoJudicialPrimeiraInstanciaObservacoes(
+                            processo.getNumeroProcessoJudicialPrimeiraInstanciaObservacoes()
+                        );
+                    }
+                    if (processo.getParecer() != null) {
+                        existingProcesso.setParecer(processo.getParecer());
+                    }
+                    if (processo.getApelacao() != null) {
+                        existingProcesso.setApelacao(processo.getApelacao());
+                    }
+
+                    return existingProcesso;
+                }
+            )
+            .map(processoRepository::save);
+    }
+
+    /**
      * Get all the processos.
      *
      * @param pageable the pagination information.
@@ -49,7 +107,6 @@ public class ProcessoService {
         log.debug("Request to get all Processos");
         return processoRepository.findAll(pageable);
     }
-
 
     /**
      * Get all the processos with eager load of many-to-many relationships.

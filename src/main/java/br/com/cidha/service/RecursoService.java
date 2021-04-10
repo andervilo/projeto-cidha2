@@ -2,15 +2,13 @@ package br.com.cidha.service;
 
 import br.com.cidha.domain.Recurso;
 import br.com.cidha.repository.RecursoRepository;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 /**
  * Service Implementation for managing {@link Recurso}.
@@ -39,6 +37,29 @@ public class RecursoService {
     }
 
     /**
+     * Partially update a recurso.
+     *
+     * @param recurso the entity to update partially.
+     * @return the persisted entity.
+     */
+    public Optional<Recurso> partialUpdate(Recurso recurso) {
+        log.debug("Request to partially update Recurso : {}", recurso);
+
+        return recursoRepository
+            .findById(recurso.getId())
+            .map(
+                existingRecurso -> {
+                    if (recurso.getObservacoes() != null) {
+                        existingRecurso.setObservacoes(recurso.getObservacoes());
+                    }
+
+                    return existingRecurso;
+                }
+            )
+            .map(recursoRepository::save);
+    }
+
+    /**
      * Get all the recursos.
      *
      * @param pageable the pagination information.
@@ -49,7 +70,6 @@ public class RecursoService {
         log.debug("Request to get all Recursos");
         return recursoRepository.findAll(pageable);
     }
-
 
     /**
      * Get one recurso by id.

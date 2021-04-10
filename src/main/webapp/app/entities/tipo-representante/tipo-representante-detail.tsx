@@ -2,12 +2,11 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col } from 'reactstrap';
-import { Translate, ICrudGetAction } from 'react-jhipster';
+import { Translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
 import { getEntity } from './tipo-representante.reducer';
-import { ITipoRepresentante } from 'app/shared/model/tipo-representante.model';
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 
 export interface ITipoRepresentanteDetailProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
@@ -21,11 +20,16 @@ export const TipoRepresentanteDetail = (props: ITipoRepresentanteDetailProps) =>
   return (
     <Row>
       <Col md="8">
-        <h2>
-          <Translate contentKey="cidhaApp.tipoRepresentante.detail.title">TipoRepresentante</Translate> [<b>{tipoRepresentanteEntity.id}</b>
-          ]
+        <h2 data-cy="tipoRepresentanteDetailsHeading">
+          <Translate contentKey="cidhaApp.tipoRepresentante.detail.title">TipoRepresentante</Translate>
         </h2>
         <dl className="jh-entity-details">
+          <dt>
+            <span id="id">
+              <Translate contentKey="global.field.id">ID</Translate>
+            </span>
+          </dt>
+          <dd>{tipoRepresentanteEntity.id}</dd>
           <dt>
             <span id="descricao">
               <Translate contentKey="cidhaApp.tipoRepresentante.descricao">Descricao</Translate>
@@ -33,7 +37,7 @@ export const TipoRepresentanteDetail = (props: ITipoRepresentanteDetailProps) =>
           </dt>
           <dd>{tipoRepresentanteEntity.descricao}</dd>
         </dl>
-        <Button tag={Link} to="/tipo-representante" replace color="info">
+        <Button tag={Link} to="/tipo-representante" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" />{' '}
           <span className="d-none d-md-inline">
             <Translate contentKey="entity.action.back">Back</Translate>

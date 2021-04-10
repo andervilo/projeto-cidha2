@@ -1,14 +1,16 @@
 package br.com.cidha.web.rest;
 
 import br.com.cidha.domain.AtividadeExploracaoIlegal;
-import br.com.cidha.service.AtividadeExploracaoIlegalService;
-import br.com.cidha.web.rest.errors.BadRequestAlertException;
-import br.com.cidha.service.dto.AtividadeExploracaoIlegalCriteria;
+import br.com.cidha.repository.AtividadeExploracaoIlegalRepository;
 import br.com.cidha.service.AtividadeExploracaoIlegalQueryService;
-
-import io.github.jhipster.web.util.HeaderUtil;
-import io.github.jhipster.web.util.PaginationUtil;
-import io.github.jhipster.web.util.ResponseUtil;
+import br.com.cidha.service.AtividadeExploracaoIlegalService;
+import br.com.cidha.service.criteria.AtividadeExploracaoIlegalCriteria;
+import br.com.cidha.web.rest.errors.BadRequestAlertException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,14 +18,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import tech.jhipster.web.util.HeaderUtil;
+import tech.jhipster.web.util.PaginationUtil;
+import tech.jhipster.web.util.ResponseUtil;
 
 /**
  * REST controller for managing {@link br.com.cidha.domain.AtividadeExploracaoIlegal}.
@@ -41,10 +41,17 @@ public class AtividadeExploracaoIlegalResource {
 
     private final AtividadeExploracaoIlegalService atividadeExploracaoIlegalService;
 
+    private final AtividadeExploracaoIlegalRepository atividadeExploracaoIlegalRepository;
+
     private final AtividadeExploracaoIlegalQueryService atividadeExploracaoIlegalQueryService;
 
-    public AtividadeExploracaoIlegalResource(AtividadeExploracaoIlegalService atividadeExploracaoIlegalService, AtividadeExploracaoIlegalQueryService atividadeExploracaoIlegalQueryService) {
+    public AtividadeExploracaoIlegalResource(
+        AtividadeExploracaoIlegalService atividadeExploracaoIlegalService,
+        AtividadeExploracaoIlegalRepository atividadeExploracaoIlegalRepository,
+        AtividadeExploracaoIlegalQueryService atividadeExploracaoIlegalQueryService
+    ) {
         this.atividadeExploracaoIlegalService = atividadeExploracaoIlegalService;
+        this.atividadeExploracaoIlegalRepository = atividadeExploracaoIlegalRepository;
         this.atividadeExploracaoIlegalQueryService = atividadeExploracaoIlegalQueryService;
     }
 
@@ -56,36 +63,88 @@ public class AtividadeExploracaoIlegalResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/atividade-exploracao-ilegals")
-    public ResponseEntity<AtividadeExploracaoIlegal> createAtividadeExploracaoIlegal(@RequestBody AtividadeExploracaoIlegal atividadeExploracaoIlegal) throws URISyntaxException {
+    public ResponseEntity<AtividadeExploracaoIlegal> createAtividadeExploracaoIlegal(
+        @RequestBody AtividadeExploracaoIlegal atividadeExploracaoIlegal
+    ) throws URISyntaxException {
         log.debug("REST request to save AtividadeExploracaoIlegal : {}", atividadeExploracaoIlegal);
         if (atividadeExploracaoIlegal.getId() != null) {
             throw new BadRequestAlertException("A new atividadeExploracaoIlegal cannot already have an ID", ENTITY_NAME, "idexists");
         }
         AtividadeExploracaoIlegal result = atividadeExploracaoIlegalService.save(atividadeExploracaoIlegal);
-        return ResponseEntity.created(new URI("/api/atividade-exploracao-ilegals/" + result.getId()))
+        return ResponseEntity
+            .created(new URI("/api/atividade-exploracao-ilegals/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
 
     /**
-     * {@code PUT  /atividade-exploracao-ilegals} : Updates an existing atividadeExploracaoIlegal.
+     * {@code PUT  /atividade-exploracao-ilegals/:id} : Updates an existing atividadeExploracaoIlegal.
      *
+     * @param id the id of the atividadeExploracaoIlegal to save.
      * @param atividadeExploracaoIlegal the atividadeExploracaoIlegal to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated atividadeExploracaoIlegal,
      * or with status {@code 400 (Bad Request)} if the atividadeExploracaoIlegal is not valid,
      * or with status {@code 500 (Internal Server Error)} if the atividadeExploracaoIlegal couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/atividade-exploracao-ilegals")
-    public ResponseEntity<AtividadeExploracaoIlegal> updateAtividadeExploracaoIlegal(@RequestBody AtividadeExploracaoIlegal atividadeExploracaoIlegal) throws URISyntaxException {
-        log.debug("REST request to update AtividadeExploracaoIlegal : {}", atividadeExploracaoIlegal);
+    @PutMapping("/atividade-exploracao-ilegals/{id}")
+    public ResponseEntity<AtividadeExploracaoIlegal> updateAtividadeExploracaoIlegal(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody AtividadeExploracaoIlegal atividadeExploracaoIlegal
+    ) throws URISyntaxException {
+        log.debug("REST request to update AtividadeExploracaoIlegal : {}, {}", id, atividadeExploracaoIlegal);
         if (atividadeExploracaoIlegal.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+        if (!Objects.equals(id, atividadeExploracaoIlegal.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!atividadeExploracaoIlegalRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
         AtividadeExploracaoIlegal result = atividadeExploracaoIlegalService.save(atividadeExploracaoIlegal);
-        return ResponseEntity.ok()
+        return ResponseEntity
+            .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, atividadeExploracaoIlegal.getId().toString()))
             .body(result);
+    }
+
+    /**
+     * {@code PATCH  /atividade-exploracao-ilegals/:id} : Partial updates given fields of an existing atividadeExploracaoIlegal, field will ignore if it is null
+     *
+     * @param id the id of the atividadeExploracaoIlegal to save.
+     * @param atividadeExploracaoIlegal the atividadeExploracaoIlegal to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated atividadeExploracaoIlegal,
+     * or with status {@code 400 (Bad Request)} if the atividadeExploracaoIlegal is not valid,
+     * or with status {@code 404 (Not Found)} if the atividadeExploracaoIlegal is not found,
+     * or with status {@code 500 (Internal Server Error)} if the atividadeExploracaoIlegal couldn't be updated.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PatchMapping(value = "/atividade-exploracao-ilegals/{id}", consumes = "application/merge-patch+json")
+    public ResponseEntity<AtividadeExploracaoIlegal> partialUpdateAtividadeExploracaoIlegal(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody AtividadeExploracaoIlegal atividadeExploracaoIlegal
+    ) throws URISyntaxException {
+        log.debug("REST request to partial update AtividadeExploracaoIlegal partially : {}, {}", id, atividadeExploracaoIlegal);
+        if (atividadeExploracaoIlegal.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        if (!Objects.equals(id, atividadeExploracaoIlegal.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!atividadeExploracaoIlegalRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
+        Optional<AtividadeExploracaoIlegal> result = atividadeExploracaoIlegalService.partialUpdate(atividadeExploracaoIlegal);
+
+        return ResponseUtil.wrapOrNotFound(
+            result,
+            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, atividadeExploracaoIlegal.getId().toString())
+        );
     }
 
     /**
@@ -96,7 +155,10 @@ public class AtividadeExploracaoIlegalResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of atividadeExploracaoIlegals in body.
      */
     @GetMapping("/atividade-exploracao-ilegals")
-    public ResponseEntity<List<AtividadeExploracaoIlegal>> getAllAtividadeExploracaoIlegals(AtividadeExploracaoIlegalCriteria criteria, Pageable pageable) {
+    public ResponseEntity<List<AtividadeExploracaoIlegal>> getAllAtividadeExploracaoIlegals(
+        AtividadeExploracaoIlegalCriteria criteria,
+        Pageable pageable
+    ) {
         log.debug("REST request to get AtividadeExploracaoIlegals by criteria: {}", criteria);
         Page<AtividadeExploracaoIlegal> page = atividadeExploracaoIlegalQueryService.findByCriteria(criteria, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
@@ -138,6 +200,9 @@ public class AtividadeExploracaoIlegalResource {
     public ResponseEntity<Void> deleteAtividadeExploracaoIlegal(@PathVariable Long id) {
         log.debug("REST request to delete AtividadeExploracaoIlegal : {}", id);
         atividadeExploracaoIlegalService.delete(id);
-        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
+        return ResponseEntity
+            .noContent()
+            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
+            .build();
     }
 }

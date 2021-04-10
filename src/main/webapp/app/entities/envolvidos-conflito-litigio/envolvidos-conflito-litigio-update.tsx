@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col, Label } from 'reactstrap';
 import { AvFeedback, AvForm, AvGroup, AvInput, AvField } from 'availity-reactstrap-validation';
-import { Translate, translate, ICrudGetAction, ICrudGetAllAction, setFileData, byteSize, ICrudPutAction } from 'react-jhipster';
+import { setFileData, byteSize, Translate, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
@@ -17,8 +17,7 @@ import { mapIdList } from 'app/shared/util/entity-utils';
 export interface IEnvolvidosConflitoLitigioUpdateProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
 
 export const EnvolvidosConflitoLitigioUpdate = (props: IEnvolvidosConflitoLitigioUpdateProps) => {
-  const [processoId, setProcessoId] = useState('0');
-  const [isNew, setIsNew] = useState(!props.match.params || !props.match.params.id);
+  const [isNew] = useState(!props.match.params || !props.match.params.id);
 
   const { envolvidosConflitoLitigioEntity, processos, loading, updating } = props;
 
@@ -71,7 +70,7 @@ export const EnvolvidosConflitoLitigioUpdate = (props: IEnvolvidosConflitoLitigi
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="cidhaApp.envolvidosConflitoLitigio.home.createOrEditLabel">
+          <h2 id="cidhaApp.envolvidosConflitoLitigio.home.createOrEditLabel" data-cy="EnvolvidosConflitoLitigioCreateUpdateHeading">
             <Translate contentKey="cidhaApp.envolvidosConflitoLitigio.home.createOrEditLabel">
               Create or edit a EnvolvidosConflitoLitigio
             </Translate>
@@ -96,19 +95,30 @@ export const EnvolvidosConflitoLitigioUpdate = (props: IEnvolvidosConflitoLitigi
                 <Label id="numeroIndividuosLabel" for="envolvidos-conflito-litigio-numeroIndividuos">
                   <Translate contentKey="cidhaApp.envolvidosConflitoLitigio.numeroIndividuos">Numero Individuos</Translate>
                 </Label>
-                <AvField id="envolvidos-conflito-litigio-numeroIndividuos" type="string" className="form-control" name="numeroIndividuos" />
+                <AvField
+                  id="envolvidos-conflito-litigio-numeroIndividuos"
+                  data-cy="numeroIndividuos"
+                  type="string"
+                  className="form-control"
+                  name="numeroIndividuos"
+                />
               </AvGroup>
               <AvGroup>
                 <Label id="fonteInformacaoQtdeLabel" for="envolvidos-conflito-litigio-fonteInformacaoQtde">
                   <Translate contentKey="cidhaApp.envolvidosConflitoLitigio.fonteInformacaoQtde">Fonte Informacao Qtde</Translate>
                 </Label>
-                <AvInput id="envolvidos-conflito-litigio-fonteInformacaoQtde" type="textarea" name="fonteInformacaoQtde" />
+                <AvInput
+                  id="envolvidos-conflito-litigio-fonteInformacaoQtde"
+                  data-cy="fonteInformacaoQtde"
+                  type="textarea"
+                  name="fonteInformacaoQtde"
+                />
               </AvGroup>
               <AvGroup>
                 <Label id="observacoesLabel" for="envolvidos-conflito-litigio-observacoes">
                   <Translate contentKey="cidhaApp.envolvidosConflitoLitigio.observacoes">Observacoes</Translate>
                 </Label>
-                <AvInput id="envolvidos-conflito-litigio-observacoes" type="textarea" name="observacoes" />
+                <AvInput id="envolvidos-conflito-litigio-observacoes" data-cy="observacoes" type="textarea" name="observacoes" />
               </AvGroup>
               <Button tag={Link} id="cancel-save" to="/envolvidos-conflito-litigio" replace color="info">
                 <FontAwesomeIcon icon="arrow-left" />
@@ -118,7 +128,7 @@ export const EnvolvidosConflitoLitigioUpdate = (props: IEnvolvidosConflitoLitigi
                 </span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp;
                 <Translate contentKey="entity.action.save">Save</Translate>

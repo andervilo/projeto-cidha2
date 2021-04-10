@@ -1,14 +1,16 @@
 package br.com.cidha.web.rest;
 
 import br.com.cidha.domain.EnvolvidosConflitoLitigio;
-import br.com.cidha.service.EnvolvidosConflitoLitigioService;
-import br.com.cidha.web.rest.errors.BadRequestAlertException;
-import br.com.cidha.service.dto.EnvolvidosConflitoLitigioCriteria;
+import br.com.cidha.repository.EnvolvidosConflitoLitigioRepository;
 import br.com.cidha.service.EnvolvidosConflitoLitigioQueryService;
-
-import io.github.jhipster.web.util.HeaderUtil;
-import io.github.jhipster.web.util.PaginationUtil;
-import io.github.jhipster.web.util.ResponseUtil;
+import br.com.cidha.service.EnvolvidosConflitoLitigioService;
+import br.com.cidha.service.criteria.EnvolvidosConflitoLitigioCriteria;
+import br.com.cidha.web.rest.errors.BadRequestAlertException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,14 +18,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import tech.jhipster.web.util.HeaderUtil;
+import tech.jhipster.web.util.PaginationUtil;
+import tech.jhipster.web.util.ResponseUtil;
 
 /**
  * REST controller for managing {@link br.com.cidha.domain.EnvolvidosConflitoLitigio}.
@@ -41,10 +41,17 @@ public class EnvolvidosConflitoLitigioResource {
 
     private final EnvolvidosConflitoLitigioService envolvidosConflitoLitigioService;
 
+    private final EnvolvidosConflitoLitigioRepository envolvidosConflitoLitigioRepository;
+
     private final EnvolvidosConflitoLitigioQueryService envolvidosConflitoLitigioQueryService;
 
-    public EnvolvidosConflitoLitigioResource(EnvolvidosConflitoLitigioService envolvidosConflitoLitigioService, EnvolvidosConflitoLitigioQueryService envolvidosConflitoLitigioQueryService) {
+    public EnvolvidosConflitoLitigioResource(
+        EnvolvidosConflitoLitigioService envolvidosConflitoLitigioService,
+        EnvolvidosConflitoLitigioRepository envolvidosConflitoLitigioRepository,
+        EnvolvidosConflitoLitigioQueryService envolvidosConflitoLitigioQueryService
+    ) {
         this.envolvidosConflitoLitigioService = envolvidosConflitoLitigioService;
+        this.envolvidosConflitoLitigioRepository = envolvidosConflitoLitigioRepository;
         this.envolvidosConflitoLitigioQueryService = envolvidosConflitoLitigioQueryService;
     }
 
@@ -56,36 +63,88 @@ public class EnvolvidosConflitoLitigioResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/envolvidos-conflito-litigios")
-    public ResponseEntity<EnvolvidosConflitoLitigio> createEnvolvidosConflitoLitigio(@RequestBody EnvolvidosConflitoLitigio envolvidosConflitoLitigio) throws URISyntaxException {
+    public ResponseEntity<EnvolvidosConflitoLitigio> createEnvolvidosConflitoLitigio(
+        @RequestBody EnvolvidosConflitoLitigio envolvidosConflitoLitigio
+    ) throws URISyntaxException {
         log.debug("REST request to save EnvolvidosConflitoLitigio : {}", envolvidosConflitoLitigio);
         if (envolvidosConflitoLitigio.getId() != null) {
             throw new BadRequestAlertException("A new envolvidosConflitoLitigio cannot already have an ID", ENTITY_NAME, "idexists");
         }
         EnvolvidosConflitoLitigio result = envolvidosConflitoLitigioService.save(envolvidosConflitoLitigio);
-        return ResponseEntity.created(new URI("/api/envolvidos-conflito-litigios/" + result.getId()))
+        return ResponseEntity
+            .created(new URI("/api/envolvidos-conflito-litigios/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
 
     /**
-     * {@code PUT  /envolvidos-conflito-litigios} : Updates an existing envolvidosConflitoLitigio.
+     * {@code PUT  /envolvidos-conflito-litigios/:id} : Updates an existing envolvidosConflitoLitigio.
      *
+     * @param id the id of the envolvidosConflitoLitigio to save.
      * @param envolvidosConflitoLitigio the envolvidosConflitoLitigio to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated envolvidosConflitoLitigio,
      * or with status {@code 400 (Bad Request)} if the envolvidosConflitoLitigio is not valid,
      * or with status {@code 500 (Internal Server Error)} if the envolvidosConflitoLitigio couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/envolvidos-conflito-litigios")
-    public ResponseEntity<EnvolvidosConflitoLitigio> updateEnvolvidosConflitoLitigio(@RequestBody EnvolvidosConflitoLitigio envolvidosConflitoLitigio) throws URISyntaxException {
-        log.debug("REST request to update EnvolvidosConflitoLitigio : {}", envolvidosConflitoLitigio);
+    @PutMapping("/envolvidos-conflito-litigios/{id}")
+    public ResponseEntity<EnvolvidosConflitoLitigio> updateEnvolvidosConflitoLitigio(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody EnvolvidosConflitoLitigio envolvidosConflitoLitigio
+    ) throws URISyntaxException {
+        log.debug("REST request to update EnvolvidosConflitoLitigio : {}, {}", id, envolvidosConflitoLitigio);
         if (envolvidosConflitoLitigio.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+        if (!Objects.equals(id, envolvidosConflitoLitigio.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!envolvidosConflitoLitigioRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
         EnvolvidosConflitoLitigio result = envolvidosConflitoLitigioService.save(envolvidosConflitoLitigio);
-        return ResponseEntity.ok()
+        return ResponseEntity
+            .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, envolvidosConflitoLitigio.getId().toString()))
             .body(result);
+    }
+
+    /**
+     * {@code PATCH  /envolvidos-conflito-litigios/:id} : Partial updates given fields of an existing envolvidosConflitoLitigio, field will ignore if it is null
+     *
+     * @param id the id of the envolvidosConflitoLitigio to save.
+     * @param envolvidosConflitoLitigio the envolvidosConflitoLitigio to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated envolvidosConflitoLitigio,
+     * or with status {@code 400 (Bad Request)} if the envolvidosConflitoLitigio is not valid,
+     * or with status {@code 404 (Not Found)} if the envolvidosConflitoLitigio is not found,
+     * or with status {@code 500 (Internal Server Error)} if the envolvidosConflitoLitigio couldn't be updated.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PatchMapping(value = "/envolvidos-conflito-litigios/{id}", consumes = "application/merge-patch+json")
+    public ResponseEntity<EnvolvidosConflitoLitigio> partialUpdateEnvolvidosConflitoLitigio(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody EnvolvidosConflitoLitigio envolvidosConflitoLitigio
+    ) throws URISyntaxException {
+        log.debug("REST request to partial update EnvolvidosConflitoLitigio partially : {}, {}", id, envolvidosConflitoLitigio);
+        if (envolvidosConflitoLitigio.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        if (!Objects.equals(id, envolvidosConflitoLitigio.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!envolvidosConflitoLitigioRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
+        Optional<EnvolvidosConflitoLitigio> result = envolvidosConflitoLitigioService.partialUpdate(envolvidosConflitoLitigio);
+
+        return ResponseUtil.wrapOrNotFound(
+            result,
+            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, envolvidosConflitoLitigio.getId().toString())
+        );
     }
 
     /**
@@ -96,7 +155,10 @@ public class EnvolvidosConflitoLitigioResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of envolvidosConflitoLitigios in body.
      */
     @GetMapping("/envolvidos-conflito-litigios")
-    public ResponseEntity<List<EnvolvidosConflitoLitigio>> getAllEnvolvidosConflitoLitigios(EnvolvidosConflitoLitigioCriteria criteria, Pageable pageable) {
+    public ResponseEntity<List<EnvolvidosConflitoLitigio>> getAllEnvolvidosConflitoLitigios(
+        EnvolvidosConflitoLitigioCriteria criteria,
+        Pageable pageable
+    ) {
         log.debug("REST request to get EnvolvidosConflitoLitigios by criteria: {}", criteria);
         Page<EnvolvidosConflitoLitigio> page = envolvidosConflitoLitigioQueryService.findByCriteria(criteria, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
@@ -138,6 +200,9 @@ public class EnvolvidosConflitoLitigioResource {
     public ResponseEntity<Void> deleteEnvolvidosConflitoLitigio(@PathVariable Long id) {
         log.debug("REST request to delete EnvolvidosConflitoLitigio : {}", id);
         envolvidosConflitoLitigioService.delete(id);
-        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
+        return ResponseEntity
+            .noContent()
+            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
+            .build();
     }
 }

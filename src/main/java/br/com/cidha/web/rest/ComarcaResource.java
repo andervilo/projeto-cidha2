@@ -1,14 +1,16 @@
 package br.com.cidha.web.rest;
 
 import br.com.cidha.domain.Comarca;
-import br.com.cidha.service.ComarcaService;
-import br.com.cidha.web.rest.errors.BadRequestAlertException;
-import br.com.cidha.service.dto.ComarcaCriteria;
+import br.com.cidha.repository.ComarcaRepository;
 import br.com.cidha.service.ComarcaQueryService;
-
-import io.github.jhipster.web.util.HeaderUtil;
-import io.github.jhipster.web.util.PaginationUtil;
-import io.github.jhipster.web.util.ResponseUtil;
+import br.com.cidha.service.ComarcaService;
+import br.com.cidha.service.criteria.ComarcaCriteria;
+import br.com.cidha.web.rest.errors.BadRequestAlertException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,14 +18,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import tech.jhipster.web.util.HeaderUtil;
+import tech.jhipster.web.util.PaginationUtil;
+import tech.jhipster.web.util.ResponseUtil;
 
 /**
  * REST controller for managing {@link br.com.cidha.domain.Comarca}.
@@ -41,10 +41,13 @@ public class ComarcaResource {
 
     private final ComarcaService comarcaService;
 
+    private final ComarcaRepository comarcaRepository;
+
     private final ComarcaQueryService comarcaQueryService;
 
-    public ComarcaResource(ComarcaService comarcaService, ComarcaQueryService comarcaQueryService) {
+    public ComarcaResource(ComarcaService comarcaService, ComarcaRepository comarcaRepository, ComarcaQueryService comarcaQueryService) {
         this.comarcaService = comarcaService;
+        this.comarcaRepository = comarcaRepository;
         this.comarcaQueryService = comarcaQueryService;
     }
 
@@ -62,30 +65,78 @@ public class ComarcaResource {
             throw new BadRequestAlertException("A new comarca cannot already have an ID", ENTITY_NAME, "idexists");
         }
         Comarca result = comarcaService.save(comarca);
-        return ResponseEntity.created(new URI("/api/comarcas/" + result.getId()))
+        return ResponseEntity
+            .created(new URI("/api/comarcas/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
 
     /**
-     * {@code PUT  /comarcas} : Updates an existing comarca.
+     * {@code PUT  /comarcas/:id} : Updates an existing comarca.
      *
+     * @param id the id of the comarca to save.
      * @param comarca the comarca to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated comarca,
      * or with status {@code 400 (Bad Request)} if the comarca is not valid,
      * or with status {@code 500 (Internal Server Error)} if the comarca couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/comarcas")
-    public ResponseEntity<Comarca> updateComarca(@RequestBody Comarca comarca) throws URISyntaxException {
-        log.debug("REST request to update Comarca : {}", comarca);
+    @PutMapping("/comarcas/{id}")
+    public ResponseEntity<Comarca> updateComarca(@PathVariable(value = "id", required = false) final Long id, @RequestBody Comarca comarca)
+        throws URISyntaxException {
+        log.debug("REST request to update Comarca : {}, {}", id, comarca);
         if (comarca.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+        if (!Objects.equals(id, comarca.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!comarcaRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
         Comarca result = comarcaService.save(comarca);
-        return ResponseEntity.ok()
+        return ResponseEntity
+            .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, comarca.getId().toString()))
             .body(result);
+    }
+
+    /**
+     * {@code PATCH  /comarcas/:id} : Partial updates given fields of an existing comarca, field will ignore if it is null
+     *
+     * @param id the id of the comarca to save.
+     * @param comarca the comarca to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated comarca,
+     * or with status {@code 400 (Bad Request)} if the comarca is not valid,
+     * or with status {@code 404 (Not Found)} if the comarca is not found,
+     * or with status {@code 500 (Internal Server Error)} if the comarca couldn't be updated.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PatchMapping(value = "/comarcas/{id}", consumes = "application/merge-patch+json")
+    public ResponseEntity<Comarca> partialUpdateComarca(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody Comarca comarca
+    ) throws URISyntaxException {
+        log.debug("REST request to partial update Comarca partially : {}, {}", id, comarca);
+        if (comarca.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        if (!Objects.equals(id, comarca.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!comarcaRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
+        Optional<Comarca> result = comarcaService.partialUpdate(comarca);
+
+        return ResponseUtil.wrapOrNotFound(
+            result,
+            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, comarca.getId().toString())
+        );
     }
 
     /**
@@ -138,6 +189,9 @@ public class ComarcaResource {
     public ResponseEntity<Void> deleteComarca(@PathVariable Long id) {
         log.debug("REST request to delete Comarca : {}", id);
         comarcaService.delete(id);
-        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
+        return ResponseEntity
+            .noContent()
+            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
+            .build();
     }
 }

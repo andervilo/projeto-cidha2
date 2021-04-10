@@ -2,12 +2,11 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col } from 'reactstrap';
-import { Translate, ICrudGetAction } from 'react-jhipster';
+import { Translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
 import { getEntity } from './opcao-recurso.reducer';
-import { IOpcaoRecurso } from 'app/shared/model/opcao-recurso.model';
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 
 export interface IOpcaoRecursoDetailProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
@@ -21,10 +20,16 @@ export const OpcaoRecursoDetail = (props: IOpcaoRecursoDetailProps) => {
   return (
     <Row>
       <Col md="8">
-        <h2>
-          <Translate contentKey="cidhaApp.opcaoRecurso.detail.title">OpcaoRecurso</Translate> [<b>{opcaoRecursoEntity.id}</b>]
+        <h2 data-cy="opcaoRecursoDetailsHeading">
+          <Translate contentKey="cidhaApp.opcaoRecurso.detail.title">OpcaoRecurso</Translate>
         </h2>
         <dl className="jh-entity-details">
+          <dt>
+            <span id="id">
+              <Translate contentKey="global.field.id">ID</Translate>
+            </span>
+          </dt>
+          <dd>{opcaoRecursoEntity.id}</dd>
           <dt>
             <span id="descricao">
               <Translate contentKey="cidhaApp.opcaoRecurso.descricao">Descricao</Translate>
@@ -32,7 +37,7 @@ export const OpcaoRecursoDetail = (props: IOpcaoRecursoDetailProps) => {
           </dt>
           <dd>{opcaoRecursoEntity.descricao}</dd>
         </dl>
-        <Button tag={Link} to="/opcao-recurso" replace color="info">
+        <Button tag={Link} to="/opcao-recurso" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" />{' '}
           <span className="d-none d-md-inline">
             <Translate contentKey="entity.action.back">Back</Translate>

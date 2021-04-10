@@ -1,9 +1,11 @@
 package br.com.cidha.service;
 
+import br.com.cidha.domain.*; // for static metamodels
+import br.com.cidha.domain.ProblemaJuridico;
+import br.com.cidha.repository.ProblemaJuridicoRepository;
+import br.com.cidha.service.criteria.ProblemaJuridicoCriteria;
 import java.util.List;
-
 import javax.persistence.criteria.JoinType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -11,13 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import io.github.jhipster.service.QueryService;
-
-import br.com.cidha.domain.ProblemaJuridico;
-import br.com.cidha.domain.*; // for static metamodels
-import br.com.cidha.repository.ProblemaJuridicoRepository;
-import br.com.cidha.service.dto.ProblemaJuridicoCriteria;
+import tech.jhipster.service.QueryService;
 
 /**
  * Service for executing complex queries for {@link ProblemaJuridico} entities in the database.
@@ -86,27 +82,55 @@ public class ProblemaJuridicoQueryService extends QueryService<ProblemaJuridico>
                 specification = specification.and(buildRangeSpecification(criteria.getId(), ProblemaJuridico_.id));
             }
             if (criteria.getFolhasProblemaJuridico() != null) {
-                specification = specification.and(buildStringSpecification(criteria.getFolhasProblemaJuridico(), ProblemaJuridico_.folhasProblemaJuridico));
+                specification =
+                    specification.and(
+                        buildStringSpecification(criteria.getFolhasProblemaJuridico(), ProblemaJuridico_.folhasProblemaJuridico)
+                    );
             }
             if (criteria.getFundamentacaoDoutrinariaId() != null) {
-                specification = specification.and(buildSpecification(criteria.getFundamentacaoDoutrinariaId(),
-                    root -> root.join(ProblemaJuridico_.fundamentacaoDoutrinarias, JoinType.LEFT).get(FundamentacaoDoutrinaria_.id)));
+                specification =
+                    specification.and(
+                        buildSpecification(
+                            criteria.getFundamentacaoDoutrinariaId(),
+                            root -> root.join(ProblemaJuridico_.fundamentacaoDoutrinarias, JoinType.LEFT).get(FundamentacaoDoutrinaria_.id)
+                        )
+                    );
             }
             if (criteria.getJurisprudenciaId() != null) {
-                specification = specification.and(buildSpecification(criteria.getJurisprudenciaId(),
-                    root -> root.join(ProblemaJuridico_.jurisprudencias, JoinType.LEFT).get(Jurisprudencia_.id)));
+                specification =
+                    specification.and(
+                        buildSpecification(
+                            criteria.getJurisprudenciaId(),
+                            root -> root.join(ProblemaJuridico_.jurisprudencias, JoinType.LEFT).get(Jurisprudencia_.id)
+                        )
+                    );
             }
             if (criteria.getFundamentacaoLegalId() != null) {
-                specification = specification.and(buildSpecification(criteria.getFundamentacaoLegalId(),
-                    root -> root.join(ProblemaJuridico_.fundamentacaoLegals, JoinType.LEFT).get(FundamentacaoLegal_.id)));
+                specification =
+                    specification.and(
+                        buildSpecification(
+                            criteria.getFundamentacaoLegalId(),
+                            root -> root.join(ProblemaJuridico_.fundamentacaoLegals, JoinType.LEFT).get(FundamentacaoLegal_.id)
+                        )
+                    );
             }
             if (criteria.getInstrumentoInternacionalId() != null) {
-                specification = specification.and(buildSpecification(criteria.getInstrumentoInternacionalId(),
-                    root -> root.join(ProblemaJuridico_.instrumentoInternacionals, JoinType.LEFT).get(InstrumentoInternacional_.id)));
+                specification =
+                    specification.and(
+                        buildSpecification(
+                            criteria.getInstrumentoInternacionalId(),
+                            root -> root.join(ProblemaJuridico_.instrumentoInternacionals, JoinType.LEFT).get(InstrumentoInternacional_.id)
+                        )
+                    );
             }
             if (criteria.getProcessoId() != null) {
-                specification = specification.and(buildSpecification(criteria.getProcessoId(),
-                    root -> root.join(ProblemaJuridico_.processos, JoinType.LEFT).get(Processo_.id)));
+                specification =
+                    specification.and(
+                        buildSpecification(
+                            criteria.getProcessoId(),
+                            root -> root.join(ProblemaJuridico_.processos, JoinType.LEFT).get(Processo_.id)
+                        )
+                    );
             }
         }
         return specification;

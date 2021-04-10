@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Col, Row, Table } from 'reactstrap';
-import { byteSize, Translate, ICrudGetAllAction, getSortState, IPaginationBaseState, JhiPagination, JhiItemCount } from 'react-jhipster';
+import { byteSize, Translate, getSortState, IPaginationBaseState, JhiPagination, JhiItemCount } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
@@ -16,7 +16,7 @@ export interface IFundamentacaoDoutrinariaProps extends StateProps, DispatchProp
 
 export const FundamentacaoDoutrinaria = (props: IFundamentacaoDoutrinariaProps) => {
   const [paginationState, setPaginationState] = useState(
-    overridePaginationStateWithQueryParams(getSortState(props.location, ITEMS_PER_PAGE), props.location.search)
+    overridePaginationStateWithQueryParams(getSortState(props.location, ITEMS_PER_PAGE, 'id'), props.location.search)
   );
 
   const getAllEntities = () => {
@@ -64,16 +64,26 @@ export const FundamentacaoDoutrinaria = (props: IFundamentacaoDoutrinariaProps) 
       activePage: currentPage,
     });
 
+  const handleSyncList = () => {
+    sortEntities();
+  };
+
   const { fundamentacaoDoutrinariaList, match, loading, totalItems } = props;
   return (
     <div>
-      <h2 id="fundamentacao-doutrinaria-heading">
+      <h2 id="fundamentacao-doutrinaria-heading" data-cy="FundamentacaoDoutrinariaHeading">
         <Translate contentKey="cidhaApp.fundamentacaoDoutrinaria.home.title">Fundamentacao Doutrinarias</Translate>
-        <Link to={`${match.url}/new`} className="btn btn-primary float-right jh-create-entity" id="jh-create-entity">
-          <FontAwesomeIcon icon="plus" />
-          &nbsp;
-          <Translate contentKey="cidhaApp.fundamentacaoDoutrinaria.home.createLabel">Create new Fundamentacao Doutrinaria</Translate>
-        </Link>
+        <div className="d-flex justify-content-end">
+          <Button className="mr-2" color="info" onClick={handleSyncList} disabled={loading}>
+            <FontAwesomeIcon icon="sync" spin={loading} />{' '}
+            <Translate contentKey="cidhaApp.fundamentacaoDoutrinaria.home.refreshListLabel">Refresh List</Translate>
+          </Button>
+          <Link to={`${match.url}/new`} className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
+            <FontAwesomeIcon icon="plus" />
+            &nbsp;
+            <Translate contentKey="cidhaApp.fundamentacaoDoutrinaria.home.createLabel">Create new Fundamentacao Doutrinaria</Translate>
+          </Link>
+        </div>
       </h2>
       <div className="table-responsive">
         {fundamentacaoDoutrinariaList && fundamentacaoDoutrinariaList.length > 0 ? (
@@ -81,7 +91,7 @@ export const FundamentacaoDoutrinaria = (props: IFundamentacaoDoutrinariaProps) 
             <thead>
               <tr>
                 <th className="hand" onClick={sort('id')}>
-                  <Translate contentKey="global.field.id">ID</Translate> <FontAwesomeIcon icon="sort" />
+                  <Translate contentKey="cidhaApp.fundamentacaoDoutrinaria.id">ID</Translate> <FontAwesomeIcon icon="sort" />
                 </th>
                 <th className="hand" onClick={sort('fundamentacaoDoutrinariaCitada')}>
                   <Translate contentKey="cidhaApp.fundamentacaoDoutrinaria.fundamentacaoDoutrinariaCitada">
@@ -106,7 +116,7 @@ export const FundamentacaoDoutrinaria = (props: IFundamentacaoDoutrinariaProps) 
             </thead>
             <tbody>
               {fundamentacaoDoutrinariaList.map((fundamentacaoDoutrinaria, i) => (
-                <tr key={`entity-${i}`}>
+                <tr key={`entity-${i}`} data-cy="entityTable">
                   <td>
                     <Button tag={Link} to={`${match.url}/${fundamentacaoDoutrinaria.id}`} color="link" size="sm">
                       {fundamentacaoDoutrinaria.id}
@@ -117,7 +127,13 @@ export const FundamentacaoDoutrinaria = (props: IFundamentacaoDoutrinariaProps) 
                   <td>{fundamentacaoDoutrinaria.fundamentacaoDoutrinariaSugerida}</td>
                   <td className="text-right">
                     <div className="btn-group flex-btn-group-container">
-                      <Button tag={Link} to={`${match.url}/${fundamentacaoDoutrinaria.id}`} color="info" size="sm">
+                      <Button
+                        tag={Link}
+                        to={`${match.url}/${fundamentacaoDoutrinaria.id}`}
+                        color="info"
+                        size="sm"
+                        data-cy="entityDetailsButton"
+                      >
                         <FontAwesomeIcon icon="eye" />{' '}
                         <span className="d-none d-md-inline">
                           <Translate contentKey="entity.action.view">View</Translate>
@@ -128,6 +144,7 @@ export const FundamentacaoDoutrinaria = (props: IFundamentacaoDoutrinariaProps) 
                         to={`${match.url}/${fundamentacaoDoutrinaria.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
                         color="primary"
                         size="sm"
+                        data-cy="entityEditButton"
                       >
                         <FontAwesomeIcon icon="pencil-alt" />{' '}
                         <span className="d-none d-md-inline">
@@ -139,6 +156,7 @@ export const FundamentacaoDoutrinaria = (props: IFundamentacaoDoutrinariaProps) 
                         to={`${match.url}/${fundamentacaoDoutrinaria.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
                         color="danger"
                         size="sm"
+                        data-cy="entityDeleteButton"
                       >
                         <FontAwesomeIcon icon="trash" />{' '}
                         <span className="d-none d-md-inline">

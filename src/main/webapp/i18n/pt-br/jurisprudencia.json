@@ -3,6 +3,7 @@
     "jurisprudencia": {
       "home": {
         "title": "Jurisprudencias",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Jurisprudencia",
         "createOrEditLabel": "Criar ou editar Jurisprudencia",
         "notFound": "Nenhum Jurisprudencia encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Jurisprudencia"
       },
+      "id": "ID",
       "jurisprudenciaCitadaDescricao": "Jurisprudencia Citada Descricao",
       "folhasJurisprudenciaCitada": "Folhas Jurisprudencia Citada",
       "jurisprudenciaSugerida": "Jurisprudencia Sugerida",

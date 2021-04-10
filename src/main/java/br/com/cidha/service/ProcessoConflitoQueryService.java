@@ -1,9 +1,11 @@
 package br.com.cidha.service;
 
+import br.com.cidha.domain.*; // for static metamodels
+import br.com.cidha.domain.ProcessoConflito;
+import br.com.cidha.repository.ProcessoConflitoRepository;
+import br.com.cidha.service.criteria.ProcessoConflitoCriteria;
 import java.util.List;
-
 import javax.persistence.criteria.JoinType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -11,13 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import io.github.jhipster.service.QueryService;
-
-import br.com.cidha.domain.ProcessoConflito;
-import br.com.cidha.domain.*; // for static metamodels
-import br.com.cidha.repository.ProcessoConflitoRepository;
-import br.com.cidha.service.dto.ProcessoConflitoCriteria;
+import tech.jhipster.service.QueryService;
 
 /**
  * Service for executing complex queries for {@link ProcessoConflito} entities in the database.
@@ -86,22 +82,38 @@ public class ProcessoConflitoQueryService extends QueryService<ProcessoConflito>
                 specification = specification.and(buildRangeSpecification(criteria.getId(), ProcessoConflito_.id));
             }
             if (criteria.getNomeCasoComuidade() != null) {
-                specification = specification.and(buildStringSpecification(criteria.getNomeCasoComuidade(), ProcessoConflito_.nomeCasoComuidade));
+                specification =
+                    specification.and(buildStringSpecification(criteria.getNomeCasoComuidade(), ProcessoConflito_.nomeCasoComuidade));
             }
             if (criteria.getConsultaPrevia() != null) {
                 specification = specification.and(buildSpecification(criteria.getConsultaPrevia(), ProcessoConflito_.consultaPrevia));
             }
             if (criteria.getConflitoId() != null) {
-                specification = specification.and(buildSpecification(criteria.getConflitoId(),
-                    root -> root.join(ProcessoConflito_.conflitos, JoinType.LEFT).get(Conflito_.id)));
+                specification =
+                    specification.and(
+                        buildSpecification(
+                            criteria.getConflitoId(),
+                            root -> root.join(ProcessoConflito_.conflitos, JoinType.LEFT).get(Conflito_.id)
+                        )
+                    );
             }
             if (criteria.getDireitoId() != null) {
-                specification = specification.and(buildSpecification(criteria.getDireitoId(),
-                    root -> root.join(ProcessoConflito_.direitos, JoinType.LEFT).get(Direito_.id)));
+                specification =
+                    specification.and(
+                        buildSpecification(
+                            criteria.getDireitoId(),
+                            root -> root.join(ProcessoConflito_.direitos, JoinType.LEFT).get(Direito_.id)
+                        )
+                    );
             }
             if (criteria.getProcessoId() != null) {
-                specification = specification.and(buildSpecification(criteria.getProcessoId(),
-                    root -> root.join(ProcessoConflito_.processos, JoinType.LEFT).get(Processo_.id)));
+                specification =
+                    specification.and(
+                        buildSpecification(
+                            criteria.getProcessoId(),
+                            root -> root.join(ProcessoConflito_.processos, JoinType.LEFT).get(Processo_.id)
+                        )
+                    );
             }
         }
         return specification;

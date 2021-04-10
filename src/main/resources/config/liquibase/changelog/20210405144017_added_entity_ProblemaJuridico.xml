@@ -3,10 +3,9 @@
     xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
     xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd
                         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
-    
     <!--
         Added the entity ProblemaJuridico.
     -->
@@ -27,7 +26,7 @@
 
     <changeSet id="20210405144017-1-relations" author="jhipster">
 
-        <createTable tableName="problema_juridico_fundamentacao_doutrinaria">
+        <createTable tableName="rel_problema_juridico__fundamentacao_doutrinaria">
             <column name="fundamentacao_doutrinaria_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
@@ -36,9 +35,9 @@
             </column>
         </createTable>
 
-        <addPrimaryKey columnNames="problema_juridico_id, fundamentacao_doutrinaria_id" tableName="problema_juridico_fundamentacao_doutrinaria"/>
-        
-        <createTable tableName="problema_juridico_jurisprudencia">
+        <addPrimaryKey columnNames="problema_juridico_id, fundamentacao_doutrinaria_id" tableName="rel_problema_juridico__fundamentacao_doutrinaria"/>
+
+        <createTable tableName="rel_problema_juridico__jurisprudencia">
             <column name="jurisprudencia_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
@@ -47,9 +46,9 @@
             </column>
         </createTable>
 
-        <addPrimaryKey columnNames="problema_juridico_id, jurisprudencia_id" tableName="problema_juridico_jurisprudencia"/>
-        
-        <createTable tableName="problema_juridico_fundamentacao_legal">
+        <addPrimaryKey columnNames="problema_juridico_id, jurisprudencia_id" tableName="rel_problema_juridico__jurisprudencia"/>
+
+        <createTable tableName="rel_problema_juridico__fundamentacao_legal">
             <column name="fundamentacao_legal_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
@@ -58,9 +57,9 @@
             </column>
         </createTable>
 
-        <addPrimaryKey columnNames="problema_juridico_id, fundamentacao_legal_id" tableName="problema_juridico_fundamentacao_legal"/>
-        
-        <createTable tableName="problema_juridico_instrumento_internacional">
+        <addPrimaryKey columnNames="problema_juridico_id, fundamentacao_legal_id" tableName="rel_problema_juridico__fundamentacao_legal"/>
+
+        <createTable tableName="rel_problema_juridico__instrumento_internacional">
             <column name="instrumento_internacional_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
@@ -69,9 +68,9 @@
             </column>
         </createTable>
 
-        <addPrimaryKey columnNames="problema_juridico_id, instrumento_internacional_id" tableName="problema_juridico_instrumento_internacional"/>
-        
-        <createTable tableName="problema_juridico_processo">
+        <addPrimaryKey columnNames="problema_juridico_id, instrumento_internacional_id" tableName="rel_problema_juridico__instrumento_internacional"/>
+
+        <createTable tableName="rel_problema_juridico__processo">
             <column name="processo_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
@@ -80,9 +79,9 @@
             </column>
         </createTable>
 
-        <addPrimaryKey columnNames="problema_juridico_id, processo_id" tableName="problema_juridico_processo"/>
-        
+        <addPrimaryKey columnNames="problema_juridico_id, processo_id" tableName="rel_problema_juridico__processo"/>
     </changeSet>
+
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
 
     <!--
@@ -104,5 +103,4 @@
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>
-
 </databaseChangeLog>

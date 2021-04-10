@@ -1,13 +1,14 @@
 package br.com.cidha.domain;
 
-import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
-import br.com.cidha.web.rest.TestUtil;
 
-public class TerritorioTest {
+import br.com.cidha.web.rest.TestUtil;
+import org.junit.jupiter.api.Test;
+
+class TerritorioTest {
 
     @Test
-    public void equalsVerifier() throws Exception {
+    void equalsVerifier() throws Exception {
         TestUtil.equalsVerifier(Territorio.class);
         Territorio territorio1 = new Territorio();
         territorio1.setId(1L);

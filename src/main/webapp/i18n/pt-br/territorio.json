@@ -3,6 +3,7 @@
     "territorio": {
       "home": {
         "title": "Territorios",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Territorio",
         "createOrEditLabel": "Criar ou editar Territorio",
         "notFound": "Nenhum Territorio encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Territorio"
       },
+      "id": "ID",
       "nome": "Nome",
       "processo": "Processo"
     }

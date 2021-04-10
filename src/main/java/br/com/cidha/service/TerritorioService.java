@@ -2,15 +2,13 @@ package br.com.cidha.service;
 
 import br.com.cidha.domain.Territorio;
 import br.com.cidha.repository.TerritorioRepository;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 /**
  * Service Implementation for managing {@link Territorio}.
@@ -39,6 +37,29 @@ public class TerritorioService {
     }
 
     /**
+     * Partially update a territorio.
+     *
+     * @param territorio the entity to update partially.
+     * @return the persisted entity.
+     */
+    public Optional<Territorio> partialUpdate(Territorio territorio) {
+        log.debug("Request to partially update Territorio : {}", territorio);
+
+        return territorioRepository
+            .findById(territorio.getId())
+            .map(
+                existingTerritorio -> {
+                    if (territorio.getNome() != null) {
+                        existingTerritorio.setNome(territorio.getNome());
+                    }
+
+                    return existingTerritorio;
+                }
+            )
+            .map(territorioRepository::save);
+    }
+
+    /**
      * Get all the territorios.
      *
      * @param pageable the pagination information.
@@ -49,7 +70,6 @@ public class TerritorioService {
         log.debug("Request to get all Territorios");
         return territorioRepository.findAll(pageable);
     }
-
 
     /**
      * Get one territorio by id.

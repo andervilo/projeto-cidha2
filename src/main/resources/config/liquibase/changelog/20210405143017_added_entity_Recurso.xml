@@ -3,10 +3,9 @@
     xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
     xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd
                         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
-    
     <!--
         Added the entity Recurso.
     -->
@@ -19,10 +18,10 @@
                 <constraints nullable="true" />
             </column>
             <column name="tipo_recurso_id" type="bigint">
-                <constraints unique="true" nullable="true" uniqueConstraintName="ux_recurso_tipo_recurso_id" />
+                <constraints nullable="true" unique="true" uniqueConstraintName="ux_recurso__tipo_recurso_id" />
             </column>
             <column name="opcao_recurso_id" type="bigint">
-                <constraints unique="true" nullable="true" uniqueConstraintName="ux_recurso_opcao_recurso_id" />
+                <constraints nullable="true" unique="true" uniqueConstraintName="ux_recurso__opcao_recurso_id" />
             </column>
             <column name="processo_id" type="bigint">
                 <constraints nullable="true" />
@@ -31,9 +30,6 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="20210405143017-1-relations" author="jhipster">
-
-    </changeSet>
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
 
     <!--
@@ -54,5 +50,4 @@
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>
-
 </databaseChangeLog>

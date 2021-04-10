@@ -1,15 +1,13 @@
 package br.com.cidha.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Type;
-
-import javax.persistence.*;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.*;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Type;
 
 /**
  * A EnvolvidosConflitoLitigio.
@@ -41,7 +39,31 @@ public class EnvolvidosConflitoLitigio implements Serializable {
 
     @ManyToMany(mappedBy = "envolvidosConflitoLitigios")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnore
+    @JsonIgnoreProperties(
+        value = {
+            "concessaoLiminars",
+            "concessaoLiminarCassadas",
+            "embargoRespRes",
+            "embargoDeclaracaoAgravos",
+            "embargoDeclaracaos",
+            "embargoRecursoEspecials",
+            "tipoDecisao",
+            "tipoEmpreendimento",
+            "comarcas",
+            "quilombos",
+            "municipios",
+            "territorios",
+            "atividadeExploracaoIlegals",
+            "unidadeConservacaos",
+            "envolvidosConflitoLitigios",
+            "terraIndigenas",
+            "processoConflitos",
+            "parteInteresssadas",
+            "relators",
+            "problemaJuridicos",
+        },
+        allowSetters = true
+    )
     private Set<Processo> processos = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -53,8 +75,13 @@ public class EnvolvidosConflitoLitigio implements Serializable {
         this.id = id;
     }
 
+    public EnvolvidosConflitoLitigio id(Long id) {
+        this.id = id;
+        return this;
+    }
+
     public Integer getNumeroIndividuos() {
-        return numeroIndividuos;
+        return this.numeroIndividuos;
     }
 
     public EnvolvidosConflitoLitigio numeroIndividuos(Integer numeroIndividuos) {
@@ -67,7 +94,7 @@ public class EnvolvidosConflitoLitigio implements Serializable {
     }
 
     public String getFonteInformacaoQtde() {
-        return fonteInformacaoQtde;
+        return this.fonteInformacaoQtde;
     }
 
     public EnvolvidosConflitoLitigio fonteInformacaoQtde(String fonteInformacaoQtde) {
@@ -80,7 +107,7 @@ public class EnvolvidosConflitoLitigio implements Serializable {
     }
 
     public String getObservacoes() {
-        return observacoes;
+        return this.observacoes;
     }
 
     public EnvolvidosConflitoLitigio observacoes(String observacoes) {
@@ -93,11 +120,11 @@ public class EnvolvidosConflitoLitigio implements Serializable {
     }
 
     public Set<Processo> getProcessos() {
-        return processos;
+        return this.processos;
     }
 
     public EnvolvidosConflitoLitigio processos(Set<Processo> processos) {
-        this.processos = processos;
+        this.setProcessos(processos);
         return this;
     }
 
@@ -114,8 +141,15 @@ public class EnvolvidosConflitoLitigio implements Serializable {
     }
 
     public void setProcessos(Set<Processo> processos) {
+        if (this.processos != null) {
+            this.processos.forEach(i -> i.removeEnvolvidosConflitoLitigio(this));
+        }
+        if (processos != null) {
+            processos.forEach(i -> i.addEnvolvidosConflitoLitigio(this));
+        }
         this.processos = processos;
     }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -131,7 +165,8 @@ public class EnvolvidosConflitoLitigio implements Serializable {
 
     @Override
     public int hashCode() {
-        return 31;
+        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        return getClass().hashCode();
     }
 
     // prettier-ignore

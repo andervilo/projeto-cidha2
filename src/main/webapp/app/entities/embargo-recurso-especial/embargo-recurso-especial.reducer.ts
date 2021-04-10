@@ -11,6 +11,7 @@ export const ACTION_TYPES = {
   FETCH_EMBARGORECURSOESPECIAL: 'embargoRecursoEspecial/FETCH_EMBARGORECURSOESPECIAL',
   CREATE_EMBARGORECURSOESPECIAL: 'embargoRecursoEspecial/CREATE_EMBARGORECURSOESPECIAL',
   UPDATE_EMBARGORECURSOESPECIAL: 'embargoRecursoEspecial/UPDATE_EMBARGORECURSOESPECIAL',
+  PARTIAL_UPDATE_EMBARGORECURSOESPECIAL: 'embargoRecursoEspecial/PARTIAL_UPDATE_EMBARGORECURSOESPECIAL',
   DELETE_EMBARGORECURSOESPECIAL: 'embargoRecursoEspecial/DELETE_EMBARGORECURSOESPECIAL',
   RESET: 'embargoRecursoEspecial/RESET',
 };
@@ -42,6 +43,7 @@ export default (state: EmbargoRecursoEspecialState = initialState, action): Emba
     case REQUEST(ACTION_TYPES.CREATE_EMBARGORECURSOESPECIAL):
     case REQUEST(ACTION_TYPES.UPDATE_EMBARGORECURSOESPECIAL):
     case REQUEST(ACTION_TYPES.DELETE_EMBARGORECURSOESPECIAL):
+    case REQUEST(ACTION_TYPES.PARTIAL_UPDATE_EMBARGORECURSOESPECIAL):
       return {
         ...state,
         errorMessage: null,
@@ -52,6 +54,7 @@ export default (state: EmbargoRecursoEspecialState = initialState, action): Emba
     case FAILURE(ACTION_TYPES.FETCH_EMBARGORECURSOESPECIAL):
     case FAILURE(ACTION_TYPES.CREATE_EMBARGORECURSOESPECIAL):
     case FAILURE(ACTION_TYPES.UPDATE_EMBARGORECURSOESPECIAL):
+    case FAILURE(ACTION_TYPES.PARTIAL_UPDATE_EMBARGORECURSOESPECIAL):
     case FAILURE(ACTION_TYPES.DELETE_EMBARGORECURSOESPECIAL):
       return {
         ...state,
@@ -75,6 +78,7 @@ export default (state: EmbargoRecursoEspecialState = initialState, action): Emba
       };
     case SUCCESS(ACTION_TYPES.CREATE_EMBARGORECURSOESPECIAL):
     case SUCCESS(ACTION_TYPES.UPDATE_EMBARGORECURSOESPECIAL):
+    case SUCCESS(ACTION_TYPES.PARTIAL_UPDATE_EMBARGORECURSOESPECIAL):
       return {
         ...state,
         updating: false,
@@ -129,7 +133,15 @@ export const createEntity: ICrudPutAction<IEmbargoRecursoEspecial> = entity => a
 export const updateEntity: ICrudPutAction<IEmbargoRecursoEspecial> = entity => async dispatch => {
   const result = await dispatch({
     type: ACTION_TYPES.UPDATE_EMBARGORECURSOESPECIAL,
-    payload: axios.put(apiUrl, cleanEntity(entity)),
+    payload: axios.put(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
+  });
+  return result;
+};
+
+export const partialUpdate: ICrudPutAction<IEmbargoRecursoEspecial> = entity => async dispatch => {
+  const result = await dispatch({
+    type: ACTION_TYPES.PARTIAL_UPDATE_EMBARGORECURSOESPECIAL,
+    payload: axios.patch(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
   });
   return result;
 };

@@ -11,6 +11,7 @@ export const ACTION_TYPES = {
   FETCH_OPCAORECURSO: 'opcaoRecurso/FETCH_OPCAORECURSO',
   CREATE_OPCAORECURSO: 'opcaoRecurso/CREATE_OPCAORECURSO',
   UPDATE_OPCAORECURSO: 'opcaoRecurso/UPDATE_OPCAORECURSO',
+  PARTIAL_UPDATE_OPCAORECURSO: 'opcaoRecurso/PARTIAL_UPDATE_OPCAORECURSO',
   DELETE_OPCAORECURSO: 'opcaoRecurso/DELETE_OPCAORECURSO',
   RESET: 'opcaoRecurso/RESET',
 };
@@ -42,6 +43,7 @@ export default (state: OpcaoRecursoState = initialState, action): OpcaoRecursoSt
     case REQUEST(ACTION_TYPES.CREATE_OPCAORECURSO):
     case REQUEST(ACTION_TYPES.UPDATE_OPCAORECURSO):
     case REQUEST(ACTION_TYPES.DELETE_OPCAORECURSO):
+    case REQUEST(ACTION_TYPES.PARTIAL_UPDATE_OPCAORECURSO):
       return {
         ...state,
         errorMessage: null,
@@ -52,6 +54,7 @@ export default (state: OpcaoRecursoState = initialState, action): OpcaoRecursoSt
     case FAILURE(ACTION_TYPES.FETCH_OPCAORECURSO):
     case FAILURE(ACTION_TYPES.CREATE_OPCAORECURSO):
     case FAILURE(ACTION_TYPES.UPDATE_OPCAORECURSO):
+    case FAILURE(ACTION_TYPES.PARTIAL_UPDATE_OPCAORECURSO):
     case FAILURE(ACTION_TYPES.DELETE_OPCAORECURSO):
       return {
         ...state,
@@ -75,6 +78,7 @@ export default (state: OpcaoRecursoState = initialState, action): OpcaoRecursoSt
       };
     case SUCCESS(ACTION_TYPES.CREATE_OPCAORECURSO):
     case SUCCESS(ACTION_TYPES.UPDATE_OPCAORECURSO):
+    case SUCCESS(ACTION_TYPES.PARTIAL_UPDATE_OPCAORECURSO):
       return {
         ...state,
         updating: false,
@@ -129,7 +133,15 @@ export const createEntity: ICrudPutAction<IOpcaoRecurso> = entity => async dispa
 export const updateEntity: ICrudPutAction<IOpcaoRecurso> = entity => async dispatch => {
   const result = await dispatch({
     type: ACTION_TYPES.UPDATE_OPCAORECURSO,
-    payload: axios.put(apiUrl, cleanEntity(entity)),
+    payload: axios.put(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
+  });
+  return result;
+};
+
+export const partialUpdate: ICrudPutAction<IOpcaoRecurso> = entity => async dispatch => {
+  const result = await dispatch({
+    type: ACTION_TYPES.PARTIAL_UPDATE_OPCAORECURSO,
+    payload: axios.patch(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
   });
   return result;
 };

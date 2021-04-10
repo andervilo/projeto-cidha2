@@ -1,48 +1,46 @@
 package br.com.cidha.web.rest;
 
-import br.com.cidha.CidhaApp;
-import br.com.cidha.domain.TipoDecisao;
-import br.com.cidha.repository.TipoDecisaoRepository;
-import br.com.cidha.service.TipoDecisaoService;
-import br.com.cidha.service.dto.TipoDecisaoCriteria;
-import br.com.cidha.service.TipoDecisaoQueryService;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
-import javax.persistence.EntityManager;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import br.com.cidha.IntegrationTest;
+import br.com.cidha.domain.TipoDecisao;
+import br.com.cidha.repository.TipoDecisaoRepository;
+import br.com.cidha.service.criteria.TipoDecisaoCriteria;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
+import javax.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * Integration tests for the {@link TipoDecisaoResource} REST controller.
  */
-@SpringBootTest(classes = CidhaApp.class)
+@IntegrationTest
 @AutoConfigureMockMvc
 @WithMockUser
-public class TipoDecisaoResourceIT {
+class TipoDecisaoResourceIT {
 
     private static final String DEFAULT_DESCRICAO = "AAAAAAAAAA";
     private static final String UPDATED_DESCRICAO = "BBBBBBBBBB";
 
+    private static final String ENTITY_API_URL = "/api/tipo-decisaos";
+    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+
+    private static Random random = new Random();
+    private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
+
     @Autowired
     private TipoDecisaoRepository tipoDecisaoRepository;
-
-    @Autowired
-    private TipoDecisaoService tipoDecisaoService;
-
-    @Autowired
-    private TipoDecisaoQueryService tipoDecisaoQueryService;
 
     @Autowired
     private EntityManager em;
@@ -59,10 +57,10 @@ public class TipoDecisaoResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static TipoDecisao createEntity(EntityManager em) {
-        TipoDecisao tipoDecisao = new TipoDecisao()
-            .descricao(DEFAULT_DESCRICAO);
+        TipoDecisao tipoDecisao = new TipoDecisao().descricao(DEFAULT_DESCRICAO);
         return tipoDecisao;
     }
+
     /**
      * Create an updated entity for this test.
      *
@@ -70,8 +68,7 @@ public class TipoDecisaoResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static TipoDecisao createUpdatedEntity(EntityManager em) {
-        TipoDecisao tipoDecisao = new TipoDecisao()
-            .descricao(UPDATED_DESCRICAO);
+        TipoDecisao tipoDecisao = new TipoDecisao().descricao(UPDATED_DESCRICAO);
         return tipoDecisao;
     }
 
@@ -82,12 +79,11 @@ public class TipoDecisaoResourceIT {
 
     @Test
     @Transactional
-    public void createTipoDecisao() throws Exception {
+    void createTipoDecisao() throws Exception {
         int databaseSizeBeforeCreate = tipoDecisaoRepository.findAll().size();
         // Create the TipoDecisao
-        restTipoDecisaoMockMvc.perform(post("/api/tipo-decisaos")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(tipoDecisao)))
+        restTipoDecisaoMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(tipoDecisao)))
             .andExpect(status().isCreated());
 
         // Validate the TipoDecisao in the database
@@ -99,16 +95,15 @@ public class TipoDecisaoResourceIT {
 
     @Test
     @Transactional
-    public void createTipoDecisaoWithExistingId() throws Exception {
-        int databaseSizeBeforeCreate = tipoDecisaoRepository.findAll().size();
-
+    void createTipoDecisaoWithExistingId() throws Exception {
         // Create the TipoDecisao with an existing ID
         tipoDecisao.setId(1L);
 
+        int databaseSizeBeforeCreate = tipoDecisaoRepository.findAll().size();
+
         // An entity with an existing ID cannot be created, so this API call must fail
-        restTipoDecisaoMockMvc.perform(post("/api/tipo-decisaos")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(tipoDecisao)))
+        restTipoDecisaoMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(tipoDecisao)))
             .andExpect(status().isBadRequest());
 
         // Validate the TipoDecisao in the database
@@ -116,39 +111,39 @@ public class TipoDecisaoResourceIT {
         assertThat(tipoDecisaoList).hasSize(databaseSizeBeforeCreate);
     }
 
-
     @Test
     @Transactional
-    public void getAllTipoDecisaos() throws Exception {
+    void getAllTipoDecisaos() throws Exception {
         // Initialize the database
         tipoDecisaoRepository.saveAndFlush(tipoDecisao);
 
         // Get all the tipoDecisaoList
-        restTipoDecisaoMockMvc.perform(get("/api/tipo-decisaos?sort=id,desc"))
+        restTipoDecisaoMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(tipoDecisao.getId().intValue())))
             .andExpect(jsonPath("$.[*].descricao").value(hasItem(DEFAULT_DESCRICAO)));
     }
-    
+
     @Test
     @Transactional
-    public void getTipoDecisao() throws Exception {
+    void getTipoDecisao() throws Exception {
         // Initialize the database
         tipoDecisaoRepository.saveAndFlush(tipoDecisao);
 
         // Get the tipoDecisao
-        restTipoDecisaoMockMvc.perform(get("/api/tipo-decisaos/{id}", tipoDecisao.getId()))
+        restTipoDecisaoMockMvc
+            .perform(get(ENTITY_API_URL_ID, tipoDecisao.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(tipoDecisao.getId().intValue()))
             .andExpect(jsonPath("$.descricao").value(DEFAULT_DESCRICAO));
     }
 
-
     @Test
     @Transactional
-    public void getTipoDecisaosByIdFiltering() throws Exception {
+    void getTipoDecisaosByIdFiltering() throws Exception {
         // Initialize the database
         tipoDecisaoRepository.saveAndFlush(tipoDecisao);
 
@@ -164,10 +159,9 @@ public class TipoDecisaoResourceIT {
         defaultTipoDecisaoShouldNotBeFound("id.lessThan=" + id);
     }
 
-
     @Test
     @Transactional
-    public void getAllTipoDecisaosByDescricaoIsEqualToSomething() throws Exception {
+    void getAllTipoDecisaosByDescricaoIsEqualToSomething() throws Exception {
         // Initialize the database
         tipoDecisaoRepository.saveAndFlush(tipoDecisao);
 
@@ -180,7 +174,7 @@ public class TipoDecisaoResourceIT {
 
     @Test
     @Transactional
-    public void getAllTipoDecisaosByDescricaoIsNotEqualToSomething() throws Exception {
+    void getAllTipoDecisaosByDescricaoIsNotEqualToSomething() throws Exception {
         // Initialize the database
         tipoDecisaoRepository.saveAndFlush(tipoDecisao);
 
@@ -193,7 +187,7 @@ public class TipoDecisaoResourceIT {
 
     @Test
     @Transactional
-    public void getAllTipoDecisaosByDescricaoIsInShouldWork() throws Exception {
+    void getAllTipoDecisaosByDescricaoIsInShouldWork() throws Exception {
         // Initialize the database
         tipoDecisaoRepository.saveAndFlush(tipoDecisao);
 
@@ -206,7 +200,7 @@ public class TipoDecisaoResourceIT {
 
     @Test
     @Transactional
-    public void getAllTipoDecisaosByDescricaoIsNullOrNotNull() throws Exception {
+    void getAllTipoDecisaosByDescricaoIsNullOrNotNull() throws Exception {
         // Initialize the database
         tipoDecisaoRepository.saveAndFlush(tipoDecisao);
 
@@ -216,9 +210,10 @@ public class TipoDecisaoResourceIT {
         // Get all the tipoDecisaoList where descricao is null
         defaultTipoDecisaoShouldNotBeFound("descricao.specified=false");
     }
-                @Test
+
+    @Test
     @Transactional
-    public void getAllTipoDecisaosByDescricaoContainsSomething() throws Exception {
+    void getAllTipoDecisaosByDescricaoContainsSomething() throws Exception {
         // Initialize the database
         tipoDecisaoRepository.saveAndFlush(tipoDecisao);
 
@@ -231,7 +226,7 @@ public class TipoDecisaoResourceIT {
 
     @Test
     @Transactional
-    public void getAllTipoDecisaosByDescricaoNotContainsSomething() throws Exception {
+    void getAllTipoDecisaosByDescricaoNotContainsSomething() throws Exception {
         // Initialize the database
         tipoDecisaoRepository.saveAndFlush(tipoDecisao);
 
@@ -246,14 +241,16 @@ public class TipoDecisaoResourceIT {
      * Executes the search, and checks that the default entity is returned.
      */
     private void defaultTipoDecisaoShouldBeFound(String filter) throws Exception {
-        restTipoDecisaoMockMvc.perform(get("/api/tipo-decisaos?sort=id,desc&" + filter))
+        restTipoDecisaoMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(tipoDecisao.getId().intValue())))
             .andExpect(jsonPath("$.[*].descricao").value(hasItem(DEFAULT_DESCRICAO)));
 
         // Check, that the count call also returns 1
-        restTipoDecisaoMockMvc.perform(get("/api/tipo-decisaos/count?sort=id,desc&" + filter))
+        restTipoDecisaoMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("1"));
@@ -263,14 +260,16 @@ public class TipoDecisaoResourceIT {
      * Executes the search, and checks that the default entity is not returned.
      */
     private void defaultTipoDecisaoShouldNotBeFound(String filter) throws Exception {
-        restTipoDecisaoMockMvc.perform(get("/api/tipo-decisaos?sort=id,desc&" + filter))
+        restTipoDecisaoMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$").isEmpty());
 
         // Check, that the count call also returns 0
-        restTipoDecisaoMockMvc.perform(get("/api/tipo-decisaos/count?sort=id,desc&" + filter))
+        restTipoDecisaoMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("0"));
@@ -278,17 +277,16 @@ public class TipoDecisaoResourceIT {
 
     @Test
     @Transactional
-    public void getNonExistingTipoDecisao() throws Exception {
+    void getNonExistingTipoDecisao() throws Exception {
         // Get the tipoDecisao
-        restTipoDecisaoMockMvc.perform(get("/api/tipo-decisaos/{id}", Long.MAX_VALUE))
-            .andExpect(status().isNotFound());
+        restTipoDecisaoMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
     @Test
     @Transactional
-    public void updateTipoDecisao() throws Exception {
+    void putNewTipoDecisao() throws Exception {
         // Initialize the database
-        tipoDecisaoService.save(tipoDecisao);
+        tipoDecisaoRepository.saveAndFlush(tipoDecisao);
 
         int databaseSizeBeforeUpdate = tipoDecisaoRepository.findAll().size();
 
@@ -296,12 +294,14 @@ public class TipoDecisaoResourceIT {
         TipoDecisao updatedTipoDecisao = tipoDecisaoRepository.findById(tipoDecisao.getId()).get();
         // Disconnect from session so that the updates on updatedTipoDecisao are not directly saved in db
         em.detach(updatedTipoDecisao);
-        updatedTipoDecisao
-            .descricao(UPDATED_DESCRICAO);
+        updatedTipoDecisao.descricao(UPDATED_DESCRICAO);
 
-        restTipoDecisaoMockMvc.perform(put("/api/tipo-decisaos")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(updatedTipoDecisao)))
+        restTipoDecisaoMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, updatedTipoDecisao.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(updatedTipoDecisao))
+            )
             .andExpect(status().isOk());
 
         // Validate the TipoDecisao in the database
@@ -313,13 +313,17 @@ public class TipoDecisaoResourceIT {
 
     @Test
     @Transactional
-    public void updateNonExistingTipoDecisao() throws Exception {
+    void putNonExistingTipoDecisao() throws Exception {
         int databaseSizeBeforeUpdate = tipoDecisaoRepository.findAll().size();
+        tipoDecisao.setId(count.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restTipoDecisaoMockMvc.perform(put("/api/tipo-decisaos")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(tipoDecisao)))
+        restTipoDecisaoMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, tipoDecisao.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(tipoDecisao))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the TipoDecisao in the database
@@ -329,15 +333,165 @@ public class TipoDecisaoResourceIT {
 
     @Test
     @Transactional
-    public void deleteTipoDecisao() throws Exception {
+    void putWithIdMismatchTipoDecisao() throws Exception {
+        int databaseSizeBeforeUpdate = tipoDecisaoRepository.findAll().size();
+        tipoDecisao.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restTipoDecisaoMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(tipoDecisao))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the TipoDecisao in the database
+        List<TipoDecisao> tipoDecisaoList = tipoDecisaoRepository.findAll();
+        assertThat(tipoDecisaoList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void putWithMissingIdPathParamTipoDecisao() throws Exception {
+        int databaseSizeBeforeUpdate = tipoDecisaoRepository.findAll().size();
+        tipoDecisao.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restTipoDecisaoMockMvc
+            .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(tipoDecisao)))
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the TipoDecisao in the database
+        List<TipoDecisao> tipoDecisaoList = tipoDecisaoRepository.findAll();
+        assertThat(tipoDecisaoList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void partialUpdateTipoDecisaoWithPatch() throws Exception {
         // Initialize the database
-        tipoDecisaoService.save(tipoDecisao);
+        tipoDecisaoRepository.saveAndFlush(tipoDecisao);
+
+        int databaseSizeBeforeUpdate = tipoDecisaoRepository.findAll().size();
+
+        // Update the tipoDecisao using partial update
+        TipoDecisao partialUpdatedTipoDecisao = new TipoDecisao();
+        partialUpdatedTipoDecisao.setId(tipoDecisao.getId());
+
+        restTipoDecisaoMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedTipoDecisao.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedTipoDecisao))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the TipoDecisao in the database
+        List<TipoDecisao> tipoDecisaoList = tipoDecisaoRepository.findAll();
+        assertThat(tipoDecisaoList).hasSize(databaseSizeBeforeUpdate);
+        TipoDecisao testTipoDecisao = tipoDecisaoList.get(tipoDecisaoList.size() - 1);
+        assertThat(testTipoDecisao.getDescricao()).isEqualTo(DEFAULT_DESCRICAO);
+    }
+
+    @Test
+    @Transactional
+    void fullUpdateTipoDecisaoWithPatch() throws Exception {
+        // Initialize the database
+        tipoDecisaoRepository.saveAndFlush(tipoDecisao);
+
+        int databaseSizeBeforeUpdate = tipoDecisaoRepository.findAll().size();
+
+        // Update the tipoDecisao using partial update
+        TipoDecisao partialUpdatedTipoDecisao = new TipoDecisao();
+        partialUpdatedTipoDecisao.setId(tipoDecisao.getId());
+
+        partialUpdatedTipoDecisao.descricao(UPDATED_DESCRICAO);
+
+        restTipoDecisaoMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedTipoDecisao.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedTipoDecisao))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the TipoDecisao in the database
+        List<TipoDecisao> tipoDecisaoList = tipoDecisaoRepository.findAll();
+        assertThat(tipoDecisaoList).hasSize(databaseSizeBeforeUpdate);
+        TipoDecisao testTipoDecisao = tipoDecisaoList.get(tipoDecisaoList.size() - 1);
+        assertThat(testTipoDecisao.getDescricao()).isEqualTo(UPDATED_DESCRICAO);
+    }
+
+    @Test
+    @Transactional
+    void patchNonExistingTipoDecisao() throws Exception {
+        int databaseSizeBeforeUpdate = tipoDecisaoRepository.findAll().size();
+        tipoDecisao.setId(count.incrementAndGet());
+
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
+        restTipoDecisaoMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, tipoDecisao.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(tipoDecisao))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the TipoDecisao in the database
+        List<TipoDecisao> tipoDecisaoList = tipoDecisaoRepository.findAll();
+        assertThat(tipoDecisaoList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithIdMismatchTipoDecisao() throws Exception {
+        int databaseSizeBeforeUpdate = tipoDecisaoRepository.findAll().size();
+        tipoDecisao.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restTipoDecisaoMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(tipoDecisao))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the TipoDecisao in the database
+        List<TipoDecisao> tipoDecisaoList = tipoDecisaoRepository.findAll();
+        assertThat(tipoDecisaoList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithMissingIdPathParamTipoDecisao() throws Exception {
+        int databaseSizeBeforeUpdate = tipoDecisaoRepository.findAll().size();
+        tipoDecisao.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restTipoDecisaoMockMvc
+            .perform(
+                patch(ENTITY_API_URL).contentType("application/merge-patch+json").content(TestUtil.convertObjectToJsonBytes(tipoDecisao))
+            )
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the TipoDecisao in the database
+        List<TipoDecisao> tipoDecisaoList = tipoDecisaoRepository.findAll();
+        assertThat(tipoDecisaoList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void deleteTipoDecisao() throws Exception {
+        // Initialize the database
+        tipoDecisaoRepository.saveAndFlush(tipoDecisao);
 
         int databaseSizeBeforeDelete = tipoDecisaoRepository.findAll().size();
 
         // Delete the tipoDecisao
-        restTipoDecisaoMockMvc.perform(delete("/api/tipo-decisaos/{id}", tipoDecisao.getId())
-            .accept(MediaType.APPLICATION_JSON))
+        restTipoDecisaoMockMvc
+            .perform(delete(ENTITY_API_URL_ID, tipoDecisao.getId()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item

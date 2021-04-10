@@ -1,11 +1,9 @@
 package br.com.cidha.domain;
 
+import java.io.Serializable;
+import javax.persistence.*;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-
-import javax.persistence.*;
-
-import java.io.Serializable;
 
 /**
  * A TipoDecisao.
@@ -34,8 +32,13 @@ public class TipoDecisao implements Serializable {
         this.id = id;
     }
 
+    public TipoDecisao id(Long id) {
+        this.id = id;
+        return this;
+    }
+
     public String getDescricao() {
-        return descricao;
+        return this.descricao;
     }
 
     public TipoDecisao descricao(String descricao) {
@@ -46,6 +49,7 @@ public class TipoDecisao implements Serializable {
     public void setDescricao(String descricao) {
         this.descricao = descricao;
     }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -61,7 +65,8 @@ public class TipoDecisao implements Serializable {
 
     @Override
     public int hashCode() {
-        return 31;
+        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        return getClass().hashCode();
     }
 
     // prettier-ignore

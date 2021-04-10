@@ -1,14 +1,16 @@
 package br.com.cidha.web.rest;
 
 import br.com.cidha.domain.InstrumentoInternacional;
-import br.com.cidha.service.InstrumentoInternacionalService;
-import br.com.cidha.web.rest.errors.BadRequestAlertException;
-import br.com.cidha.service.dto.InstrumentoInternacionalCriteria;
+import br.com.cidha.repository.InstrumentoInternacionalRepository;
 import br.com.cidha.service.InstrumentoInternacionalQueryService;
-
-import io.github.jhipster.web.util.HeaderUtil;
-import io.github.jhipster.web.util.PaginationUtil;
-import io.github.jhipster.web.util.ResponseUtil;
+import br.com.cidha.service.InstrumentoInternacionalService;
+import br.com.cidha.service.criteria.InstrumentoInternacionalCriteria;
+import br.com.cidha.web.rest.errors.BadRequestAlertException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,14 +18,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import tech.jhipster.web.util.HeaderUtil;
+import tech.jhipster.web.util.PaginationUtil;
+import tech.jhipster.web.util.ResponseUtil;
 
 /**
  * REST controller for managing {@link br.com.cidha.domain.InstrumentoInternacional}.
@@ -41,10 +41,17 @@ public class InstrumentoInternacionalResource {
 
     private final InstrumentoInternacionalService instrumentoInternacionalService;
 
+    private final InstrumentoInternacionalRepository instrumentoInternacionalRepository;
+
     private final InstrumentoInternacionalQueryService instrumentoInternacionalQueryService;
 
-    public InstrumentoInternacionalResource(InstrumentoInternacionalService instrumentoInternacionalService, InstrumentoInternacionalQueryService instrumentoInternacionalQueryService) {
+    public InstrumentoInternacionalResource(
+        InstrumentoInternacionalService instrumentoInternacionalService,
+        InstrumentoInternacionalRepository instrumentoInternacionalRepository,
+        InstrumentoInternacionalQueryService instrumentoInternacionalQueryService
+    ) {
         this.instrumentoInternacionalService = instrumentoInternacionalService;
+        this.instrumentoInternacionalRepository = instrumentoInternacionalRepository;
         this.instrumentoInternacionalQueryService = instrumentoInternacionalQueryService;
     }
 
@@ -56,36 +63,88 @@ public class InstrumentoInternacionalResource {
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
     @PostMapping("/instrumento-internacionals")
-    public ResponseEntity<InstrumentoInternacional> createInstrumentoInternacional(@RequestBody InstrumentoInternacional instrumentoInternacional) throws URISyntaxException {
+    public ResponseEntity<InstrumentoInternacional> createInstrumentoInternacional(
+        @RequestBody InstrumentoInternacional instrumentoInternacional
+    ) throws URISyntaxException {
         log.debug("REST request to save InstrumentoInternacional : {}", instrumentoInternacional);
         if (instrumentoInternacional.getId() != null) {
             throw new BadRequestAlertException("A new instrumentoInternacional cannot already have an ID", ENTITY_NAME, "idexists");
         }
         InstrumentoInternacional result = instrumentoInternacionalService.save(instrumentoInternacional);
-        return ResponseEntity.created(new URI("/api/instrumento-internacionals/" + result.getId()))
+        return ResponseEntity
+            .created(new URI("/api/instrumento-internacionals/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
 
     /**
-     * {@code PUT  /instrumento-internacionals} : Updates an existing instrumentoInternacional.
+     * {@code PUT  /instrumento-internacionals/:id} : Updates an existing instrumentoInternacional.
      *
+     * @param id the id of the instrumentoInternacional to save.
      * @param instrumentoInternacional the instrumentoInternacional to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated instrumentoInternacional,
      * or with status {@code 400 (Bad Request)} if the instrumentoInternacional is not valid,
      * or with status {@code 500 (Internal Server Error)} if the instrumentoInternacional couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/instrumento-internacionals")
-    public ResponseEntity<InstrumentoInternacional> updateInstrumentoInternacional(@RequestBody InstrumentoInternacional instrumentoInternacional) throws URISyntaxException {
-        log.debug("REST request to update InstrumentoInternacional : {}", instrumentoInternacional);
+    @PutMapping("/instrumento-internacionals/{id}")
+    public ResponseEntity<InstrumentoInternacional> updateInstrumentoInternacional(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody InstrumentoInternacional instrumentoInternacional
+    ) throws URISyntaxException {
+        log.debug("REST request to update InstrumentoInternacional : {}, {}", id, instrumentoInternacional);
         if (instrumentoInternacional.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+        if (!Objects.equals(id, instrumentoInternacional.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!instrumentoInternacionalRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
         InstrumentoInternacional result = instrumentoInternacionalService.save(instrumentoInternacional);
-        return ResponseEntity.ok()
+        return ResponseEntity
+            .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, instrumentoInternacional.getId().toString()))
             .body(result);
+    }
+
+    /**
+     * {@code PATCH  /instrumento-internacionals/:id} : Partial updates given fields of an existing instrumentoInternacional, field will ignore if it is null
+     *
+     * @param id the id of the instrumentoInternacional to save.
+     * @param instrumentoInternacional the instrumentoInternacional to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated instrumentoInternacional,
+     * or with status {@code 400 (Bad Request)} if the instrumentoInternacional is not valid,
+     * or with status {@code 404 (Not Found)} if the instrumentoInternacional is not found,
+     * or with status {@code 500 (Internal Server Error)} if the instrumentoInternacional couldn't be updated.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PatchMapping(value = "/instrumento-internacionals/{id}", consumes = "application/merge-patch+json")
+    public ResponseEntity<InstrumentoInternacional> partialUpdateInstrumentoInternacional(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody InstrumentoInternacional instrumentoInternacional
+    ) throws URISyntaxException {
+        log.debug("REST request to partial update InstrumentoInternacional partially : {}, {}", id, instrumentoInternacional);
+        if (instrumentoInternacional.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        if (!Objects.equals(id, instrumentoInternacional.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!instrumentoInternacionalRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
+        Optional<InstrumentoInternacional> result = instrumentoInternacionalService.partialUpdate(instrumentoInternacional);
+
+        return ResponseUtil.wrapOrNotFound(
+            result,
+            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, instrumentoInternacional.getId().toString())
+        );
     }
 
     /**
@@ -96,7 +155,10 @@ public class InstrumentoInternacionalResource {
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of instrumentoInternacionals in body.
      */
     @GetMapping("/instrumento-internacionals")
-    public ResponseEntity<List<InstrumentoInternacional>> getAllInstrumentoInternacionals(InstrumentoInternacionalCriteria criteria, Pageable pageable) {
+    public ResponseEntity<List<InstrumentoInternacional>> getAllInstrumentoInternacionals(
+        InstrumentoInternacionalCriteria criteria,
+        Pageable pageable
+    ) {
         log.debug("REST request to get InstrumentoInternacionals by criteria: {}", criteria);
         Page<InstrumentoInternacional> page = instrumentoInternacionalQueryService.findByCriteria(criteria, pageable);
         HttpHeaders headers = PaginationUtil.generatePaginationHttpHeaders(ServletUriComponentsBuilder.fromCurrentRequest(), page);
@@ -138,6 +200,9 @@ public class InstrumentoInternacionalResource {
     public ResponseEntity<Void> deleteInstrumentoInternacional(@PathVariable Long id) {
         log.debug("REST request to delete InstrumentoInternacional : {}", id);
         instrumentoInternacionalService.delete(id);
-        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
+        return ResponseEntity
+            .noContent()
+            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
+            .build();
     }
 }

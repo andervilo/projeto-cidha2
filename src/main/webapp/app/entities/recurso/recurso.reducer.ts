@@ -11,6 +11,7 @@ export const ACTION_TYPES = {
   FETCH_RECURSO: 'recurso/FETCH_RECURSO',
   CREATE_RECURSO: 'recurso/CREATE_RECURSO',
   UPDATE_RECURSO: 'recurso/UPDATE_RECURSO',
+  PARTIAL_UPDATE_RECURSO: 'recurso/PARTIAL_UPDATE_RECURSO',
   DELETE_RECURSO: 'recurso/DELETE_RECURSO',
   SET_BLOB: 'recurso/SET_BLOB',
   RESET: 'recurso/RESET',
@@ -43,6 +44,7 @@ export default (state: RecursoState = initialState, action): RecursoState => {
     case REQUEST(ACTION_TYPES.CREATE_RECURSO):
     case REQUEST(ACTION_TYPES.UPDATE_RECURSO):
     case REQUEST(ACTION_TYPES.DELETE_RECURSO):
+    case REQUEST(ACTION_TYPES.PARTIAL_UPDATE_RECURSO):
       return {
         ...state,
         errorMessage: null,
@@ -53,6 +55,7 @@ export default (state: RecursoState = initialState, action): RecursoState => {
     case FAILURE(ACTION_TYPES.FETCH_RECURSO):
     case FAILURE(ACTION_TYPES.CREATE_RECURSO):
     case FAILURE(ACTION_TYPES.UPDATE_RECURSO):
+    case FAILURE(ACTION_TYPES.PARTIAL_UPDATE_RECURSO):
     case FAILURE(ACTION_TYPES.DELETE_RECURSO):
       return {
         ...state,
@@ -76,6 +79,7 @@ export default (state: RecursoState = initialState, action): RecursoState => {
       };
     case SUCCESS(ACTION_TYPES.CREATE_RECURSO):
     case SUCCESS(ACTION_TYPES.UPDATE_RECURSO):
+    case SUCCESS(ACTION_TYPES.PARTIAL_UPDATE_RECURSO):
       return {
         ...state,
         updating: false,
@@ -141,7 +145,15 @@ export const createEntity: ICrudPutAction<IRecurso> = entity => async dispatch =
 export const updateEntity: ICrudPutAction<IRecurso> = entity => async dispatch => {
   const result = await dispatch({
     type: ACTION_TYPES.UPDATE_RECURSO,
-    payload: axios.put(apiUrl, cleanEntity(entity)),
+    payload: axios.put(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
+  });
+  return result;
+};
+
+export const partialUpdate: ICrudPutAction<IRecurso> = entity => async dispatch => {
+  const result = await dispatch({
+    type: ACTION_TYPES.PARTIAL_UPDATE_RECURSO,
+    payload: axios.patch(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
   });
   return result;
 };

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col, Label } from 'reactstrap';
 import { AvFeedback, AvForm, AvGroup, AvInput, AvField } from 'availity-reactstrap-validation';
-import { Translate, translate, ICrudGetAction, ICrudGetAllAction, setFileData, byteSize, ICrudPutAction } from 'react-jhipster';
+import { setFileData, byteSize, Translate, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
@@ -17,8 +17,7 @@ import { mapIdList } from 'app/shared/util/entity-utils';
 export interface IDireitoUpdateProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
 
 export const DireitoUpdate = (props: IDireitoUpdateProps) => {
-  const [processoConflitoId, setProcessoConflitoId] = useState('0');
-  const [isNew, setIsNew] = useState(!props.match.params || !props.match.params.id);
+  const [isNew] = useState(!props.match.params || !props.match.params.id);
 
   const { direitoEntity, processoConflitos, loading, updating } = props;
 
@@ -71,7 +70,7 @@ export const DireitoUpdate = (props: IDireitoUpdateProps) => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="cidhaApp.direito.home.createOrEditLabel">
+          <h2 id="cidhaApp.direito.home.createOrEditLabel" data-cy="DireitoCreateUpdateHeading">
             <Translate contentKey="cidhaApp.direito.home.createOrEditLabel">Create or edit a Direito</Translate>
           </h2>
         </Col>
@@ -94,7 +93,7 @@ export const DireitoUpdate = (props: IDireitoUpdateProps) => {
                 <Label id="descricaoLabel" for="direito-descricao">
                   <Translate contentKey="cidhaApp.direito.descricao">Descricao</Translate>
                 </Label>
-                <AvInput id="direito-descricao" type="textarea" name="descricao" />
+                <AvInput id="direito-descricao" data-cy="descricao" type="textarea" name="descricao" />
               </AvGroup>
               <Button tag={Link} id="cancel-save" to="/direito" replace color="info">
                 <FontAwesomeIcon icon="arrow-left" />
@@ -104,7 +103,7 @@ export const DireitoUpdate = (props: IDireitoUpdateProps) => {
                 </span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp;
                 <Translate contentKey="entity.action.save">Save</Translate>

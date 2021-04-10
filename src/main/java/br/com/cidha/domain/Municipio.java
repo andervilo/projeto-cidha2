@@ -1,14 +1,12 @@
 package br.com.cidha.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
-import javax.persistence.*;
-
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.*;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /**
  * A Municipio.
@@ -39,7 +37,31 @@ public class Municipio implements Serializable {
 
     @ManyToMany(mappedBy = "municipios")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnore
+    @JsonIgnoreProperties(
+        value = {
+            "concessaoLiminars",
+            "concessaoLiminarCassadas",
+            "embargoRespRes",
+            "embargoDeclaracaoAgravos",
+            "embargoDeclaracaos",
+            "embargoRecursoEspecials",
+            "tipoDecisao",
+            "tipoEmpreendimento",
+            "comarcas",
+            "quilombos",
+            "municipios",
+            "territorios",
+            "atividadeExploracaoIlegals",
+            "unidadeConservacaos",
+            "envolvidosConflitoLitigios",
+            "terraIndigenas",
+            "processoConflitos",
+            "parteInteresssadas",
+            "relators",
+            "problemaJuridicos",
+        },
+        allowSetters = true
+    )
     private Set<Processo> processos = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -51,8 +73,13 @@ public class Municipio implements Serializable {
         this.id = id;
     }
 
-    public Boolean isAmazoniaLegal() {
-        return amazoniaLegal;
+    public Municipio id(Long id) {
+        this.id = id;
+        return this;
+    }
+
+    public Boolean getAmazoniaLegal() {
+        return this.amazoniaLegal;
     }
 
     public Municipio amazoniaLegal(Boolean amazoniaLegal) {
@@ -65,7 +92,7 @@ public class Municipio implements Serializable {
     }
 
     public Integer getCodigoIbge() {
-        return codigoIbge;
+        return this.codigoIbge;
     }
 
     public Municipio codigoIbge(Integer codigoIbge) {
@@ -78,7 +105,7 @@ public class Municipio implements Serializable {
     }
 
     public String getEstado() {
-        return estado;
+        return this.estado;
     }
 
     public Municipio estado(String estado) {
@@ -91,7 +118,7 @@ public class Municipio implements Serializable {
     }
 
     public String getNome() {
-        return nome;
+        return this.nome;
     }
 
     public Municipio nome(String nome) {
@@ -104,11 +131,11 @@ public class Municipio implements Serializable {
     }
 
     public Set<Processo> getProcessos() {
-        return processos;
+        return this.processos;
     }
 
     public Municipio processos(Set<Processo> processos) {
-        this.processos = processos;
+        this.setProcessos(processos);
         return this;
     }
 
@@ -125,8 +152,15 @@ public class Municipio implements Serializable {
     }
 
     public void setProcessos(Set<Processo> processos) {
+        if (this.processos != null) {
+            this.processos.forEach(i -> i.removeMunicipio(this));
+        }
+        if (processos != null) {
+            processos.forEach(i -> i.addMunicipio(this));
+        }
         this.processos = processos;
     }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -142,7 +176,8 @@ public class Municipio implements Serializable {
 
     @Override
     public int hashCode() {
-        return 31;
+        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        return getClass().hashCode();
     }
 
     // prettier-ignore
@@ -150,7 +185,7 @@ public class Municipio implements Serializable {
     public String toString() {
         return "Municipio{" +
             "id=" + getId() +
-            ", amazoniaLegal='" + isAmazoniaLegal() + "'" +
+            ", amazoniaLegal='" + getAmazoniaLegal() + "'" +
             ", codigoIbge=" + getCodigoIbge() +
             ", estado='" + getEstado() + "'" +
             ", nome='" + getNome() + "'" +

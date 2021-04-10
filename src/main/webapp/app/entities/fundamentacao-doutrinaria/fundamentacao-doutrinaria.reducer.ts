@@ -11,6 +11,7 @@ export const ACTION_TYPES = {
   FETCH_FUNDAMENTACAODOUTRINARIA: 'fundamentacaoDoutrinaria/FETCH_FUNDAMENTACAODOUTRINARIA',
   CREATE_FUNDAMENTACAODOUTRINARIA: 'fundamentacaoDoutrinaria/CREATE_FUNDAMENTACAODOUTRINARIA',
   UPDATE_FUNDAMENTACAODOUTRINARIA: 'fundamentacaoDoutrinaria/UPDATE_FUNDAMENTACAODOUTRINARIA',
+  PARTIAL_UPDATE_FUNDAMENTACAODOUTRINARIA: 'fundamentacaoDoutrinaria/PARTIAL_UPDATE_FUNDAMENTACAODOUTRINARIA',
   DELETE_FUNDAMENTACAODOUTRINARIA: 'fundamentacaoDoutrinaria/DELETE_FUNDAMENTACAODOUTRINARIA',
   SET_BLOB: 'fundamentacaoDoutrinaria/SET_BLOB',
   RESET: 'fundamentacaoDoutrinaria/RESET',
@@ -43,6 +44,7 @@ export default (state: FundamentacaoDoutrinariaState = initialState, action): Fu
     case REQUEST(ACTION_TYPES.CREATE_FUNDAMENTACAODOUTRINARIA):
     case REQUEST(ACTION_TYPES.UPDATE_FUNDAMENTACAODOUTRINARIA):
     case REQUEST(ACTION_TYPES.DELETE_FUNDAMENTACAODOUTRINARIA):
+    case REQUEST(ACTION_TYPES.PARTIAL_UPDATE_FUNDAMENTACAODOUTRINARIA):
       return {
         ...state,
         errorMessage: null,
@@ -53,6 +55,7 @@ export default (state: FundamentacaoDoutrinariaState = initialState, action): Fu
     case FAILURE(ACTION_TYPES.FETCH_FUNDAMENTACAODOUTRINARIA):
     case FAILURE(ACTION_TYPES.CREATE_FUNDAMENTACAODOUTRINARIA):
     case FAILURE(ACTION_TYPES.UPDATE_FUNDAMENTACAODOUTRINARIA):
+    case FAILURE(ACTION_TYPES.PARTIAL_UPDATE_FUNDAMENTACAODOUTRINARIA):
     case FAILURE(ACTION_TYPES.DELETE_FUNDAMENTACAODOUTRINARIA):
       return {
         ...state,
@@ -76,6 +79,7 @@ export default (state: FundamentacaoDoutrinariaState = initialState, action): Fu
       };
     case SUCCESS(ACTION_TYPES.CREATE_FUNDAMENTACAODOUTRINARIA):
     case SUCCESS(ACTION_TYPES.UPDATE_FUNDAMENTACAODOUTRINARIA):
+    case SUCCESS(ACTION_TYPES.PARTIAL_UPDATE_FUNDAMENTACAODOUTRINARIA):
       return {
         ...state,
         updating: false,
@@ -141,7 +145,15 @@ export const createEntity: ICrudPutAction<IFundamentacaoDoutrinaria> = entity =>
 export const updateEntity: ICrudPutAction<IFundamentacaoDoutrinaria> = entity => async dispatch => {
   const result = await dispatch({
     type: ACTION_TYPES.UPDATE_FUNDAMENTACAODOUTRINARIA,
-    payload: axios.put(apiUrl, cleanEntity(entity)),
+    payload: axios.put(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
+  });
+  return result;
+};
+
+export const partialUpdate: ICrudPutAction<IFundamentacaoDoutrinaria> = entity => async dispatch => {
+  const result = await dispatch({
+    type: ACTION_TYPES.PARTIAL_UPDATE_FUNDAMENTACAODOUTRINARIA,
+    payload: axios.patch(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
   });
   return result;
 };

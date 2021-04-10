@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col, Label } from 'reactstrap';
 import { AvFeedback, AvForm, AvGroup, AvInput, AvField } from 'availity-reactstrap-validation';
-import { Translate, translate, ICrudGetAction, ICrudGetAllAction, setFileData, byteSize, ICrudPutAction } from 'react-jhipster';
+import { setFileData, byteSize, Translate, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
@@ -20,8 +20,7 @@ export interface ITerraIndigenaUpdateProps extends StateProps, DispatchProps, Ro
 
 export const TerraIndigenaUpdate = (props: ITerraIndigenaUpdateProps) => {
   const [idsetnia, setIdsetnia] = useState([]);
-  const [processoId, setProcessoId] = useState('0');
-  const [isNew, setIsNew] = useState(!props.match.params || !props.match.params.id);
+  const [isNew] = useState(!props.match.params || !props.match.params.id);
 
   const { terraIndigenaEntity, etniaIndigenas, processos, loading, updating } = props;
 
@@ -76,7 +75,7 @@ export const TerraIndigenaUpdate = (props: ITerraIndigenaUpdateProps) => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="cidhaApp.terraIndigena.home.createOrEditLabel">
+          <h2 id="cidhaApp.terraIndigena.home.createOrEditLabel" data-cy="TerraIndigenaCreateUpdateHeading">
             <Translate contentKey="cidhaApp.terraIndigena.home.createOrEditLabel">Create or edit a TerraIndigena</Translate>
           </h2>
         </Col>
@@ -99,7 +98,7 @@ export const TerraIndigenaUpdate = (props: ITerraIndigenaUpdateProps) => {
                 <Label id="descricaoLabel" for="terra-indigena-descricao">
                   <Translate contentKey="cidhaApp.terraIndigena.descricao">Descricao</Translate>
                 </Label>
-                <AvInput id="terra-indigena-descricao" type="textarea" name="descricao" />
+                <AvInput id="terra-indigena-descricao" data-cy="descricao" type="textarea" name="descricao" />
               </AvGroup>
               <AvGroup>
                 <Label for="terra-indigena-etnia">
@@ -107,11 +106,12 @@ export const TerraIndigenaUpdate = (props: ITerraIndigenaUpdateProps) => {
                 </Label>
                 <AvInput
                   id="terra-indigena-etnia"
+                  data-cy="etnia"
                   type="select"
                   multiple
                   className="form-control"
                   name="etnias"
-                  value={terraIndigenaEntity.etnias && terraIndigenaEntity.etnias.map(e => e.id)}
+                  value={!isNew && terraIndigenaEntity.etnias && terraIndigenaEntity.etnias.map(e => e.id)}
                 >
                   <option value="" key="0" />
                   {etniaIndigenas
@@ -131,7 +131,7 @@ export const TerraIndigenaUpdate = (props: ITerraIndigenaUpdateProps) => {
                 </span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp;
                 <Translate contentKey="entity.action.save">Save</Translate>

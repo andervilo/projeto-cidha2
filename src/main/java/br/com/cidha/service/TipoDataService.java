@@ -2,15 +2,13 @@ package br.com.cidha.service;
 
 import br.com.cidha.domain.TipoData;
 import br.com.cidha.repository.TipoDataRepository;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 /**
  * Service Implementation for managing {@link TipoData}.
@@ -39,6 +37,29 @@ public class TipoDataService {
     }
 
     /**
+     * Partially update a tipoData.
+     *
+     * @param tipoData the entity to update partially.
+     * @return the persisted entity.
+     */
+    public Optional<TipoData> partialUpdate(TipoData tipoData) {
+        log.debug("Request to partially update TipoData : {}", tipoData);
+
+        return tipoDataRepository
+            .findById(tipoData.getId())
+            .map(
+                existingTipoData -> {
+                    if (tipoData.getDescricao() != null) {
+                        existingTipoData.setDescricao(tipoData.getDescricao());
+                    }
+
+                    return existingTipoData;
+                }
+            )
+            .map(tipoDataRepository::save);
+    }
+
+    /**
      * Get all the tipoData.
      *
      * @param pageable the pagination information.
@@ -49,7 +70,6 @@ public class TipoDataService {
         log.debug("Request to get all TipoData");
         return tipoDataRepository.findAll(pageable);
     }
-
 
     /**
      * Get one tipoData by id.

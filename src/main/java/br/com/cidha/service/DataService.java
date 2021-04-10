@@ -2,15 +2,13 @@ package br.com.cidha.service;
 
 import br.com.cidha.domain.Data;
 import br.com.cidha.repository.DataRepository;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 /**
  * Service Implementation for managing {@link Data}.
@@ -39,6 +37,29 @@ public class DataService {
     }
 
     /**
+     * Partially update a data.
+     *
+     * @param data the entity to update partially.
+     * @return the persisted entity.
+     */
+    public Optional<Data> partialUpdate(Data data) {
+        log.debug("Request to partially update Data : {}", data);
+
+        return dataRepository
+            .findById(data.getId())
+            .map(
+                existingData -> {
+                    if (data.getData() != null) {
+                        existingData.setData(data.getData());
+                    }
+
+                    return existingData;
+                }
+            )
+            .map(dataRepository::save);
+    }
+
+    /**
      * Get all the data.
      *
      * @param pageable the pagination information.
@@ -49,7 +70,6 @@ public class DataService {
         log.debug("Request to get all Data");
         return dataRepository.findAll(pageable);
     }
-
 
     /**
      * Get one data by id.

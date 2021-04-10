@@ -11,6 +11,7 @@ export const ACTION_TYPES = {
   FETCH_ENVOLVIDOSCONFLITOLITIGIO: 'envolvidosConflitoLitigio/FETCH_ENVOLVIDOSCONFLITOLITIGIO',
   CREATE_ENVOLVIDOSCONFLITOLITIGIO: 'envolvidosConflitoLitigio/CREATE_ENVOLVIDOSCONFLITOLITIGIO',
   UPDATE_ENVOLVIDOSCONFLITOLITIGIO: 'envolvidosConflitoLitigio/UPDATE_ENVOLVIDOSCONFLITOLITIGIO',
+  PARTIAL_UPDATE_ENVOLVIDOSCONFLITOLITIGIO: 'envolvidosConflitoLitigio/PARTIAL_UPDATE_ENVOLVIDOSCONFLITOLITIGIO',
   DELETE_ENVOLVIDOSCONFLITOLITIGIO: 'envolvidosConflitoLitigio/DELETE_ENVOLVIDOSCONFLITOLITIGIO',
   SET_BLOB: 'envolvidosConflitoLitigio/SET_BLOB',
   RESET: 'envolvidosConflitoLitigio/RESET',
@@ -43,6 +44,7 @@ export default (state: EnvolvidosConflitoLitigioState = initialState, action): E
     case REQUEST(ACTION_TYPES.CREATE_ENVOLVIDOSCONFLITOLITIGIO):
     case REQUEST(ACTION_TYPES.UPDATE_ENVOLVIDOSCONFLITOLITIGIO):
     case REQUEST(ACTION_TYPES.DELETE_ENVOLVIDOSCONFLITOLITIGIO):
+    case REQUEST(ACTION_TYPES.PARTIAL_UPDATE_ENVOLVIDOSCONFLITOLITIGIO):
       return {
         ...state,
         errorMessage: null,
@@ -53,6 +55,7 @@ export default (state: EnvolvidosConflitoLitigioState = initialState, action): E
     case FAILURE(ACTION_TYPES.FETCH_ENVOLVIDOSCONFLITOLITIGIO):
     case FAILURE(ACTION_TYPES.CREATE_ENVOLVIDOSCONFLITOLITIGIO):
     case FAILURE(ACTION_TYPES.UPDATE_ENVOLVIDOSCONFLITOLITIGIO):
+    case FAILURE(ACTION_TYPES.PARTIAL_UPDATE_ENVOLVIDOSCONFLITOLITIGIO):
     case FAILURE(ACTION_TYPES.DELETE_ENVOLVIDOSCONFLITOLITIGIO):
       return {
         ...state,
@@ -76,6 +79,7 @@ export default (state: EnvolvidosConflitoLitigioState = initialState, action): E
       };
     case SUCCESS(ACTION_TYPES.CREATE_ENVOLVIDOSCONFLITOLITIGIO):
     case SUCCESS(ACTION_TYPES.UPDATE_ENVOLVIDOSCONFLITOLITIGIO):
+    case SUCCESS(ACTION_TYPES.PARTIAL_UPDATE_ENVOLVIDOSCONFLITOLITIGIO):
       return {
         ...state,
         updating: false,
@@ -141,7 +145,15 @@ export const createEntity: ICrudPutAction<IEnvolvidosConflitoLitigio> = entity =
 export const updateEntity: ICrudPutAction<IEnvolvidosConflitoLitigio> = entity => async dispatch => {
   const result = await dispatch({
     type: ACTION_TYPES.UPDATE_ENVOLVIDOSCONFLITOLITIGIO,
-    payload: axios.put(apiUrl, cleanEntity(entity)),
+    payload: axios.put(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
+  });
+  return result;
+};
+
+export const partialUpdate: ICrudPutAction<IEnvolvidosConflitoLitigio> = entity => async dispatch => {
+  const result = await dispatch({
+    type: ACTION_TYPES.PARTIAL_UPDATE_ENVOLVIDOSCONFLITOLITIGIO,
+    payload: axios.patch(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
   });
   return result;
 };

@@ -3,6 +3,7 @@
     "tipoRecurso": {
       "home": {
         "title": "Tipo Recursos",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Tipo Recurso",
         "createOrEditLabel": "Criar ou editar Tipo Recurso",
         "notFound": "Nenhum Tipo Recurso encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Tipo Recurso"
       },
+      "id": "ID",
       "descricao": "Descricao"
     }
   }

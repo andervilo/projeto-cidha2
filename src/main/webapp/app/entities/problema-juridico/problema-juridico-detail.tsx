@@ -2,12 +2,11 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col } from 'reactstrap';
-import { Translate, ICrudGetAction, byteSize } from 'react-jhipster';
+import { Translate, byteSize } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
 import { getEntity } from './problema-juridico.reducer';
-import { IProblemaJuridico } from 'app/shared/model/problema-juridico.model';
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 
 export interface IProblemaJuridicoDetailProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
@@ -21,10 +20,16 @@ export const ProblemaJuridicoDetail = (props: IProblemaJuridicoDetailProps) => {
   return (
     <Row>
       <Col md="8">
-        <h2>
-          <Translate contentKey="cidhaApp.problemaJuridico.detail.title">ProblemaJuridico</Translate> [<b>{problemaJuridicoEntity.id}</b>]
+        <h2 data-cy="problemaJuridicoDetailsHeading">
+          <Translate contentKey="cidhaApp.problemaJuridico.detail.title">ProblemaJuridico</Translate>
         </h2>
         <dl className="jh-entity-details">
+          <dt>
+            <span id="id">
+              <Translate contentKey="global.field.id">ID</Translate>
+            </span>
+          </dt>
+          <dd>{problemaJuridicoEntity.id}</dd>
           <dt>
             <span id="prolemaJuridicoRespondido">
               <Translate contentKey="cidhaApp.problemaJuridico.prolemaJuridicoRespondido">Prolema Juridico Respondido</Translate>
@@ -107,7 +112,7 @@ export const ProblemaJuridicoDetail = (props: IProblemaJuridicoDetailProps) => {
               : null}
           </dd>
         </dl>
-        <Button tag={Link} to="/problema-juridico" replace color="info">
+        <Button tag={Link} to="/problema-juridico" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" />{' '}
           <span className="d-none d-md-inline">
             <Translate contentKey="entity.action.back">Back</Translate>

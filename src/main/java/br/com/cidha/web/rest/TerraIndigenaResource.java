@@ -1,14 +1,16 @@
 package br.com.cidha.web.rest;
 
 import br.com.cidha.domain.TerraIndigena;
-import br.com.cidha.service.TerraIndigenaService;
-import br.com.cidha.web.rest.errors.BadRequestAlertException;
-import br.com.cidha.service.dto.TerraIndigenaCriteria;
+import br.com.cidha.repository.TerraIndigenaRepository;
 import br.com.cidha.service.TerraIndigenaQueryService;
-
-import io.github.jhipster.web.util.HeaderUtil;
-import io.github.jhipster.web.util.PaginationUtil;
-import io.github.jhipster.web.util.ResponseUtil;
+import br.com.cidha.service.TerraIndigenaService;
+import br.com.cidha.service.criteria.TerraIndigenaCriteria;
+import br.com.cidha.web.rest.errors.BadRequestAlertException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,14 +18,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.List;
-import java.util.Optional;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import tech.jhipster.web.util.HeaderUtil;
+import tech.jhipster.web.util.PaginationUtil;
+import tech.jhipster.web.util.ResponseUtil;
 
 /**
  * REST controller for managing {@link br.com.cidha.domain.TerraIndigena}.
@@ -41,10 +41,17 @@ public class TerraIndigenaResource {
 
     private final TerraIndigenaService terraIndigenaService;
 
+    private final TerraIndigenaRepository terraIndigenaRepository;
+
     private final TerraIndigenaQueryService terraIndigenaQueryService;
 
-    public TerraIndigenaResource(TerraIndigenaService terraIndigenaService, TerraIndigenaQueryService terraIndigenaQueryService) {
+    public TerraIndigenaResource(
+        TerraIndigenaService terraIndigenaService,
+        TerraIndigenaRepository terraIndigenaRepository,
+        TerraIndigenaQueryService terraIndigenaQueryService
+    ) {
         this.terraIndigenaService = terraIndigenaService;
+        this.terraIndigenaRepository = terraIndigenaRepository;
         this.terraIndigenaQueryService = terraIndigenaQueryService;
     }
 
@@ -62,30 +69,80 @@ public class TerraIndigenaResource {
             throw new BadRequestAlertException("A new terraIndigena cannot already have an ID", ENTITY_NAME, "idexists");
         }
         TerraIndigena result = terraIndigenaService.save(terraIndigena);
-        return ResponseEntity.created(new URI("/api/terra-indigenas/" + result.getId()))
+        return ResponseEntity
+            .created(new URI("/api/terra-indigenas/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
             .body(result);
     }
 
     /**
-     * {@code PUT  /terra-indigenas} : Updates an existing terraIndigena.
+     * {@code PUT  /terra-indigenas/:id} : Updates an existing terraIndigena.
      *
+     * @param id the id of the terraIndigena to save.
      * @param terraIndigena the terraIndigena to update.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated terraIndigena,
      * or with status {@code 400 (Bad Request)} if the terraIndigena is not valid,
      * or with status {@code 500 (Internal Server Error)} if the terraIndigena couldn't be updated.
      * @throws URISyntaxException if the Location URI syntax is incorrect.
      */
-    @PutMapping("/terra-indigenas")
-    public ResponseEntity<TerraIndigena> updateTerraIndigena(@RequestBody TerraIndigena terraIndigena) throws URISyntaxException {
-        log.debug("REST request to update TerraIndigena : {}", terraIndigena);
+    @PutMapping("/terra-indigenas/{id}")
+    public ResponseEntity<TerraIndigena> updateTerraIndigena(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody TerraIndigena terraIndigena
+    ) throws URISyntaxException {
+        log.debug("REST request to update TerraIndigena : {}, {}", id, terraIndigena);
         if (terraIndigena.getId() == null) {
             throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
         }
+        if (!Objects.equals(id, terraIndigena.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!terraIndigenaRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
         TerraIndigena result = terraIndigenaService.save(terraIndigena);
-        return ResponseEntity.ok()
+        return ResponseEntity
+            .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, terraIndigena.getId().toString()))
             .body(result);
+    }
+
+    /**
+     * {@code PATCH  /terra-indigenas/:id} : Partial updates given fields of an existing terraIndigena, field will ignore if it is null
+     *
+     * @param id the id of the terraIndigena to save.
+     * @param terraIndigena the terraIndigena to update.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and with body the updated terraIndigena,
+     * or with status {@code 400 (Bad Request)} if the terraIndigena is not valid,
+     * or with status {@code 404 (Not Found)} if the terraIndigena is not found,
+     * or with status {@code 500 (Internal Server Error)} if the terraIndigena couldn't be updated.
+     * @throws URISyntaxException if the Location URI syntax is incorrect.
+     */
+    @PatchMapping(value = "/terra-indigenas/{id}", consumes = "application/merge-patch+json")
+    public ResponseEntity<TerraIndigena> partialUpdateTerraIndigena(
+        @PathVariable(value = "id", required = false) final Long id,
+        @RequestBody TerraIndigena terraIndigena
+    ) throws URISyntaxException {
+        log.debug("REST request to partial update TerraIndigena partially : {}, {}", id, terraIndigena);
+        if (terraIndigena.getId() == null) {
+            throw new BadRequestAlertException("Invalid id", ENTITY_NAME, "idnull");
+        }
+        if (!Objects.equals(id, terraIndigena.getId())) {
+            throw new BadRequestAlertException("Invalid ID", ENTITY_NAME, "idinvalid");
+        }
+
+        if (!terraIndigenaRepository.existsById(id)) {
+            throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
+        }
+
+        Optional<TerraIndigena> result = terraIndigenaService.partialUpdate(terraIndigena);
+
+        return ResponseUtil.wrapOrNotFound(
+            result,
+            HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, terraIndigena.getId().toString())
+        );
     }
 
     /**
@@ -138,6 +195,9 @@ public class TerraIndigenaResource {
     public ResponseEntity<Void> deleteTerraIndigena(@PathVariable Long id) {
         log.debug("REST request to delete TerraIndigena : {}", id);
         terraIndigenaService.delete(id);
-        return ResponseEntity.noContent().headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString())).build();
+        return ResponseEntity
+            .noContent()
+            .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
+            .build();
     }
 }

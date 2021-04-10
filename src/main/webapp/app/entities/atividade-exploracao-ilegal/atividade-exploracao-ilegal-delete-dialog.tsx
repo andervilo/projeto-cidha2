@@ -2,10 +2,9 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router-dom';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
-import { Translate, ICrudGetAction, ICrudDeleteAction } from 'react-jhipster';
+import { Translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { IAtividadeExploracaoIlegal } from 'app/shared/model/atividade-exploracao-ilegal.model';
 import { IRootState } from 'app/shared/reducers';
 import { getEntity, deleteEntity } from './atividade-exploracao-ilegal.reducer';
 
@@ -33,7 +32,7 @@ export const AtividadeExploracaoIlegalDeleteDialog = (props: IAtividadeExploraca
   const { atividadeExploracaoIlegalEntity } = props;
   return (
     <Modal isOpen toggle={handleClose}>
-      <ModalHeader toggle={handleClose}>
+      <ModalHeader toggle={handleClose} data-cy="atividadeExploracaoIlegalDeleteDialogHeading">
         <Translate contentKey="entity.delete.title">Confirm delete operation</Translate>
       </ModalHeader>
       <ModalBody id="cidhaApp.atividadeExploracaoIlegal.delete.question">
@@ -47,7 +46,12 @@ export const AtividadeExploracaoIlegalDeleteDialog = (props: IAtividadeExploraca
           &nbsp;
           <Translate contentKey="entity.action.cancel">Cancel</Translate>
         </Button>
-        <Button id="jhi-confirm-delete-atividadeExploracaoIlegal" color="danger" onClick={confirmDelete}>
+        <Button
+          id="jhi-confirm-delete-atividadeExploracaoIlegal"
+          data-cy="entityConfirmDeleteButton"
+          color="danger"
+          onClick={confirmDelete}
+        >
           <FontAwesomeIcon icon="trash" />
           &nbsp;
           <Translate contentKey="entity.action.delete">Delete</Translate>

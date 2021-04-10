@@ -1,16 +1,13 @@
 package br.com.cidha.domain;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.Type;
-
-import javax.persistence.*;
-
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import javax.persistence.*;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Type;
 
 /**
  * A Processo.
@@ -69,116 +66,156 @@ public class Processo implements Serializable {
 
     @OneToMany(mappedBy = "processo")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @JsonIgnoreProperties(value = { "processo" }, allowSetters = true)
     private Set<ConcessaoLiminar> concessaoLiminars = new HashSet<>();
 
     @OneToMany(mappedBy = "processo")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @JsonIgnoreProperties(value = { "processo" }, allowSetters = true)
     private Set<ConcessaoLiminarCassada> concessaoLiminarCassadas = new HashSet<>();
 
     @OneToMany(mappedBy = "processo")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @JsonIgnoreProperties(value = { "processo" }, allowSetters = true)
     private Set<EmbargoRespRe> embargoRespRes = new HashSet<>();
 
     @OneToMany(mappedBy = "processo")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @JsonIgnoreProperties(value = { "processo" }, allowSetters = true)
     private Set<EmbargoDeclaracaoAgravo> embargoDeclaracaoAgravos = new HashSet<>();
 
     @OneToMany(mappedBy = "processo")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @JsonIgnoreProperties(value = { "processo" }, allowSetters = true)
     private Set<EmbargoDeclaracao> embargoDeclaracaos = new HashSet<>();
 
     @OneToMany(mappedBy = "processo")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @JsonIgnoreProperties(value = { "processo" }, allowSetters = true)
     private Set<EmbargoRecursoEspecial> embargoRecursoEspecials = new HashSet<>();
 
     @ManyToOne
-    @JsonIgnoreProperties(value = "processos", allowSetters = true)
     private TipoDecisao tipoDecisao;
 
     @ManyToOne
-    @JsonIgnoreProperties(value = "processos", allowSetters = true)
     private TipoEmpreendimento tipoEmpreendimento;
 
     @ManyToMany
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JoinTable(name = "processo_comarca",
-               joinColumns = @JoinColumn(name = "processo_id", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name = "comarca_id", referencedColumnName = "id"))
+    @JoinTable(
+        name = "rel_processo__comarca",
+        joinColumns = @JoinColumn(name = "processo_id"),
+        inverseJoinColumns = @JoinColumn(name = "comarca_id")
+    )
+    @JsonIgnoreProperties(value = { "processos" }, allowSetters = true)
     private Set<Comarca> comarcas = new HashSet<>();
 
     @ManyToMany
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JoinTable(name = "processo_quilombo",
-               joinColumns = @JoinColumn(name = "processo_id", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name = "quilombo_id", referencedColumnName = "id"))
+    @JoinTable(
+        name = "rel_processo__quilombo",
+        joinColumns = @JoinColumn(name = "processo_id"),
+        inverseJoinColumns = @JoinColumn(name = "quilombo_id")
+    )
+    @JsonIgnoreProperties(value = { "processos" }, allowSetters = true)
     private Set<Quilombo> quilombos = new HashSet<>();
 
     @ManyToMany
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JoinTable(name = "processo_municipio",
-               joinColumns = @JoinColumn(name = "processo_id", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name = "municipio_id", referencedColumnName = "id"))
+    @JoinTable(
+        name = "rel_processo__municipio",
+        joinColumns = @JoinColumn(name = "processo_id"),
+        inverseJoinColumns = @JoinColumn(name = "municipio_id")
+    )
+    @JsonIgnoreProperties(value = { "processos" }, allowSetters = true)
     private Set<Municipio> municipios = new HashSet<>();
 
     @ManyToMany
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JoinTable(name = "processo_territorio",
-               joinColumns = @JoinColumn(name = "processo_id", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name = "territorio_id", referencedColumnName = "id"))
+    @JoinTable(
+        name = "rel_processo__territorio",
+        joinColumns = @JoinColumn(name = "processo_id"),
+        inverseJoinColumns = @JoinColumn(name = "territorio_id")
+    )
+    @JsonIgnoreProperties(value = { "processos" }, allowSetters = true)
     private Set<Territorio> territorios = new HashSet<>();
 
     @ManyToMany
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JoinTable(name = "processo_atividade_exploracao_ilegal",
-               joinColumns = @JoinColumn(name = "processo_id", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name = "atividade_exploracao_ilegal_id", referencedColumnName = "id"))
+    @JoinTable(
+        name = "rel_processo__atividade_exploracao_ilegal",
+        joinColumns = @JoinColumn(name = "processo_id"),
+        inverseJoinColumns = @JoinColumn(name = "atividade_exploracao_ilegal_id")
+    )
+    @JsonIgnoreProperties(value = { "processos" }, allowSetters = true)
     private Set<AtividadeExploracaoIlegal> atividadeExploracaoIlegals = new HashSet<>();
 
     @ManyToMany
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JoinTable(name = "processo_unidade_conservacao",
-               joinColumns = @JoinColumn(name = "processo_id", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name = "unidade_conservacao_id", referencedColumnName = "id"))
+    @JoinTable(
+        name = "rel_processo__unidade_conservacao",
+        joinColumns = @JoinColumn(name = "processo_id"),
+        inverseJoinColumns = @JoinColumn(name = "unidade_conservacao_id")
+    )
+    @JsonIgnoreProperties(value = { "processos" }, allowSetters = true)
     private Set<UnidadeConservacao> unidadeConservacaos = new HashSet<>();
 
     @ManyToMany
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JoinTable(name = "processo_envolvidos_conflito_litigio",
-               joinColumns = @JoinColumn(name = "processo_id", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name = "envolvidos_conflito_litigio_id", referencedColumnName = "id"))
+    @JoinTable(
+        name = "rel_processo__envolvidos_conflito_litigio",
+        joinColumns = @JoinColumn(name = "processo_id"),
+        inverseJoinColumns = @JoinColumn(name = "envolvidos_conflito_litigio_id")
+    )
+    @JsonIgnoreProperties(value = { "processos" }, allowSetters = true)
     private Set<EnvolvidosConflitoLitigio> envolvidosConflitoLitigios = new HashSet<>();
 
     @ManyToMany
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JoinTable(name = "processo_terra_indigena",
-               joinColumns = @JoinColumn(name = "processo_id", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name = "terra_indigena_id", referencedColumnName = "id"))
+    @JoinTable(
+        name = "rel_processo__terra_indigena",
+        joinColumns = @JoinColumn(name = "processo_id"),
+        inverseJoinColumns = @JoinColumn(name = "terra_indigena_id")
+    )
+    @JsonIgnoreProperties(value = { "etnias", "processos" }, allowSetters = true)
     private Set<TerraIndigena> terraIndigenas = new HashSet<>();
 
     @ManyToMany
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JoinTable(name = "processo_processo_conflito",
-               joinColumns = @JoinColumn(name = "processo_id", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name = "processo_conflito_id", referencedColumnName = "id"))
+    @JoinTable(
+        name = "rel_processo__processo_conflito",
+        joinColumns = @JoinColumn(name = "processo_id"),
+        inverseJoinColumns = @JoinColumn(name = "processo_conflito_id")
+    )
+    @JsonIgnoreProperties(value = { "conflitos", "direitos", "processos" }, allowSetters = true)
     private Set<ProcessoConflito> processoConflitos = new HashSet<>();
 
     @ManyToMany
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JoinTable(name = "processo_parte_interesssada",
-               joinColumns = @JoinColumn(name = "processo_id", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name = "parte_interesssada_id", referencedColumnName = "id"))
+    @JoinTable(
+        name = "rel_processo__parte_interesssada",
+        joinColumns = @JoinColumn(name = "processo_id"),
+        inverseJoinColumns = @JoinColumn(name = "parte_interesssada_id")
+    )
+    @JsonIgnoreProperties(value = { "representanteLegals", "processos" }, allowSetters = true)
     private Set<ParteInteresssada> parteInteresssadas = new HashSet<>();
 
     @ManyToMany
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JoinTable(name = "processo_relator",
-               joinColumns = @JoinColumn(name = "processo_id", referencedColumnName = "id"),
-               inverseJoinColumns = @JoinColumn(name = "relator_id", referencedColumnName = "id"))
+    @JoinTable(
+        name = "rel_processo__relator",
+        joinColumns = @JoinColumn(name = "processo_id"),
+        inverseJoinColumns = @JoinColumn(name = "relator_id")
+    )
+    @JsonIgnoreProperties(value = { "processos" }, allowSetters = true)
     private Set<Relator> relators = new HashSet<>();
 
     @ManyToMany(mappedBy = "processos")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JsonIgnore
+    @JsonIgnoreProperties(
+        value = { "fundamentacaoDoutrinarias", "jurisprudencias", "fundamentacaoLegals", "instrumentoInternacionals", "processos" },
+        allowSetters = true
+    )
     private Set<ProblemaJuridico> problemaJuridicos = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -190,8 +227,13 @@ public class Processo implements Serializable {
         this.id = id;
     }
 
+    public Processo id(Long id) {
+        this.id = id;
+        return this;
+    }
+
     public String getOficio() {
-        return oficio;
+        return this.oficio;
     }
 
     public Processo oficio(String oficio) {
@@ -204,7 +246,7 @@ public class Processo implements Serializable {
     }
 
     public String getAssunto() {
-        return assunto;
+        return this.assunto;
     }
 
     public Processo assunto(String assunto) {
@@ -217,7 +259,7 @@ public class Processo implements Serializable {
     }
 
     public String getLinkUnico() {
-        return linkUnico;
+        return this.linkUnico;
     }
 
     public Processo linkUnico(String linkUnico) {
@@ -230,7 +272,7 @@ public class Processo implements Serializable {
     }
 
     public String getLinkTrf() {
-        return linkTrf;
+        return this.linkTrf;
     }
 
     public Processo linkTrf(String linkTrf) {
@@ -243,7 +285,7 @@ public class Processo implements Serializable {
     }
 
     public String getSubsecaoJudiciaria() {
-        return subsecaoJudiciaria;
+        return this.subsecaoJudiciaria;
     }
 
     public Processo subsecaoJudiciaria(String subsecaoJudiciaria) {
@@ -256,7 +298,7 @@ public class Processo implements Serializable {
     }
 
     public String getTurmaTrf1() {
-        return turmaTrf1;
+        return this.turmaTrf1;
     }
 
     public Processo turmaTrf1(String turmaTrf1) {
@@ -269,7 +311,7 @@ public class Processo implements Serializable {
     }
 
     public String getNumeroProcessoAdministrativo() {
-        return numeroProcessoAdministrativo;
+        return this.numeroProcessoAdministrativo;
     }
 
     public Processo numeroProcessoAdministrativo(String numeroProcessoAdministrativo) {
@@ -282,7 +324,7 @@ public class Processo implements Serializable {
     }
 
     public String getNumeroProcessoJudicialPrimeiraInstancia() {
-        return numeroProcessoJudicialPrimeiraInstancia;
+        return this.numeroProcessoJudicialPrimeiraInstancia;
     }
 
     public Processo numeroProcessoJudicialPrimeiraInstancia(String numeroProcessoJudicialPrimeiraInstancia) {
@@ -295,7 +337,7 @@ public class Processo implements Serializable {
     }
 
     public String getNumeroProcessoJudicialPrimeiraInstanciaLink() {
-        return numeroProcessoJudicialPrimeiraInstanciaLink;
+        return this.numeroProcessoJudicialPrimeiraInstanciaLink;
     }
 
     public Processo numeroProcessoJudicialPrimeiraInstanciaLink(String numeroProcessoJudicialPrimeiraInstanciaLink) {
@@ -308,7 +350,7 @@ public class Processo implements Serializable {
     }
 
     public String getNumeroProcessoJudicialPrimeiraInstanciaObservacoes() {
-        return numeroProcessoJudicialPrimeiraInstanciaObservacoes;
+        return this.numeroProcessoJudicialPrimeiraInstanciaObservacoes;
     }
 
     public Processo numeroProcessoJudicialPrimeiraInstanciaObservacoes(String numeroProcessoJudicialPrimeiraInstanciaObservacoes) {
@@ -320,8 +362,8 @@ public class Processo implements Serializable {
         this.numeroProcessoJudicialPrimeiraInstanciaObservacoes = numeroProcessoJudicialPrimeiraInstanciaObservacoes;
     }
 
-    public Boolean isParecer() {
-        return parecer;
+    public Boolean getParecer() {
+        return this.parecer;
     }
 
     public Processo parecer(Boolean parecer) {
@@ -334,7 +376,7 @@ public class Processo implements Serializable {
     }
 
     public String getApelacao() {
-        return apelacao;
+        return this.apelacao;
     }
 
     public Processo apelacao(String apelacao) {
@@ -347,11 +389,11 @@ public class Processo implements Serializable {
     }
 
     public Set<ConcessaoLiminar> getConcessaoLiminars() {
-        return concessaoLiminars;
+        return this.concessaoLiminars;
     }
 
     public Processo concessaoLiminars(Set<ConcessaoLiminar> concessaoLiminars) {
-        this.concessaoLiminars = concessaoLiminars;
+        this.setConcessaoLiminars(concessaoLiminars);
         return this;
     }
 
@@ -368,15 +410,21 @@ public class Processo implements Serializable {
     }
 
     public void setConcessaoLiminars(Set<ConcessaoLiminar> concessaoLiminars) {
+        if (this.concessaoLiminars != null) {
+            this.concessaoLiminars.forEach(i -> i.setProcesso(null));
+        }
+        if (concessaoLiminars != null) {
+            concessaoLiminars.forEach(i -> i.setProcesso(this));
+        }
         this.concessaoLiminars = concessaoLiminars;
     }
 
     public Set<ConcessaoLiminarCassada> getConcessaoLiminarCassadas() {
-        return concessaoLiminarCassadas;
+        return this.concessaoLiminarCassadas;
     }
 
     public Processo concessaoLiminarCassadas(Set<ConcessaoLiminarCassada> concessaoLiminarCassadas) {
-        this.concessaoLiminarCassadas = concessaoLiminarCassadas;
+        this.setConcessaoLiminarCassadas(concessaoLiminarCassadas);
         return this;
     }
 
@@ -393,15 +441,21 @@ public class Processo implements Serializable {
     }
 
     public void setConcessaoLiminarCassadas(Set<ConcessaoLiminarCassada> concessaoLiminarCassadas) {
+        if (this.concessaoLiminarCassadas != null) {
+            this.concessaoLiminarCassadas.forEach(i -> i.setProcesso(null));
+        }
+        if (concessaoLiminarCassadas != null) {
+            concessaoLiminarCassadas.forEach(i -> i.setProcesso(this));
+        }
         this.concessaoLiminarCassadas = concessaoLiminarCassadas;
     }
 
     public Set<EmbargoRespRe> getEmbargoRespRes() {
-        return embargoRespRes;
+        return this.embargoRespRes;
     }
 
     public Processo embargoRespRes(Set<EmbargoRespRe> embargoRespRes) {
-        this.embargoRespRes = embargoRespRes;
+        this.setEmbargoRespRes(embargoRespRes);
         return this;
     }
 
@@ -418,15 +472,21 @@ public class Processo implements Serializable {
     }
 
     public void setEmbargoRespRes(Set<EmbargoRespRe> embargoRespRes) {
+        if (this.embargoRespRes != null) {
+            this.embargoRespRes.forEach(i -> i.setProcesso(null));
+        }
+        if (embargoRespRes != null) {
+            embargoRespRes.forEach(i -> i.setProcesso(this));
+        }
         this.embargoRespRes = embargoRespRes;
     }
 
     public Set<EmbargoDeclaracaoAgravo> getEmbargoDeclaracaoAgravos() {
-        return embargoDeclaracaoAgravos;
+        return this.embargoDeclaracaoAgravos;
     }
 
     public Processo embargoDeclaracaoAgravos(Set<EmbargoDeclaracaoAgravo> embargoDeclaracaoAgravos) {
-        this.embargoDeclaracaoAgravos = embargoDeclaracaoAgravos;
+        this.setEmbargoDeclaracaoAgravos(embargoDeclaracaoAgravos);
         return this;
     }
 
@@ -443,15 +503,21 @@ public class Processo implements Serializable {
     }
 
     public void setEmbargoDeclaracaoAgravos(Set<EmbargoDeclaracaoAgravo> embargoDeclaracaoAgravos) {
+        if (this.embargoDeclaracaoAgravos != null) {
+            this.embargoDeclaracaoAgravos.forEach(i -> i.setProcesso(null));
+        }
+        if (embargoDeclaracaoAgravos != null) {
+            embargoDeclaracaoAgravos.forEach(i -> i.setProcesso(this));
+        }
         this.embargoDeclaracaoAgravos = embargoDeclaracaoAgravos;
     }
 
     public Set<EmbargoDeclaracao> getEmbargoDeclaracaos() {
-        return embargoDeclaracaos;
+        return this.embargoDeclaracaos;
     }
 
     public Processo embargoDeclaracaos(Set<EmbargoDeclaracao> embargoDeclaracaos) {
-        this.embargoDeclaracaos = embargoDeclaracaos;
+        this.setEmbargoDeclaracaos(embargoDeclaracaos);
         return this;
     }
 
@@ -468,15 +534,21 @@ public class Processo implements Serializable {
     }
 
     public void setEmbargoDeclaracaos(Set<EmbargoDeclaracao> embargoDeclaracaos) {
+        if (this.embargoDeclaracaos != null) {
+            this.embargoDeclaracaos.forEach(i -> i.setProcesso(null));
+        }
+        if (embargoDeclaracaos != null) {
+            embargoDeclaracaos.forEach(i -> i.setProcesso(this));
+        }
         this.embargoDeclaracaos = embargoDeclaracaos;
     }
 
     public Set<EmbargoRecursoEspecial> getEmbargoRecursoEspecials() {
-        return embargoRecursoEspecials;
+        return this.embargoRecursoEspecials;
     }
 
     public Processo embargoRecursoEspecials(Set<EmbargoRecursoEspecial> embargoRecursoEspecials) {
-        this.embargoRecursoEspecials = embargoRecursoEspecials;
+        this.setEmbargoRecursoEspecials(embargoRecursoEspecials);
         return this;
     }
 
@@ -493,15 +565,21 @@ public class Processo implements Serializable {
     }
 
     public void setEmbargoRecursoEspecials(Set<EmbargoRecursoEspecial> embargoRecursoEspecials) {
+        if (this.embargoRecursoEspecials != null) {
+            this.embargoRecursoEspecials.forEach(i -> i.setProcesso(null));
+        }
+        if (embargoRecursoEspecials != null) {
+            embargoRecursoEspecials.forEach(i -> i.setProcesso(this));
+        }
         this.embargoRecursoEspecials = embargoRecursoEspecials;
     }
 
     public TipoDecisao getTipoDecisao() {
-        return tipoDecisao;
+        return this.tipoDecisao;
     }
 
     public Processo tipoDecisao(TipoDecisao tipoDecisao) {
-        this.tipoDecisao = tipoDecisao;
+        this.setTipoDecisao(tipoDecisao);
         return this;
     }
 
@@ -510,11 +588,11 @@ public class Processo implements Serializable {
     }
 
     public TipoEmpreendimento getTipoEmpreendimento() {
-        return tipoEmpreendimento;
+        return this.tipoEmpreendimento;
     }
 
     public Processo tipoEmpreendimento(TipoEmpreendimento tipoEmpreendimento) {
-        this.tipoEmpreendimento = tipoEmpreendimento;
+        this.setTipoEmpreendimento(tipoEmpreendimento);
         return this;
     }
 
@@ -523,11 +601,11 @@ public class Processo implements Serializable {
     }
 
     public Set<Comarca> getComarcas() {
-        return comarcas;
+        return this.comarcas;
     }
 
     public Processo comarcas(Set<Comarca> comarcas) {
-        this.comarcas = comarcas;
+        this.setComarcas(comarcas);
         return this;
     }
 
@@ -548,11 +626,11 @@ public class Processo implements Serializable {
     }
 
     public Set<Quilombo> getQuilombos() {
-        return quilombos;
+        return this.quilombos;
     }
 
     public Processo quilombos(Set<Quilombo> quilombos) {
-        this.quilombos = quilombos;
+        this.setQuilombos(quilombos);
         return this;
     }
 
@@ -573,11 +651,11 @@ public class Processo implements Serializable {
     }
 
     public Set<Municipio> getMunicipios() {
-        return municipios;
+        return this.municipios;
     }
 
     public Processo municipios(Set<Municipio> municipios) {
-        this.municipios = municipios;
+        this.setMunicipios(municipios);
         return this;
     }
 
@@ -598,11 +676,11 @@ public class Processo implements Serializable {
     }
 
     public Set<Territorio> getTerritorios() {
-        return territorios;
+        return this.territorios;
     }
 
     public Processo territorios(Set<Territorio> territorios) {
-        this.territorios = territorios;
+        this.setTerritorios(territorios);
         return this;
     }
 
@@ -623,11 +701,11 @@ public class Processo implements Serializable {
     }
 
     public Set<AtividadeExploracaoIlegal> getAtividadeExploracaoIlegals() {
-        return atividadeExploracaoIlegals;
+        return this.atividadeExploracaoIlegals;
     }
 
     public Processo atividadeExploracaoIlegals(Set<AtividadeExploracaoIlegal> atividadeExploracaoIlegals) {
-        this.atividadeExploracaoIlegals = atividadeExploracaoIlegals;
+        this.setAtividadeExploracaoIlegals(atividadeExploracaoIlegals);
         return this;
     }
 
@@ -648,11 +726,11 @@ public class Processo implements Serializable {
     }
 
     public Set<UnidadeConservacao> getUnidadeConservacaos() {
-        return unidadeConservacaos;
+        return this.unidadeConservacaos;
     }
 
     public Processo unidadeConservacaos(Set<UnidadeConservacao> unidadeConservacaos) {
-        this.unidadeConservacaos = unidadeConservacaos;
+        this.setUnidadeConservacaos(unidadeConservacaos);
         return this;
     }
 
@@ -673,11 +751,11 @@ public class Processo implements Serializable {
     }
 
     public Set<EnvolvidosConflitoLitigio> getEnvolvidosConflitoLitigios() {
-        return envolvidosConflitoLitigios;
+        return this.envolvidosConflitoLitigios;
     }
 
     public Processo envolvidosConflitoLitigios(Set<EnvolvidosConflitoLitigio> envolvidosConflitoLitigios) {
-        this.envolvidosConflitoLitigios = envolvidosConflitoLitigios;
+        this.setEnvolvidosConflitoLitigios(envolvidosConflitoLitigios);
         return this;
     }
 
@@ -698,11 +776,11 @@ public class Processo implements Serializable {
     }
 
     public Set<TerraIndigena> getTerraIndigenas() {
-        return terraIndigenas;
+        return this.terraIndigenas;
     }
 
     public Processo terraIndigenas(Set<TerraIndigena> terraIndigenas) {
-        this.terraIndigenas = terraIndigenas;
+        this.setTerraIndigenas(terraIndigenas);
         return this;
     }
 
@@ -723,11 +801,11 @@ public class Processo implements Serializable {
     }
 
     public Set<ProcessoConflito> getProcessoConflitos() {
-        return processoConflitos;
+        return this.processoConflitos;
     }
 
     public Processo processoConflitos(Set<ProcessoConflito> processoConflitos) {
-        this.processoConflitos = processoConflitos;
+        this.setProcessoConflitos(processoConflitos);
         return this;
     }
 
@@ -748,11 +826,11 @@ public class Processo implements Serializable {
     }
 
     public Set<ParteInteresssada> getParteInteresssadas() {
-        return parteInteresssadas;
+        return this.parteInteresssadas;
     }
 
     public Processo parteInteresssadas(Set<ParteInteresssada> parteInteresssadas) {
-        this.parteInteresssadas = parteInteresssadas;
+        this.setParteInteresssadas(parteInteresssadas);
         return this;
     }
 
@@ -773,11 +851,11 @@ public class Processo implements Serializable {
     }
 
     public Set<Relator> getRelators() {
-        return relators;
+        return this.relators;
     }
 
     public Processo relators(Set<Relator> relators) {
-        this.relators = relators;
+        this.setRelators(relators);
         return this;
     }
 
@@ -798,11 +876,11 @@ public class Processo implements Serializable {
     }
 
     public Set<ProblemaJuridico> getProblemaJuridicos() {
-        return problemaJuridicos;
+        return this.problemaJuridicos;
     }
 
     public Processo problemaJuridicos(Set<ProblemaJuridico> problemaJuridicos) {
-        this.problemaJuridicos = problemaJuridicos;
+        this.setProblemaJuridicos(problemaJuridicos);
         return this;
     }
 
@@ -819,8 +897,15 @@ public class Processo implements Serializable {
     }
 
     public void setProblemaJuridicos(Set<ProblemaJuridico> problemaJuridicos) {
+        if (this.problemaJuridicos != null) {
+            this.problemaJuridicos.forEach(i -> i.removeProcesso(this));
+        }
+        if (problemaJuridicos != null) {
+            problemaJuridicos.forEach(i -> i.addProcesso(this));
+        }
         this.problemaJuridicos = problemaJuridicos;
     }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -836,7 +921,8 @@ public class Processo implements Serializable {
 
     @Override
     public int hashCode() {
-        return 31;
+        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        return getClass().hashCode();
     }
 
     // prettier-ignore
@@ -854,7 +940,7 @@ public class Processo implements Serializable {
             ", numeroProcessoJudicialPrimeiraInstancia='" + getNumeroProcessoJudicialPrimeiraInstancia() + "'" +
             ", numeroProcessoJudicialPrimeiraInstanciaLink='" + getNumeroProcessoJudicialPrimeiraInstanciaLink() + "'" +
             ", numeroProcessoJudicialPrimeiraInstanciaObservacoes='" + getNumeroProcessoJudicialPrimeiraInstanciaObservacoes() + "'" +
-            ", parecer='" + isParecer() + "'" +
+            ", parecer='" + getParecer() + "'" +
             ", apelacao='" + getApelacao() + "'" +
             "}";
     }

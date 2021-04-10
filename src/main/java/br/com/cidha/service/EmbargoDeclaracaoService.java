@@ -2,15 +2,13 @@ package br.com.cidha.service;
 
 import br.com.cidha.domain.EmbargoDeclaracao;
 import br.com.cidha.repository.EmbargoDeclaracaoRepository;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 /**
  * Service Implementation for managing {@link EmbargoDeclaracao}.
@@ -39,6 +37,29 @@ public class EmbargoDeclaracaoService {
     }
 
     /**
+     * Partially update a embargoDeclaracao.
+     *
+     * @param embargoDeclaracao the entity to update partially.
+     * @return the persisted entity.
+     */
+    public Optional<EmbargoDeclaracao> partialUpdate(EmbargoDeclaracao embargoDeclaracao) {
+        log.debug("Request to partially update EmbargoDeclaracao : {}", embargoDeclaracao);
+
+        return embargoDeclaracaoRepository
+            .findById(embargoDeclaracao.getId())
+            .map(
+                existingEmbargoDeclaracao -> {
+                    if (embargoDeclaracao.getDescricao() != null) {
+                        existingEmbargoDeclaracao.setDescricao(embargoDeclaracao.getDescricao());
+                    }
+
+                    return existingEmbargoDeclaracao;
+                }
+            )
+            .map(embargoDeclaracaoRepository::save);
+    }
+
+    /**
      * Get all the embargoDeclaracaos.
      *
      * @param pageable the pagination information.
@@ -49,7 +70,6 @@ public class EmbargoDeclaracaoService {
         log.debug("Request to get all EmbargoDeclaracaos");
         return embargoDeclaracaoRepository.findAll(pageable);
     }
-
 
     /**
      * Get one embargoDeclaracao by id.

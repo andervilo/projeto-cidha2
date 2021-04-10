@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col, Label } from 'reactstrap';
 import { AvFeedback, AvForm, AvGroup, AvInput, AvField } from 'availity-reactstrap-validation';
-import { Translate, translate, ICrudGetAction, ICrudGetAllAction, setFileData, byteSize, ICrudPutAction } from 'react-jhipster';
+import { setFileData, byteSize, Translate, translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { IRootState } from 'app/shared/reducers';
 
@@ -17,8 +17,7 @@ import { mapIdList } from 'app/shared/util/entity-utils';
 export interface IConflitoUpdateProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
 
 export const ConflitoUpdate = (props: IConflitoUpdateProps) => {
-  const [processoConflitoId, setProcessoConflitoId] = useState('0');
-  const [isNew, setIsNew] = useState(!props.match.params || !props.match.params.id);
+  const [isNew] = useState(!props.match.params || !props.match.params.id);
 
   const { conflitoEntity, processoConflitos, loading, updating } = props;
 
@@ -57,6 +56,7 @@ export const ConflitoUpdate = (props: IConflitoUpdateProps) => {
       const entity = {
         ...conflitoEntity,
         ...values,
+        processoConflito: processoConflitos.find(it => it.id.toString() === values.processoConflitoId.toString()),
       };
 
       if (isNew) {
@@ -71,7 +71,7 @@ export const ConflitoUpdate = (props: IConflitoUpdateProps) => {
     <div>
       <Row className="justify-content-center">
         <Col md="8">
-          <h2 id="cidhaApp.conflito.home.createOrEditLabel">
+          <h2 id="cidhaApp.conflito.home.createOrEditLabel" data-cy="ConflitoCreateUpdateHeading">
             <Translate contentKey="cidhaApp.conflito.home.createOrEditLabel">Create or edit a Conflito</Translate>
           </h2>
         </Col>
@@ -94,13 +94,19 @@ export const ConflitoUpdate = (props: IConflitoUpdateProps) => {
                 <Label id="descricaoLabel" for="conflito-descricao">
                   <Translate contentKey="cidhaApp.conflito.descricao">Descricao</Translate>
                 </Label>
-                <AvInput id="conflito-descricao" type="textarea" name="descricao" />
+                <AvInput id="conflito-descricao" data-cy="descricao" type="textarea" name="descricao" />
               </AvGroup>
               <AvGroup>
                 <Label for="conflito-processoConflito">
                   <Translate contentKey="cidhaApp.conflito.processoConflito">Processo Conflito</Translate>
                 </Label>
-                <AvInput id="conflito-processoConflito" type="select" className="form-control" name="processoConflito.id">
+                <AvInput
+                  id="conflito-processoConflito"
+                  data-cy="processoConflito"
+                  type="select"
+                  className="form-control"
+                  name="processoConflitoId"
+                >
                   <option value="" key="0" />
                   {processoConflitos
                     ? processoConflitos.map(otherEntity => (
@@ -119,7 +125,7 @@ export const ConflitoUpdate = (props: IConflitoUpdateProps) => {
                 </span>
               </Button>
               &nbsp;
-              <Button color="primary" id="save-entity" type="submit" disabled={updating}>
+              <Button color="primary" id="save-entity" data-cy="entityCreateSaveButton" type="submit" disabled={updating}>
                 <FontAwesomeIcon icon="save" />
                 &nbsp;
                 <Translate contentKey="entity.action.save">Save</Translate>

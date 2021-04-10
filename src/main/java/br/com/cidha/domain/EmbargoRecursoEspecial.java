@@ -1,12 +1,10 @@
 package br.com.cidha.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import java.io.Serializable;
+import javax.persistence.*;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-
-import javax.persistence.*;
-
-import java.io.Serializable;
 
 /**
  * A EmbargoRecursoEspecial.
@@ -27,7 +25,31 @@ public class EmbargoRecursoEspecial implements Serializable {
     private String descricao;
 
     @ManyToOne
-    @JsonIgnoreProperties(value = "embargoRecursoEspecials", allowSetters = true)
+    @JsonIgnoreProperties(
+        value = {
+            "concessaoLiminars",
+            "concessaoLiminarCassadas",
+            "embargoRespRes",
+            "embargoDeclaracaoAgravos",
+            "embargoDeclaracaos",
+            "embargoRecursoEspecials",
+            "tipoDecisao",
+            "tipoEmpreendimento",
+            "comarcas",
+            "quilombos",
+            "municipios",
+            "territorios",
+            "atividadeExploracaoIlegals",
+            "unidadeConservacaos",
+            "envolvidosConflitoLitigios",
+            "terraIndigenas",
+            "processoConflitos",
+            "parteInteresssadas",
+            "relators",
+            "problemaJuridicos",
+        },
+        allowSetters = true
+    )
     private Processo processo;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -39,8 +61,13 @@ public class EmbargoRecursoEspecial implements Serializable {
         this.id = id;
     }
 
+    public EmbargoRecursoEspecial id(Long id) {
+        this.id = id;
+        return this;
+    }
+
     public String getDescricao() {
-        return descricao;
+        return this.descricao;
     }
 
     public EmbargoRecursoEspecial descricao(String descricao) {
@@ -53,17 +80,18 @@ public class EmbargoRecursoEspecial implements Serializable {
     }
 
     public Processo getProcesso() {
-        return processo;
+        return this.processo;
     }
 
     public EmbargoRecursoEspecial processo(Processo processo) {
-        this.processo = processo;
+        this.setProcesso(processo);
         return this;
     }
 
     public void setProcesso(Processo processo) {
         this.processo = processo;
     }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -79,7 +107,8 @@ public class EmbargoRecursoEspecial implements Serializable {
 
     @Override
     public int hashCode() {
-        return 31;
+        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        return getClass().hashCode();
     }
 
     // prettier-ignore

@@ -1,9 +1,11 @@
 package br.com.cidha.service;
 
+import br.com.cidha.domain.*; // for static metamodels
+import br.com.cidha.domain.TipoRecurso;
+import br.com.cidha.repository.TipoRecursoRepository;
+import br.com.cidha.service.criteria.TipoRecursoCriteria;
 import java.util.List;
-
 import javax.persistence.criteria.JoinType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -11,13 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import io.github.jhipster.service.QueryService;
-
-import br.com.cidha.domain.TipoRecurso;
-import br.com.cidha.domain.*; // for static metamodels
-import br.com.cidha.repository.TipoRecursoRepository;
-import br.com.cidha.service.dto.TipoRecursoCriteria;
+import tech.jhipster.service.QueryService;
 
 /**
  * Service for executing complex queries for {@link TipoRecurso} entities in the database.

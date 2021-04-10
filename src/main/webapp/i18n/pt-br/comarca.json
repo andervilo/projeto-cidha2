@@ -3,6 +3,7 @@
     "comarca": {
       "home": {
         "title": "Comarcas",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Comarca",
         "createOrEditLabel": "Criar ou editar Comarca",
         "notFound": "Nenhum Comarca encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Comarca"
       },
+      "id": "ID",
       "nome": "Nome",
       "codigoCnj": "Codigo Cnj",
       "processo": "Processo"

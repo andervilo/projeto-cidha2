@@ -4,13 +4,13 @@ import { IProcesso } from 'app/shared/model/processo.model';
 
 export interface IProcessoConflito {
   id?: number;
-  inicioConflitoObservacoes?: any;
-  historicoConlito?: any;
-  nomeCasoComuidade?: string;
-  consultaPrevia?: boolean;
-  conflitos?: IConflito[];
-  direitos?: IDireito[];
-  processos?: IProcesso[];
+  inicioConflitoObservacoes?: string | null;
+  historicoConlito?: string | null;
+  nomeCasoComuidade?: string | null;
+  consultaPrevia?: boolean | null;
+  conflitos?: IConflito[] | null;
+  direitos?: IDireito[] | null;
+  processos?: IProcesso[] | null;
 }
 
 export const defaultValue: Readonly<IProcessoConflito> = {

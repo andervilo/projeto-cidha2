@@ -1,49 +1,47 @@
 package br.com.cidha.web.rest;
 
-import br.com.cidha.CidhaApp;
-import br.com.cidha.domain.ConcessaoLiminarCassada;
-import br.com.cidha.domain.Processo;
-import br.com.cidha.repository.ConcessaoLiminarCassadaRepository;
-import br.com.cidha.service.ConcessaoLiminarCassadaService;
-import br.com.cidha.service.dto.ConcessaoLiminarCassadaCriteria;
-import br.com.cidha.service.ConcessaoLiminarCassadaQueryService;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
-import javax.persistence.EntityManager;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import br.com.cidha.IntegrationTest;
+import br.com.cidha.domain.ConcessaoLiminarCassada;
+import br.com.cidha.domain.Processo;
+import br.com.cidha.repository.ConcessaoLiminarCassadaRepository;
+import br.com.cidha.service.criteria.ConcessaoLiminarCassadaCriteria;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
+import javax.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * Integration tests for the {@link ConcessaoLiminarCassadaResource} REST controller.
  */
-@SpringBootTest(classes = CidhaApp.class)
+@IntegrationTest
 @AutoConfigureMockMvc
 @WithMockUser
-public class ConcessaoLiminarCassadaResourceIT {
+class ConcessaoLiminarCassadaResourceIT {
 
     private static final String DEFAULT_DESCRICAO = "AAAAAAAAAA";
     private static final String UPDATED_DESCRICAO = "BBBBBBBBBB";
 
+    private static final String ENTITY_API_URL = "/api/concessao-liminar-cassadas";
+    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+
+    private static Random random = new Random();
+    private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
+
     @Autowired
     private ConcessaoLiminarCassadaRepository concessaoLiminarCassadaRepository;
-
-    @Autowired
-    private ConcessaoLiminarCassadaService concessaoLiminarCassadaService;
-
-    @Autowired
-    private ConcessaoLiminarCassadaQueryService concessaoLiminarCassadaQueryService;
 
     @Autowired
     private EntityManager em;
@@ -60,10 +58,10 @@ public class ConcessaoLiminarCassadaResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static ConcessaoLiminarCassada createEntity(EntityManager em) {
-        ConcessaoLiminarCassada concessaoLiminarCassada = new ConcessaoLiminarCassada()
-            .descricao(DEFAULT_DESCRICAO);
+        ConcessaoLiminarCassada concessaoLiminarCassada = new ConcessaoLiminarCassada().descricao(DEFAULT_DESCRICAO);
         return concessaoLiminarCassada;
     }
+
     /**
      * Create an updated entity for this test.
      *
@@ -71,8 +69,7 @@ public class ConcessaoLiminarCassadaResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static ConcessaoLiminarCassada createUpdatedEntity(EntityManager em) {
-        ConcessaoLiminarCassada concessaoLiminarCassada = new ConcessaoLiminarCassada()
-            .descricao(UPDATED_DESCRICAO);
+        ConcessaoLiminarCassada concessaoLiminarCassada = new ConcessaoLiminarCassada().descricao(UPDATED_DESCRICAO);
         return concessaoLiminarCassada;
     }
 
@@ -83,12 +80,15 @@ public class ConcessaoLiminarCassadaResourceIT {
 
     @Test
     @Transactional
-    public void createConcessaoLiminarCassada() throws Exception {
+    void createConcessaoLiminarCassada() throws Exception {
         int databaseSizeBeforeCreate = concessaoLiminarCassadaRepository.findAll().size();
         // Create the ConcessaoLiminarCassada
-        restConcessaoLiminarCassadaMockMvc.perform(post("/api/concessao-liminar-cassadas")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(concessaoLiminarCassada)))
+        restConcessaoLiminarCassadaMockMvc
+            .perform(
+                post(ENTITY_API_URL)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(concessaoLiminarCassada))
+            )
             .andExpect(status().isCreated());
 
         // Validate the ConcessaoLiminarCassada in the database
@@ -100,16 +100,19 @@ public class ConcessaoLiminarCassadaResourceIT {
 
     @Test
     @Transactional
-    public void createConcessaoLiminarCassadaWithExistingId() throws Exception {
-        int databaseSizeBeforeCreate = concessaoLiminarCassadaRepository.findAll().size();
-
+    void createConcessaoLiminarCassadaWithExistingId() throws Exception {
         // Create the ConcessaoLiminarCassada with an existing ID
         concessaoLiminarCassada.setId(1L);
 
+        int databaseSizeBeforeCreate = concessaoLiminarCassadaRepository.findAll().size();
+
         // An entity with an existing ID cannot be created, so this API call must fail
-        restConcessaoLiminarCassadaMockMvc.perform(post("/api/concessao-liminar-cassadas")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(concessaoLiminarCassada)))
+        restConcessaoLiminarCassadaMockMvc
+            .perform(
+                post(ENTITY_API_URL)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(concessaoLiminarCassada))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the ConcessaoLiminarCassada in the database
@@ -117,39 +120,39 @@ public class ConcessaoLiminarCassadaResourceIT {
         assertThat(concessaoLiminarCassadaList).hasSize(databaseSizeBeforeCreate);
     }
 
-
     @Test
     @Transactional
-    public void getAllConcessaoLiminarCassadas() throws Exception {
+    void getAllConcessaoLiminarCassadas() throws Exception {
         // Initialize the database
         concessaoLiminarCassadaRepository.saveAndFlush(concessaoLiminarCassada);
 
         // Get all the concessaoLiminarCassadaList
-        restConcessaoLiminarCassadaMockMvc.perform(get("/api/concessao-liminar-cassadas?sort=id,desc"))
+        restConcessaoLiminarCassadaMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(concessaoLiminarCassada.getId().intValue())))
             .andExpect(jsonPath("$.[*].descricao").value(hasItem(DEFAULT_DESCRICAO)));
     }
-    
+
     @Test
     @Transactional
-    public void getConcessaoLiminarCassada() throws Exception {
+    void getConcessaoLiminarCassada() throws Exception {
         // Initialize the database
         concessaoLiminarCassadaRepository.saveAndFlush(concessaoLiminarCassada);
 
         // Get the concessaoLiminarCassada
-        restConcessaoLiminarCassadaMockMvc.perform(get("/api/concessao-liminar-cassadas/{id}", concessaoLiminarCassada.getId()))
+        restConcessaoLiminarCassadaMockMvc
+            .perform(get(ENTITY_API_URL_ID, concessaoLiminarCassada.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(concessaoLiminarCassada.getId().intValue()))
             .andExpect(jsonPath("$.descricao").value(DEFAULT_DESCRICAO));
     }
 
-
     @Test
     @Transactional
-    public void getConcessaoLiminarCassadasByIdFiltering() throws Exception {
+    void getConcessaoLiminarCassadasByIdFiltering() throws Exception {
         // Initialize the database
         concessaoLiminarCassadaRepository.saveAndFlush(concessaoLiminarCassada);
 
@@ -165,10 +168,9 @@ public class ConcessaoLiminarCassadaResourceIT {
         defaultConcessaoLiminarCassadaShouldNotBeFound("id.lessThan=" + id);
     }
 
-
     @Test
     @Transactional
-    public void getAllConcessaoLiminarCassadasByDescricaoIsEqualToSomething() throws Exception {
+    void getAllConcessaoLiminarCassadasByDescricaoIsEqualToSomething() throws Exception {
         // Initialize the database
         concessaoLiminarCassadaRepository.saveAndFlush(concessaoLiminarCassada);
 
@@ -181,7 +183,7 @@ public class ConcessaoLiminarCassadaResourceIT {
 
     @Test
     @Transactional
-    public void getAllConcessaoLiminarCassadasByDescricaoIsNotEqualToSomething() throws Exception {
+    void getAllConcessaoLiminarCassadasByDescricaoIsNotEqualToSomething() throws Exception {
         // Initialize the database
         concessaoLiminarCassadaRepository.saveAndFlush(concessaoLiminarCassada);
 
@@ -194,7 +196,7 @@ public class ConcessaoLiminarCassadaResourceIT {
 
     @Test
     @Transactional
-    public void getAllConcessaoLiminarCassadasByDescricaoIsInShouldWork() throws Exception {
+    void getAllConcessaoLiminarCassadasByDescricaoIsInShouldWork() throws Exception {
         // Initialize the database
         concessaoLiminarCassadaRepository.saveAndFlush(concessaoLiminarCassada);
 
@@ -207,7 +209,7 @@ public class ConcessaoLiminarCassadaResourceIT {
 
     @Test
     @Transactional
-    public void getAllConcessaoLiminarCassadasByDescricaoIsNullOrNotNull() throws Exception {
+    void getAllConcessaoLiminarCassadasByDescricaoIsNullOrNotNull() throws Exception {
         // Initialize the database
         concessaoLiminarCassadaRepository.saveAndFlush(concessaoLiminarCassada);
 
@@ -217,9 +219,10 @@ public class ConcessaoLiminarCassadaResourceIT {
         // Get all the concessaoLiminarCassadaList where descricao is null
         defaultConcessaoLiminarCassadaShouldNotBeFound("descricao.specified=false");
     }
-                @Test
+
+    @Test
     @Transactional
-    public void getAllConcessaoLiminarCassadasByDescricaoContainsSomething() throws Exception {
+    void getAllConcessaoLiminarCassadasByDescricaoContainsSomething() throws Exception {
         // Initialize the database
         concessaoLiminarCassadaRepository.saveAndFlush(concessaoLiminarCassada);
 
@@ -232,7 +235,7 @@ public class ConcessaoLiminarCassadaResourceIT {
 
     @Test
     @Transactional
-    public void getAllConcessaoLiminarCassadasByDescricaoNotContainsSomething() throws Exception {
+    void getAllConcessaoLiminarCassadasByDescricaoNotContainsSomething() throws Exception {
         // Initialize the database
         concessaoLiminarCassadaRepository.saveAndFlush(concessaoLiminarCassada);
 
@@ -243,10 +246,9 @@ public class ConcessaoLiminarCassadaResourceIT {
         defaultConcessaoLiminarCassadaShouldBeFound("descricao.doesNotContain=" + UPDATED_DESCRICAO);
     }
 
-
     @Test
     @Transactional
-    public void getAllConcessaoLiminarCassadasByProcessoIsEqualToSomething() throws Exception {
+    void getAllConcessaoLiminarCassadasByProcessoIsEqualToSomething() throws Exception {
         // Initialize the database
         concessaoLiminarCassadaRepository.saveAndFlush(concessaoLiminarCassada);
         Processo processo = ProcessoResourceIT.createEntity(em);
@@ -259,7 +261,7 @@ public class ConcessaoLiminarCassadaResourceIT {
         // Get all the concessaoLiminarCassadaList where processo equals to processoId
         defaultConcessaoLiminarCassadaShouldBeFound("processoId.equals=" + processoId);
 
-        // Get all the concessaoLiminarCassadaList where processo equals to processoId + 1
+        // Get all the concessaoLiminarCassadaList where processo equals to (processoId + 1)
         defaultConcessaoLiminarCassadaShouldNotBeFound("processoId.equals=" + (processoId + 1));
     }
 
@@ -267,14 +269,16 @@ public class ConcessaoLiminarCassadaResourceIT {
      * Executes the search, and checks that the default entity is returned.
      */
     private void defaultConcessaoLiminarCassadaShouldBeFound(String filter) throws Exception {
-        restConcessaoLiminarCassadaMockMvc.perform(get("/api/concessao-liminar-cassadas?sort=id,desc&" + filter))
+        restConcessaoLiminarCassadaMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(concessaoLiminarCassada.getId().intValue())))
             .andExpect(jsonPath("$.[*].descricao").value(hasItem(DEFAULT_DESCRICAO)));
 
         // Check, that the count call also returns 1
-        restConcessaoLiminarCassadaMockMvc.perform(get("/api/concessao-liminar-cassadas/count?sort=id,desc&" + filter))
+        restConcessaoLiminarCassadaMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("1"));
@@ -284,14 +288,16 @@ public class ConcessaoLiminarCassadaResourceIT {
      * Executes the search, and checks that the default entity is not returned.
      */
     private void defaultConcessaoLiminarCassadaShouldNotBeFound(String filter) throws Exception {
-        restConcessaoLiminarCassadaMockMvc.perform(get("/api/concessao-liminar-cassadas?sort=id,desc&" + filter))
+        restConcessaoLiminarCassadaMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$").isEmpty());
 
         // Check, that the count call also returns 0
-        restConcessaoLiminarCassadaMockMvc.perform(get("/api/concessao-liminar-cassadas/count?sort=id,desc&" + filter))
+        restConcessaoLiminarCassadaMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("0"));
@@ -299,30 +305,33 @@ public class ConcessaoLiminarCassadaResourceIT {
 
     @Test
     @Transactional
-    public void getNonExistingConcessaoLiminarCassada() throws Exception {
+    void getNonExistingConcessaoLiminarCassada() throws Exception {
         // Get the concessaoLiminarCassada
-        restConcessaoLiminarCassadaMockMvc.perform(get("/api/concessao-liminar-cassadas/{id}", Long.MAX_VALUE))
-            .andExpect(status().isNotFound());
+        restConcessaoLiminarCassadaMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
     @Test
     @Transactional
-    public void updateConcessaoLiminarCassada() throws Exception {
+    void putNewConcessaoLiminarCassada() throws Exception {
         // Initialize the database
-        concessaoLiminarCassadaService.save(concessaoLiminarCassada);
+        concessaoLiminarCassadaRepository.saveAndFlush(concessaoLiminarCassada);
 
         int databaseSizeBeforeUpdate = concessaoLiminarCassadaRepository.findAll().size();
 
         // Update the concessaoLiminarCassada
-        ConcessaoLiminarCassada updatedConcessaoLiminarCassada = concessaoLiminarCassadaRepository.findById(concessaoLiminarCassada.getId()).get();
+        ConcessaoLiminarCassada updatedConcessaoLiminarCassada = concessaoLiminarCassadaRepository
+            .findById(concessaoLiminarCassada.getId())
+            .get();
         // Disconnect from session so that the updates on updatedConcessaoLiminarCassada are not directly saved in db
         em.detach(updatedConcessaoLiminarCassada);
-        updatedConcessaoLiminarCassada
-            .descricao(UPDATED_DESCRICAO);
+        updatedConcessaoLiminarCassada.descricao(UPDATED_DESCRICAO);
 
-        restConcessaoLiminarCassadaMockMvc.perform(put("/api/concessao-liminar-cassadas")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(updatedConcessaoLiminarCassada)))
+        restConcessaoLiminarCassadaMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, updatedConcessaoLiminarCassada.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(updatedConcessaoLiminarCassada))
+            )
             .andExpect(status().isOk());
 
         // Validate the ConcessaoLiminarCassada in the database
@@ -334,13 +343,17 @@ public class ConcessaoLiminarCassadaResourceIT {
 
     @Test
     @Transactional
-    public void updateNonExistingConcessaoLiminarCassada() throws Exception {
+    void putNonExistingConcessaoLiminarCassada() throws Exception {
         int databaseSizeBeforeUpdate = concessaoLiminarCassadaRepository.findAll().size();
+        concessaoLiminarCassada.setId(count.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restConcessaoLiminarCassadaMockMvc.perform(put("/api/concessao-liminar-cassadas")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(concessaoLiminarCassada)))
+        restConcessaoLiminarCassadaMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, concessaoLiminarCassada.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(concessaoLiminarCassada))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the ConcessaoLiminarCassada in the database
@@ -350,15 +363,173 @@ public class ConcessaoLiminarCassadaResourceIT {
 
     @Test
     @Transactional
-    public void deleteConcessaoLiminarCassada() throws Exception {
+    void putWithIdMismatchConcessaoLiminarCassada() throws Exception {
+        int databaseSizeBeforeUpdate = concessaoLiminarCassadaRepository.findAll().size();
+        concessaoLiminarCassada.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restConcessaoLiminarCassadaMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(concessaoLiminarCassada))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the ConcessaoLiminarCassada in the database
+        List<ConcessaoLiminarCassada> concessaoLiminarCassadaList = concessaoLiminarCassadaRepository.findAll();
+        assertThat(concessaoLiminarCassadaList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void putWithMissingIdPathParamConcessaoLiminarCassada() throws Exception {
+        int databaseSizeBeforeUpdate = concessaoLiminarCassadaRepository.findAll().size();
+        concessaoLiminarCassada.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restConcessaoLiminarCassadaMockMvc
+            .perform(
+                put(ENTITY_API_URL)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(concessaoLiminarCassada))
+            )
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the ConcessaoLiminarCassada in the database
+        List<ConcessaoLiminarCassada> concessaoLiminarCassadaList = concessaoLiminarCassadaRepository.findAll();
+        assertThat(concessaoLiminarCassadaList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void partialUpdateConcessaoLiminarCassadaWithPatch() throws Exception {
         // Initialize the database
-        concessaoLiminarCassadaService.save(concessaoLiminarCassada);
+        concessaoLiminarCassadaRepository.saveAndFlush(concessaoLiminarCassada);
+
+        int databaseSizeBeforeUpdate = concessaoLiminarCassadaRepository.findAll().size();
+
+        // Update the concessaoLiminarCassada using partial update
+        ConcessaoLiminarCassada partialUpdatedConcessaoLiminarCassada = new ConcessaoLiminarCassada();
+        partialUpdatedConcessaoLiminarCassada.setId(concessaoLiminarCassada.getId());
+
+        partialUpdatedConcessaoLiminarCassada.descricao(UPDATED_DESCRICAO);
+
+        restConcessaoLiminarCassadaMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedConcessaoLiminarCassada.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedConcessaoLiminarCassada))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the ConcessaoLiminarCassada in the database
+        List<ConcessaoLiminarCassada> concessaoLiminarCassadaList = concessaoLiminarCassadaRepository.findAll();
+        assertThat(concessaoLiminarCassadaList).hasSize(databaseSizeBeforeUpdate);
+        ConcessaoLiminarCassada testConcessaoLiminarCassada = concessaoLiminarCassadaList.get(concessaoLiminarCassadaList.size() - 1);
+        assertThat(testConcessaoLiminarCassada.getDescricao()).isEqualTo(UPDATED_DESCRICAO);
+    }
+
+    @Test
+    @Transactional
+    void fullUpdateConcessaoLiminarCassadaWithPatch() throws Exception {
+        // Initialize the database
+        concessaoLiminarCassadaRepository.saveAndFlush(concessaoLiminarCassada);
+
+        int databaseSizeBeforeUpdate = concessaoLiminarCassadaRepository.findAll().size();
+
+        // Update the concessaoLiminarCassada using partial update
+        ConcessaoLiminarCassada partialUpdatedConcessaoLiminarCassada = new ConcessaoLiminarCassada();
+        partialUpdatedConcessaoLiminarCassada.setId(concessaoLiminarCassada.getId());
+
+        partialUpdatedConcessaoLiminarCassada.descricao(UPDATED_DESCRICAO);
+
+        restConcessaoLiminarCassadaMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedConcessaoLiminarCassada.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedConcessaoLiminarCassada))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the ConcessaoLiminarCassada in the database
+        List<ConcessaoLiminarCassada> concessaoLiminarCassadaList = concessaoLiminarCassadaRepository.findAll();
+        assertThat(concessaoLiminarCassadaList).hasSize(databaseSizeBeforeUpdate);
+        ConcessaoLiminarCassada testConcessaoLiminarCassada = concessaoLiminarCassadaList.get(concessaoLiminarCassadaList.size() - 1);
+        assertThat(testConcessaoLiminarCassada.getDescricao()).isEqualTo(UPDATED_DESCRICAO);
+    }
+
+    @Test
+    @Transactional
+    void patchNonExistingConcessaoLiminarCassada() throws Exception {
+        int databaseSizeBeforeUpdate = concessaoLiminarCassadaRepository.findAll().size();
+        concessaoLiminarCassada.setId(count.incrementAndGet());
+
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
+        restConcessaoLiminarCassadaMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, concessaoLiminarCassada.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(concessaoLiminarCassada))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the ConcessaoLiminarCassada in the database
+        List<ConcessaoLiminarCassada> concessaoLiminarCassadaList = concessaoLiminarCassadaRepository.findAll();
+        assertThat(concessaoLiminarCassadaList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithIdMismatchConcessaoLiminarCassada() throws Exception {
+        int databaseSizeBeforeUpdate = concessaoLiminarCassadaRepository.findAll().size();
+        concessaoLiminarCassada.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restConcessaoLiminarCassadaMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(concessaoLiminarCassada))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the ConcessaoLiminarCassada in the database
+        List<ConcessaoLiminarCassada> concessaoLiminarCassadaList = concessaoLiminarCassadaRepository.findAll();
+        assertThat(concessaoLiminarCassadaList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithMissingIdPathParamConcessaoLiminarCassada() throws Exception {
+        int databaseSizeBeforeUpdate = concessaoLiminarCassadaRepository.findAll().size();
+        concessaoLiminarCassada.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restConcessaoLiminarCassadaMockMvc
+            .perform(
+                patch(ENTITY_API_URL)
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(concessaoLiminarCassada))
+            )
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the ConcessaoLiminarCassada in the database
+        List<ConcessaoLiminarCassada> concessaoLiminarCassadaList = concessaoLiminarCassadaRepository.findAll();
+        assertThat(concessaoLiminarCassadaList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void deleteConcessaoLiminarCassada() throws Exception {
+        // Initialize the database
+        concessaoLiminarCassadaRepository.saveAndFlush(concessaoLiminarCassada);
 
         int databaseSizeBeforeDelete = concessaoLiminarCassadaRepository.findAll().size();
 
         // Delete the concessaoLiminarCassada
-        restConcessaoLiminarCassadaMockMvc.perform(delete("/api/concessao-liminar-cassadas/{id}", concessaoLiminarCassada.getId())
-            .accept(MediaType.APPLICATION_JSON))
+        restConcessaoLiminarCassadaMockMvc
+            .perform(delete(ENTITY_API_URL_ID, concessaoLiminarCassada.getId()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item

@@ -3,6 +3,7 @@
     "representanteLegal": {
       "home": {
         "title": "Representante Legals",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Representante Legal",
         "createOrEditLabel": "Criar ou editar Representante Legal",
         "notFound": "Nenhum Representante Legal encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Representante Legal"
       },
+      "id": "ID",
       "nome": "Nome",
       "tipoRepresentante": "Tipo Representante",
       "processoConflito": "Processo Conflito"

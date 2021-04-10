@@ -1,13 +1,11 @@
 package br.com.cidha.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
-import javax.persistence.*;
-
 import java.io.Serializable;
 import java.time.LocalDate;
+import javax.persistence.*;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 /**
  * A Data.
@@ -32,7 +30,31 @@ public class Data implements Serializable {
     private TipoData tipoData;
 
     @ManyToOne
-    @JsonIgnoreProperties(value = "data", allowSetters = true)
+    @JsonIgnoreProperties(
+        value = {
+            "concessaoLiminars",
+            "concessaoLiminarCassadas",
+            "embargoRespRes",
+            "embargoDeclaracaoAgravos",
+            "embargoDeclaracaos",
+            "embargoRecursoEspecials",
+            "tipoDecisao",
+            "tipoEmpreendimento",
+            "comarcas",
+            "quilombos",
+            "municipios",
+            "territorios",
+            "atividadeExploracaoIlegals",
+            "unidadeConservacaos",
+            "envolvidosConflitoLitigios",
+            "terraIndigenas",
+            "processoConflitos",
+            "parteInteresssadas",
+            "relators",
+            "problemaJuridicos",
+        },
+        allowSetters = true
+    )
     private Processo processo;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -44,8 +66,13 @@ public class Data implements Serializable {
         this.id = id;
     }
 
+    public Data id(Long id) {
+        this.id = id;
+        return this;
+    }
+
     public LocalDate getData() {
-        return data;
+        return this.data;
     }
 
     public Data data(LocalDate data) {
@@ -58,11 +85,11 @@ public class Data implements Serializable {
     }
 
     public TipoData getTipoData() {
-        return tipoData;
+        return this.tipoData;
     }
 
     public Data tipoData(TipoData tipoData) {
-        this.tipoData = tipoData;
+        this.setTipoData(tipoData);
         return this;
     }
 
@@ -71,17 +98,18 @@ public class Data implements Serializable {
     }
 
     public Processo getProcesso() {
-        return processo;
+        return this.processo;
     }
 
     public Data processo(Processo processo) {
-        this.processo = processo;
+        this.setProcesso(processo);
         return this;
     }
 
     public void setProcesso(Processo processo) {
         this.processo = processo;
     }
+
     // jhipster-needle-entity-add-getters-setters - JHipster will add getters and setters here
 
     @Override
@@ -97,7 +125,8 @@ public class Data implements Serializable {
 
     @Override
     public int hashCode() {
-        return 31;
+        // see https://vladmihalcea.com/how-to-implement-equals-and-hashcode-using-the-jpa-entity-identifier/
+        return getClass().hashCode();
     }
 
     // prettier-ignore

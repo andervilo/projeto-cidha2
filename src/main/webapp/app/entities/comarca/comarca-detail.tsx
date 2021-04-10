@@ -2,12 +2,11 @@ import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Row, Col } from 'reactstrap';
-import { Translate, ICrudGetAction } from 'react-jhipster';
+import { Translate } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
 import { getEntity } from './comarca.reducer';
-import { IComarca } from 'app/shared/model/comarca.model';
 import { APP_DATE_FORMAT, APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 
 export interface IComarcaDetailProps extends StateProps, DispatchProps, RouteComponentProps<{ id: string }> {}
@@ -21,10 +20,16 @@ export const ComarcaDetail = (props: IComarcaDetailProps) => {
   return (
     <Row>
       <Col md="8">
-        <h2>
-          <Translate contentKey="cidhaApp.comarca.detail.title">Comarca</Translate> [<b>{comarcaEntity.id}</b>]
+        <h2 data-cy="comarcaDetailsHeading">
+          <Translate contentKey="cidhaApp.comarca.detail.title">Comarca</Translate>
         </h2>
         <dl className="jh-entity-details">
+          <dt>
+            <span id="id">
+              <Translate contentKey="global.field.id">ID</Translate>
+            </span>
+          </dt>
+          <dd>{comarcaEntity.id}</dd>
           <dt>
             <span id="nome">
               <Translate contentKey="cidhaApp.comarca.nome">Nome</Translate>
@@ -38,7 +43,7 @@ export const ComarcaDetail = (props: IComarcaDetailProps) => {
           </dt>
           <dd>{comarcaEntity.codigoCnj}</dd>
         </dl>
-        <Button tag={Link} to="/comarca" replace color="info">
+        <Button tag={Link} to="/comarca" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" />{' '}
           <span className="d-none d-md-inline">
             <Translate contentKey="entity.action.back">Back</Translate>

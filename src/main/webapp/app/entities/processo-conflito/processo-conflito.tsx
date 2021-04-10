@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link, RouteComponentProps } from 'react-router-dom';
 import { Button, Col, Row, Table } from 'reactstrap';
-import { byteSize, Translate, ICrudGetAllAction, getSortState, IPaginationBaseState, JhiPagination, JhiItemCount } from 'react-jhipster';
+import { byteSize, Translate, getSortState, IPaginationBaseState, JhiPagination, JhiItemCount } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { IRootState } from 'app/shared/reducers';
@@ -16,7 +16,7 @@ export interface IProcessoConflitoProps extends StateProps, DispatchProps, Route
 
 export const ProcessoConflito = (props: IProcessoConflitoProps) => {
   const [paginationState, setPaginationState] = useState(
-    overridePaginationStateWithQueryParams(getSortState(props.location, ITEMS_PER_PAGE), props.location.search)
+    overridePaginationStateWithQueryParams(getSortState(props.location, ITEMS_PER_PAGE, 'id'), props.location.search)
   );
 
   const getAllEntities = () => {
@@ -64,16 +64,26 @@ export const ProcessoConflito = (props: IProcessoConflitoProps) => {
       activePage: currentPage,
     });
 
+  const handleSyncList = () => {
+    sortEntities();
+  };
+
   const { processoConflitoList, match, loading, totalItems } = props;
   return (
     <div>
-      <h2 id="processo-conflito-heading">
+      <h2 id="processo-conflito-heading" data-cy="ProcessoConflitoHeading">
         <Translate contentKey="cidhaApp.processoConflito.home.title">Processo Conflitos</Translate>
-        <Link to={`${match.url}/new`} className="btn btn-primary float-right jh-create-entity" id="jh-create-entity">
-          <FontAwesomeIcon icon="plus" />
-          &nbsp;
-          <Translate contentKey="cidhaApp.processoConflito.home.createLabel">Create new Processo Conflito</Translate>
-        </Link>
+        <div className="d-flex justify-content-end">
+          <Button className="mr-2" color="info" onClick={handleSyncList} disabled={loading}>
+            <FontAwesomeIcon icon="sync" spin={loading} />{' '}
+            <Translate contentKey="cidhaApp.processoConflito.home.refreshListLabel">Refresh List</Translate>
+          </Button>
+          <Link to={`${match.url}/new`} className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
+            <FontAwesomeIcon icon="plus" />
+            &nbsp;
+            <Translate contentKey="cidhaApp.processoConflito.home.createLabel">Create new Processo Conflito</Translate>
+          </Link>
+        </div>
       </h2>
       <div className="table-responsive">
         {processoConflitoList && processoConflitoList.length > 0 ? (
@@ -81,7 +91,7 @@ export const ProcessoConflito = (props: IProcessoConflitoProps) => {
             <thead>
               <tr>
                 <th className="hand" onClick={sort('id')}>
-                  <Translate contentKey="global.field.id">ID</Translate> <FontAwesomeIcon icon="sort" />
+                  <Translate contentKey="cidhaApp.processoConflito.id">ID</Translate> <FontAwesomeIcon icon="sort" />
                 </th>
                 <th className="hand" onClick={sort('inicioConflitoObservacoes')}>
                   <Translate contentKey="cidhaApp.processoConflito.inicioConflitoObservacoes">Inicio Conflito Observacoes</Translate>{' '}
@@ -104,7 +114,7 @@ export const ProcessoConflito = (props: IProcessoConflitoProps) => {
             </thead>
             <tbody>
               {processoConflitoList.map((processoConflito, i) => (
-                <tr key={`entity-${i}`}>
+                <tr key={`entity-${i}`} data-cy="entityTable">
                   <td>
                     <Button tag={Link} to={`${match.url}/${processoConflito.id}`} color="link" size="sm">
                       {processoConflito.id}
@@ -116,7 +126,7 @@ export const ProcessoConflito = (props: IProcessoConflitoProps) => {
                   <td>{processoConflito.consultaPrevia ? 'true' : 'false'}</td>
                   <td className="text-right">
                     <div className="btn-group flex-btn-group-container">
-                      <Button tag={Link} to={`${match.url}/${processoConflito.id}`} color="info" size="sm">
+                      <Button tag={Link} to={`${match.url}/${processoConflito.id}`} color="info" size="sm" data-cy="entityDetailsButton">
                         <FontAwesomeIcon icon="eye" />{' '}
                         <span className="d-none d-md-inline">
                           <Translate contentKey="entity.action.view">View</Translate>
@@ -127,6 +137,7 @@ export const ProcessoConflito = (props: IProcessoConflitoProps) => {
                         to={`${match.url}/${processoConflito.id}/edit?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
                         color="primary"
                         size="sm"
+                        data-cy="entityEditButton"
                       >
                         <FontAwesomeIcon icon="pencil-alt" />{' '}
                         <span className="d-none d-md-inline">
@@ -138,6 +149,7 @@ export const ProcessoConflito = (props: IProcessoConflitoProps) => {
                         to={`${match.url}/${processoConflito.id}/delete?page=${paginationState.activePage}&sort=${paginationState.sort},${paginationState.order}`}
                         color="danger"
                         size="sm"
+                        data-cy="entityDeleteButton"
                       >
                         <FontAwesomeIcon icon="trash" />{' '}
                         <span className="d-none d-md-inline">

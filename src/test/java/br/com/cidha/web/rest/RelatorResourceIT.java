@@ -1,49 +1,47 @@
 package br.com.cidha.web.rest;
 
-import br.com.cidha.CidhaApp;
-import br.com.cidha.domain.Relator;
-import br.com.cidha.domain.Processo;
-import br.com.cidha.repository.RelatorRepository;
-import br.com.cidha.service.RelatorService;
-import br.com.cidha.service.dto.RelatorCriteria;
-import br.com.cidha.service.RelatorQueryService;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.transaction.annotation.Transactional;
-import javax.persistence.EntityManager;
-import java.util.List;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasItem;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import br.com.cidha.IntegrationTest;
+import br.com.cidha.domain.Processo;
+import br.com.cidha.domain.Relator;
+import br.com.cidha.repository.RelatorRepository;
+import br.com.cidha.service.criteria.RelatorCriteria;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
+import javax.persistence.EntityManager;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
+
 /**
  * Integration tests for the {@link RelatorResource} REST controller.
  */
-@SpringBootTest(classes = CidhaApp.class)
+@IntegrationTest
 @AutoConfigureMockMvc
 @WithMockUser
-public class RelatorResourceIT {
+class RelatorResourceIT {
 
     private static final String DEFAULT_NOME = "AAAAAAAAAA";
     private static final String UPDATED_NOME = "BBBBBBBBBB";
 
+    private static final String ENTITY_API_URL = "/api/relators";
+    private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
+
+    private static Random random = new Random();
+    private static AtomicLong count = new AtomicLong(random.nextInt() + (2 * Integer.MAX_VALUE));
+
     @Autowired
     private RelatorRepository relatorRepository;
-
-    @Autowired
-    private RelatorService relatorService;
-
-    @Autowired
-    private RelatorQueryService relatorQueryService;
 
     @Autowired
     private EntityManager em;
@@ -60,10 +58,10 @@ public class RelatorResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Relator createEntity(EntityManager em) {
-        Relator relator = new Relator()
-            .nome(DEFAULT_NOME);
+        Relator relator = new Relator().nome(DEFAULT_NOME);
         return relator;
     }
+
     /**
      * Create an updated entity for this test.
      *
@@ -71,8 +69,7 @@ public class RelatorResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Relator createUpdatedEntity(EntityManager em) {
-        Relator relator = new Relator()
-            .nome(UPDATED_NOME);
+        Relator relator = new Relator().nome(UPDATED_NOME);
         return relator;
     }
 
@@ -83,12 +80,11 @@ public class RelatorResourceIT {
 
     @Test
     @Transactional
-    public void createRelator() throws Exception {
+    void createRelator() throws Exception {
         int databaseSizeBeforeCreate = relatorRepository.findAll().size();
         // Create the Relator
-        restRelatorMockMvc.perform(post("/api/relators")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(relator)))
+        restRelatorMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(relator)))
             .andExpect(status().isCreated());
 
         // Validate the Relator in the database
@@ -100,16 +96,15 @@ public class RelatorResourceIT {
 
     @Test
     @Transactional
-    public void createRelatorWithExistingId() throws Exception {
-        int databaseSizeBeforeCreate = relatorRepository.findAll().size();
-
+    void createRelatorWithExistingId() throws Exception {
         // Create the Relator with an existing ID
         relator.setId(1L);
 
+        int databaseSizeBeforeCreate = relatorRepository.findAll().size();
+
         // An entity with an existing ID cannot be created, so this API call must fail
-        restRelatorMockMvc.perform(post("/api/relators")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(relator)))
+        restRelatorMockMvc
+            .perform(post(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(relator)))
             .andExpect(status().isBadRequest());
 
         // Validate the Relator in the database
@@ -117,39 +112,39 @@ public class RelatorResourceIT {
         assertThat(relatorList).hasSize(databaseSizeBeforeCreate);
     }
 
-
     @Test
     @Transactional
-    public void getAllRelators() throws Exception {
+    void getAllRelators() throws Exception {
         // Initialize the database
         relatorRepository.saveAndFlush(relator);
 
         // Get all the relatorList
-        restRelatorMockMvc.perform(get("/api/relators?sort=id,desc"))
+        restRelatorMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc"))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(relator.getId().intValue())))
             .andExpect(jsonPath("$.[*].nome").value(hasItem(DEFAULT_NOME)));
     }
-    
+
     @Test
     @Transactional
-    public void getRelator() throws Exception {
+    void getRelator() throws Exception {
         // Initialize the database
         relatorRepository.saveAndFlush(relator);
 
         // Get the relator
-        restRelatorMockMvc.perform(get("/api/relators/{id}", relator.getId()))
+        restRelatorMockMvc
+            .perform(get(ENTITY_API_URL_ID, relator.getId()))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(relator.getId().intValue()))
             .andExpect(jsonPath("$.nome").value(DEFAULT_NOME));
     }
 
-
     @Test
     @Transactional
-    public void getRelatorsByIdFiltering() throws Exception {
+    void getRelatorsByIdFiltering() throws Exception {
         // Initialize the database
         relatorRepository.saveAndFlush(relator);
 
@@ -165,10 +160,9 @@ public class RelatorResourceIT {
         defaultRelatorShouldNotBeFound("id.lessThan=" + id);
     }
 
-
     @Test
     @Transactional
-    public void getAllRelatorsByNomeIsEqualToSomething() throws Exception {
+    void getAllRelatorsByNomeIsEqualToSomething() throws Exception {
         // Initialize the database
         relatorRepository.saveAndFlush(relator);
 
@@ -181,7 +175,7 @@ public class RelatorResourceIT {
 
     @Test
     @Transactional
-    public void getAllRelatorsByNomeIsNotEqualToSomething() throws Exception {
+    void getAllRelatorsByNomeIsNotEqualToSomething() throws Exception {
         // Initialize the database
         relatorRepository.saveAndFlush(relator);
 
@@ -194,7 +188,7 @@ public class RelatorResourceIT {
 
     @Test
     @Transactional
-    public void getAllRelatorsByNomeIsInShouldWork() throws Exception {
+    void getAllRelatorsByNomeIsInShouldWork() throws Exception {
         // Initialize the database
         relatorRepository.saveAndFlush(relator);
 
@@ -207,7 +201,7 @@ public class RelatorResourceIT {
 
     @Test
     @Transactional
-    public void getAllRelatorsByNomeIsNullOrNotNull() throws Exception {
+    void getAllRelatorsByNomeIsNullOrNotNull() throws Exception {
         // Initialize the database
         relatorRepository.saveAndFlush(relator);
 
@@ -217,9 +211,10 @@ public class RelatorResourceIT {
         // Get all the relatorList where nome is null
         defaultRelatorShouldNotBeFound("nome.specified=false");
     }
-                @Test
+
+    @Test
     @Transactional
-    public void getAllRelatorsByNomeContainsSomething() throws Exception {
+    void getAllRelatorsByNomeContainsSomething() throws Exception {
         // Initialize the database
         relatorRepository.saveAndFlush(relator);
 
@@ -232,7 +227,7 @@ public class RelatorResourceIT {
 
     @Test
     @Transactional
-    public void getAllRelatorsByNomeNotContainsSomething() throws Exception {
+    void getAllRelatorsByNomeNotContainsSomething() throws Exception {
         // Initialize the database
         relatorRepository.saveAndFlush(relator);
 
@@ -243,10 +238,9 @@ public class RelatorResourceIT {
         defaultRelatorShouldBeFound("nome.doesNotContain=" + UPDATED_NOME);
     }
 
-
     @Test
     @Transactional
-    public void getAllRelatorsByProcessoIsEqualToSomething() throws Exception {
+    void getAllRelatorsByProcessoIsEqualToSomething() throws Exception {
         // Initialize the database
         relatorRepository.saveAndFlush(relator);
         Processo processo = ProcessoResourceIT.createEntity(em);
@@ -259,7 +253,7 @@ public class RelatorResourceIT {
         // Get all the relatorList where processo equals to processoId
         defaultRelatorShouldBeFound("processoId.equals=" + processoId);
 
-        // Get all the relatorList where processo equals to processoId + 1
+        // Get all the relatorList where processo equals to (processoId + 1)
         defaultRelatorShouldNotBeFound("processoId.equals=" + (processoId + 1));
     }
 
@@ -267,14 +261,16 @@ public class RelatorResourceIT {
      * Executes the search, and checks that the default entity is returned.
      */
     private void defaultRelatorShouldBeFound(String filter) throws Exception {
-        restRelatorMockMvc.perform(get("/api/relators?sort=id,desc&" + filter))
+        restRelatorMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(relator.getId().intValue())))
             .andExpect(jsonPath("$.[*].nome").value(hasItem(DEFAULT_NOME)));
 
         // Check, that the count call also returns 1
-        restRelatorMockMvc.perform(get("/api/relators/count?sort=id,desc&" + filter))
+        restRelatorMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("1"));
@@ -284,14 +280,16 @@ public class RelatorResourceIT {
      * Executes the search, and checks that the default entity is not returned.
      */
     private void defaultRelatorShouldNotBeFound(String filter) throws Exception {
-        restRelatorMockMvc.perform(get("/api/relators?sort=id,desc&" + filter))
+        restRelatorMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$").isArray())
             .andExpect(jsonPath("$").isEmpty());
 
         // Check, that the count call also returns 0
-        restRelatorMockMvc.perform(get("/api/relators/count?sort=id,desc&" + filter))
+        restRelatorMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(content().string("0"));
@@ -299,17 +297,16 @@ public class RelatorResourceIT {
 
     @Test
     @Transactional
-    public void getNonExistingRelator() throws Exception {
+    void getNonExistingRelator() throws Exception {
         // Get the relator
-        restRelatorMockMvc.perform(get("/api/relators/{id}", Long.MAX_VALUE))
-            .andExpect(status().isNotFound());
+        restRelatorMockMvc.perform(get(ENTITY_API_URL_ID, Long.MAX_VALUE)).andExpect(status().isNotFound());
     }
 
     @Test
     @Transactional
-    public void updateRelator() throws Exception {
+    void putNewRelator() throws Exception {
         // Initialize the database
-        relatorService.save(relator);
+        relatorRepository.saveAndFlush(relator);
 
         int databaseSizeBeforeUpdate = relatorRepository.findAll().size();
 
@@ -317,12 +314,14 @@ public class RelatorResourceIT {
         Relator updatedRelator = relatorRepository.findById(relator.getId()).get();
         // Disconnect from session so that the updates on updatedRelator are not directly saved in db
         em.detach(updatedRelator);
-        updatedRelator
-            .nome(UPDATED_NOME);
+        updatedRelator.nome(UPDATED_NOME);
 
-        restRelatorMockMvc.perform(put("/api/relators")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(updatedRelator)))
+        restRelatorMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, updatedRelator.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(updatedRelator))
+            )
             .andExpect(status().isOk());
 
         // Validate the Relator in the database
@@ -334,13 +333,17 @@ public class RelatorResourceIT {
 
     @Test
     @Transactional
-    public void updateNonExistingRelator() throws Exception {
+    void putNonExistingRelator() throws Exception {
         int databaseSizeBeforeUpdate = relatorRepository.findAll().size();
+        relator.setId(count.incrementAndGet());
 
         // If the entity doesn't have an ID, it will throw BadRequestAlertException
-        restRelatorMockMvc.perform(put("/api/relators")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(TestUtil.convertObjectToJsonBytes(relator)))
+        restRelatorMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, relator.getId())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(relator))
+            )
             .andExpect(status().isBadRequest());
 
         // Validate the Relator in the database
@@ -350,15 +353,163 @@ public class RelatorResourceIT {
 
     @Test
     @Transactional
-    public void deleteRelator() throws Exception {
+    void putWithIdMismatchRelator() throws Exception {
+        int databaseSizeBeforeUpdate = relatorRepository.findAll().size();
+        relator.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restRelatorMockMvc
+            .perform(
+                put(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(TestUtil.convertObjectToJsonBytes(relator))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the Relator in the database
+        List<Relator> relatorList = relatorRepository.findAll();
+        assertThat(relatorList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void putWithMissingIdPathParamRelator() throws Exception {
+        int databaseSizeBeforeUpdate = relatorRepository.findAll().size();
+        relator.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restRelatorMockMvc
+            .perform(put(ENTITY_API_URL).contentType(MediaType.APPLICATION_JSON).content(TestUtil.convertObjectToJsonBytes(relator)))
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the Relator in the database
+        List<Relator> relatorList = relatorRepository.findAll();
+        assertThat(relatorList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void partialUpdateRelatorWithPatch() throws Exception {
         // Initialize the database
-        relatorService.save(relator);
+        relatorRepository.saveAndFlush(relator);
+
+        int databaseSizeBeforeUpdate = relatorRepository.findAll().size();
+
+        // Update the relator using partial update
+        Relator partialUpdatedRelator = new Relator();
+        partialUpdatedRelator.setId(relator.getId());
+
+        restRelatorMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedRelator.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedRelator))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the Relator in the database
+        List<Relator> relatorList = relatorRepository.findAll();
+        assertThat(relatorList).hasSize(databaseSizeBeforeUpdate);
+        Relator testRelator = relatorList.get(relatorList.size() - 1);
+        assertThat(testRelator.getNome()).isEqualTo(DEFAULT_NOME);
+    }
+
+    @Test
+    @Transactional
+    void fullUpdateRelatorWithPatch() throws Exception {
+        // Initialize the database
+        relatorRepository.saveAndFlush(relator);
+
+        int databaseSizeBeforeUpdate = relatorRepository.findAll().size();
+
+        // Update the relator using partial update
+        Relator partialUpdatedRelator = new Relator();
+        partialUpdatedRelator.setId(relator.getId());
+
+        partialUpdatedRelator.nome(UPDATED_NOME);
+
+        restRelatorMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, partialUpdatedRelator.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(partialUpdatedRelator))
+            )
+            .andExpect(status().isOk());
+
+        // Validate the Relator in the database
+        List<Relator> relatorList = relatorRepository.findAll();
+        assertThat(relatorList).hasSize(databaseSizeBeforeUpdate);
+        Relator testRelator = relatorList.get(relatorList.size() - 1);
+        assertThat(testRelator.getNome()).isEqualTo(UPDATED_NOME);
+    }
+
+    @Test
+    @Transactional
+    void patchNonExistingRelator() throws Exception {
+        int databaseSizeBeforeUpdate = relatorRepository.findAll().size();
+        relator.setId(count.incrementAndGet());
+
+        // If the entity doesn't have an ID, it will throw BadRequestAlertException
+        restRelatorMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, relator.getId())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(relator))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the Relator in the database
+        List<Relator> relatorList = relatorRepository.findAll();
+        assertThat(relatorList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithIdMismatchRelator() throws Exception {
+        int databaseSizeBeforeUpdate = relatorRepository.findAll().size();
+        relator.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restRelatorMockMvc
+            .perform(
+                patch(ENTITY_API_URL_ID, count.incrementAndGet())
+                    .contentType("application/merge-patch+json")
+                    .content(TestUtil.convertObjectToJsonBytes(relator))
+            )
+            .andExpect(status().isBadRequest());
+
+        // Validate the Relator in the database
+        List<Relator> relatorList = relatorRepository.findAll();
+        assertThat(relatorList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void patchWithMissingIdPathParamRelator() throws Exception {
+        int databaseSizeBeforeUpdate = relatorRepository.findAll().size();
+        relator.setId(count.incrementAndGet());
+
+        // If url ID doesn't match entity ID, it will throw BadRequestAlertException
+        restRelatorMockMvc
+            .perform(patch(ENTITY_API_URL).contentType("application/merge-patch+json").content(TestUtil.convertObjectToJsonBytes(relator)))
+            .andExpect(status().isMethodNotAllowed());
+
+        // Validate the Relator in the database
+        List<Relator> relatorList = relatorRepository.findAll();
+        assertThat(relatorList).hasSize(databaseSizeBeforeUpdate);
+    }
+
+    @Test
+    @Transactional
+    void deleteRelator() throws Exception {
+        // Initialize the database
+        relatorRepository.saveAndFlush(relator);
 
         int databaseSizeBeforeDelete = relatorRepository.findAll().size();
 
         // Delete the relator
-        restRelatorMockMvc.perform(delete("/api/relators/{id}", relator.getId())
-            .accept(MediaType.APPLICATION_JSON))
+        restRelatorMockMvc
+            .perform(delete(ENTITY_API_URL_ID, relator.getId()).accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNoContent());
 
         // Validate the database contains one less item

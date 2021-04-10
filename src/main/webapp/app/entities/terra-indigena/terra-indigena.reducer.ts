@@ -11,6 +11,7 @@ export const ACTION_TYPES = {
   FETCH_TERRAINDIGENA: 'terraIndigena/FETCH_TERRAINDIGENA',
   CREATE_TERRAINDIGENA: 'terraIndigena/CREATE_TERRAINDIGENA',
   UPDATE_TERRAINDIGENA: 'terraIndigena/UPDATE_TERRAINDIGENA',
+  PARTIAL_UPDATE_TERRAINDIGENA: 'terraIndigena/PARTIAL_UPDATE_TERRAINDIGENA',
   DELETE_TERRAINDIGENA: 'terraIndigena/DELETE_TERRAINDIGENA',
   SET_BLOB: 'terraIndigena/SET_BLOB',
   RESET: 'terraIndigena/RESET',
@@ -43,6 +44,7 @@ export default (state: TerraIndigenaState = initialState, action): TerraIndigena
     case REQUEST(ACTION_TYPES.CREATE_TERRAINDIGENA):
     case REQUEST(ACTION_TYPES.UPDATE_TERRAINDIGENA):
     case REQUEST(ACTION_TYPES.DELETE_TERRAINDIGENA):
+    case REQUEST(ACTION_TYPES.PARTIAL_UPDATE_TERRAINDIGENA):
       return {
         ...state,
         errorMessage: null,
@@ -53,6 +55,7 @@ export default (state: TerraIndigenaState = initialState, action): TerraIndigena
     case FAILURE(ACTION_TYPES.FETCH_TERRAINDIGENA):
     case FAILURE(ACTION_TYPES.CREATE_TERRAINDIGENA):
     case FAILURE(ACTION_TYPES.UPDATE_TERRAINDIGENA):
+    case FAILURE(ACTION_TYPES.PARTIAL_UPDATE_TERRAINDIGENA):
     case FAILURE(ACTION_TYPES.DELETE_TERRAINDIGENA):
       return {
         ...state,
@@ -76,6 +79,7 @@ export default (state: TerraIndigenaState = initialState, action): TerraIndigena
       };
     case SUCCESS(ACTION_TYPES.CREATE_TERRAINDIGENA):
     case SUCCESS(ACTION_TYPES.UPDATE_TERRAINDIGENA):
+    case SUCCESS(ACTION_TYPES.PARTIAL_UPDATE_TERRAINDIGENA):
       return {
         ...state,
         updating: false,
@@ -141,7 +145,15 @@ export const createEntity: ICrudPutAction<ITerraIndigena> = entity => async disp
 export const updateEntity: ICrudPutAction<ITerraIndigena> = entity => async dispatch => {
   const result = await dispatch({
     type: ACTION_TYPES.UPDATE_TERRAINDIGENA,
-    payload: axios.put(apiUrl, cleanEntity(entity)),
+    payload: axios.put(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
+  });
+  return result;
+};
+
+export const partialUpdate: ICrudPutAction<ITerraIndigena> = entity => async dispatch => {
+  const result = await dispatch({
+    type: ACTION_TYPES.PARTIAL_UPDATE_TERRAINDIGENA,
+    payload: axios.patch(`${apiUrl}/${entity.id}`, cleanEntity(entity)),
   });
   return result;
 };

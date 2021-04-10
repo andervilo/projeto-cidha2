@@ -3,6 +3,7 @@
     "embargoRecursoEspecial": {
       "home": {
         "title": "Embargo Recurso Especials",
+        "refreshListLabel": "Atualizar lista",
         "createLabel": "Criar novo Embargo Recurso Especial",
         "createOrEditLabel": "Criar ou editar Embargo Recurso Especial",
         "notFound": "Nenhum Embargo Recurso Especial encontrado"
@@ -16,6 +17,7 @@
       "detail": {
         "title": "Embargo Recurso Especial"
       },
+      "id": "ID",
       "descricao": "Descricao",
       "processo": "Processo"
     }

@@ -2,155 +2,154 @@
 <databaseChangeLog
     xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd">
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
     <!--
         Added the constraints for entity Processo.
     -->
     <changeSet id="20210405142217-2" author="jhipster">
-        
+
         <addForeignKeyConstraint baseColumnNames="tipo_decisao_id"
                                  baseTableName="processo"
-                                 constraintName="fk_processo_tipo_decisao_id"
+                                 constraintName="fk_processo__tipo_decisao_id"
                                  referencedColumnNames="id"
                                  referencedTableName="tipo_decisao"/>
 
         <addForeignKeyConstraint baseColumnNames="tipo_empreendimento_id"
                                  baseTableName="processo"
-                                 constraintName="fk_processo_tipo_empreendimento_id"
+                                 constraintName="fk_processo__tipo_empreendimento_id"
                                  referencedColumnNames="id"
                                  referencedTableName="tipo_empreendimento"/>
 
         <addForeignKeyConstraint baseColumnNames="processo_id"
-                                 baseTableName="processo_comarca"
-                                 constraintName="fk_processo_comarca_processo_id"
+                                 baseTableName="rel_processo__comarca"
+                                 constraintName="fk_rel_processo__comarca__processo_id"
                                  referencedColumnNames="id"
                                  referencedTableName="processo"/>
 
         <addForeignKeyConstraint baseColumnNames="comarca_id"
-                                 baseTableName="processo_comarca"
-                                 constraintName="fk_processo_comarca_comarca_id"
+                                 baseTableName="rel_processo__comarca"
+                                 constraintName="fk_rel_processo__comarca__comarca_id"
                                  referencedColumnNames="id"
                                  referencedTableName="comarca"/>
-        
+
         <addForeignKeyConstraint baseColumnNames="processo_id"
-                                 baseTableName="processo_quilombo"
-                                 constraintName="fk_processo_quilombo_processo_id"
+                                 baseTableName="rel_processo__quilombo"
+                                 constraintName="fk_rel_processo__quilombo__processo_id"
                                  referencedColumnNames="id"
                                  referencedTableName="processo"/>
 
         <addForeignKeyConstraint baseColumnNames="quilombo_id"
-                                 baseTableName="processo_quilombo"
-                                 constraintName="fk_processo_quilombo_quilombo_id"
+                                 baseTableName="rel_processo__quilombo"
+                                 constraintName="fk_rel_processo__quilombo__quilombo_id"
                                  referencedColumnNames="id"
                                  referencedTableName="quilombo"/>
-        
+
         <addForeignKeyConstraint baseColumnNames="processo_id"
-                                 baseTableName="processo_municipio"
-                                 constraintName="fk_processo_municipio_processo_id"
+                                 baseTableName="rel_processo__municipio"
+                                 constraintName="fk_rel_processo__municipio__processo_id"
                                  referencedColumnNames="id"
                                  referencedTableName="processo"/>
 
         <addForeignKeyConstraint baseColumnNames="municipio_id"
-                                 baseTableName="processo_municipio"
-                                 constraintName="fk_processo_municipio_municipio_id"
+                                 baseTableName="rel_processo__municipio"
+                                 constraintName="fk_rel_processo__municipio__municipio_id"
                                  referencedColumnNames="id"
                                  referencedTableName="municipio"/>
-        
+
         <addForeignKeyConstraint baseColumnNames="processo_id"
-                                 baseTableName="processo_territorio"
-                                 constraintName="fk_processo_territorio_processo_id"
+                                 baseTableName="rel_processo__territorio"
+                                 constraintName="fk_rel_processo__territorio__processo_id"
                                  referencedColumnNames="id"
                                  referencedTableName="processo"/>
 
         <addForeignKeyConstraint baseColumnNames="territorio_id"
-                                 baseTableName="processo_territorio"
-                                 constraintName="fk_processo_territorio_territorio_id"
+                                 baseTableName="rel_processo__territorio"
+                                 constraintName="fk_rel_processo__territorio__territorio_id"
                                  referencedColumnNames="id"
                                  referencedTableName="territorio"/>
-        
+
         <addForeignKeyConstraint baseColumnNames="processo_id"
-                                 baseTableName="processo_atividade_exploracao_ilegal"
-                                 constraintName="fk_processo_atividade_exploracao_ilegal_processo_id"
+                                 baseTableName="rel_processo__atividade_exploracao_ilegal"
+                                 constraintName="fk_rel_processo__atividade_exploracao_ilegal__processo_id"
                                  referencedColumnNames="id"
                                  referencedTableName="processo"/>
 
         <addForeignKeyConstraint baseColumnNames="atividade_exploracao_ilegal_id"
-                                 baseTableName="processo_atividade_exploracao_ilegal"
-                                 constraintName="processo_atividade_exploracao__atividade_exploracao_ilegal_id"
+                                 baseTableName="rel_processo__atividade_exploracao_ilegal"
+                                 constraintName="fk_rel_processo__atividade_expl__atividade_exploracao_ile_ae_id"
                                  referencedColumnNames="id"
                                  referencedTableName="atividade_exploracao_ilegal"/>
-        
+
         <addForeignKeyConstraint baseColumnNames="processo_id"
-                                 baseTableName="processo_unidade_conservacao"
-                                 constraintName="fk_processo_unidade_conservacao_processo_id"
+                                 baseTableName="rel_processo__unidade_conservacao"
+                                 constraintName="fk_rel_processo__unidade_conservacao__processo_id"
                                  referencedColumnNames="id"
                                  referencedTableName="processo"/>
 
         <addForeignKeyConstraint baseColumnNames="unidade_conservacao_id"
-                                 baseTableName="processo_unidade_conservacao"
-                                 constraintName="fk_processo_unidade_conservacao_unidade_conservacao_id"
+                                 baseTableName="rel_processo__unidade_conservacao"
+                                 constraintName="fk_rel_processo__unidade_conservacao__unidade_conservacao_id"
                                  referencedColumnNames="id"
                                  referencedTableName="unidade_conservacao"/>
-        
+
         <addForeignKeyConstraint baseColumnNames="processo_id"
-                                 baseTableName="processo_envolvidos_conflito_litigio"
-                                 constraintName="fk_processo_envolvidos_conflito_litigio_processo_id"
+                                 baseTableName="rel_processo__envolvidos_conflito_litigio"
+                                 constraintName="fk_rel_processo__envolvidos_conflito_litigio__processo_id"
                                  referencedColumnNames="id"
                                  referencedTableName="processo"/>
 
         <addForeignKeyConstraint baseColumnNames="envolvidos_conflito_litigio_id"
-                                 baseTableName="processo_envolvidos_conflito_litigio"
-                                 constraintName="processo_envolvidos_conflito_l_envolvidos_conflito_litigio_id"
+                                 baseTableName="rel_processo__envolvidos_conflito_litigio"
+                                 constraintName="fk_rel_processo__envolvidos_con__envolvidos_conflito_liti_04_id"
                                  referencedColumnNames="id"
                                  referencedTableName="envolvidos_conflito_litigio"/>
-        
+
         <addForeignKeyConstraint baseColumnNames="processo_id"
-                                 baseTableName="processo_terra_indigena"
-                                 constraintName="fk_processo_terra_indigena_processo_id"
+                                 baseTableName="rel_processo__terra_indigena"
+                                 constraintName="fk_rel_processo__terra_indigena__processo_id"
                                  referencedColumnNames="id"
                                  referencedTableName="processo"/>
 
         <addForeignKeyConstraint baseColumnNames="terra_indigena_id"
-                                 baseTableName="processo_terra_indigena"
-                                 constraintName="fk_processo_terra_indigena_terra_indigena_id"
+                                 baseTableName="rel_processo__terra_indigena"
+                                 constraintName="fk_rel_processo__terra_indigena__terra_indigena_id"
                                  referencedColumnNames="id"
                                  referencedTableName="terra_indigena"/>
-        
+
         <addForeignKeyConstraint baseColumnNames="processo_id"
-                                 baseTableName="processo_processo_conflito"
-                                 constraintName="fk_processo_processo_conflito_processo_id"
+                                 baseTableName="rel_processo__processo_conflito"
+                                 constraintName="fk_rel_processo__processo_conflito__processo_id"
                                  referencedColumnNames="id"
                                  referencedTableName="processo"/>
 
         <addForeignKeyConstraint baseColumnNames="processo_conflito_id"
-                                 baseTableName="processo_processo_conflito"
-                                 constraintName="fk_processo_processo_conflito_processo_conflito_id"
+                                 baseTableName="rel_processo__processo_conflito"
+                                 constraintName="fk_rel_processo__processo_conflito__processo_conflito_id"
                                  referencedColumnNames="id"
                                  referencedTableName="processo_conflito"/>
-        
+
         <addForeignKeyConstraint baseColumnNames="processo_id"
-                                 baseTableName="processo_parte_interesssada"
-                                 constraintName="fk_processo_parte_interesssada_processo_id"
+                                 baseTableName="rel_processo__parte_interesssada"
+                                 constraintName="fk_rel_processo__parte_interesssada__processo_id"
                                  referencedColumnNames="id"
                                  referencedTableName="processo"/>
 
         <addForeignKeyConstraint baseColumnNames="parte_interesssada_id"
-                                 baseTableName="processo_parte_interesssada"
-                                 constraintName="fk_processo_parte_interesssada_parte_interesssada_id"
+                                 baseTableName="rel_processo__parte_interesssada"
+                                 constraintName="fk_rel_processo__parte_interesssada__parte_interesssada_id"
                                  referencedColumnNames="id"
                                  referencedTableName="parte_interesssada"/>
-        
+
         <addForeignKeyConstraint baseColumnNames="processo_id"
-                                 baseTableName="processo_relator"
-                                 constraintName="fk_processo_relator_processo_id"
+                                 baseTableName="rel_processo__relator"
+                                 constraintName="fk_rel_processo__relator__processo_id"
                                  referencedColumnNames="id"
                                  referencedTableName="processo"/>
 
         <addForeignKeyConstraint baseColumnNames="relator_id"
-                                 baseTableName="processo_relator"
-                                 constraintName="fk_processo_relator_relator_id"
+                                 baseTableName="rel_processo__relator"
+                                 constraintName="fk_rel_processo__relator__relator_id"
                                  referencedColumnNames="id"
                                  referencedTableName="relator"/>
-        
     </changeSet>
 </databaseChangeLog>

@@ -2,11 +2,11 @@ import { IProcesso } from 'app/shared/model/processo.model';
 
 export interface IMunicipio {
   id?: number;
-  amazoniaLegal?: boolean;
-  codigoIbge?: number;
-  estado?: string;
-  nome?: string;
-  processos?: IProcesso[];
+  amazoniaLegal?: boolean | null;
+  codigoIbge?: number | null;
+  estado?: string | null;
+  nome?: string | null;
+  processos?: IProcesso[] | null;
 }
 
 export const defaultValue: Readonly<IMunicipio> = {

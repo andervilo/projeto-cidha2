@@ -1,9 +1,11 @@
 package br.com.cidha.service;
 
+import br.com.cidha.domain.*; // for static metamodels
+import br.com.cidha.domain.ConcessaoLiminar;
+import br.com.cidha.repository.ConcessaoLiminarRepository;
+import br.com.cidha.service.criteria.ConcessaoLiminarCriteria;
 import java.util.List;
-
 import javax.persistence.criteria.JoinType;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -11,13 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import io.github.jhipster.service.QueryService;
-
-import br.com.cidha.domain.ConcessaoLiminar;
-import br.com.cidha.domain.*; // for static metamodels
-import br.com.cidha.repository.ConcessaoLiminarRepository;
-import br.com.cidha.service.dto.ConcessaoLiminarCriteria;
+import tech.jhipster.service.QueryService;
 
 /**
  * Service for executing complex queries for {@link ConcessaoLiminar} entities in the database.
@@ -89,8 +85,13 @@ public class ConcessaoLiminarQueryService extends QueryService<ConcessaoLiminar>
                 specification = specification.and(buildStringSpecification(criteria.getDescricao(), ConcessaoLiminar_.descricao));
             }
             if (criteria.getProcessoId() != null) {
-                specification = specification.and(buildSpecification(criteria.getProcessoId(),
-                    root -> root.join(ConcessaoLiminar_.processo, JoinType.LEFT).get(Processo_.id)));
+                specification =
+                    specification.and(
+                        buildSpecification(
+                            criteria.getProcessoId(),
+                            root -> root.join(ConcessaoLiminar_.processo, JoinType.LEFT).get(Processo_.id)
+                        )
+                    );
             }
         }
         return specification;

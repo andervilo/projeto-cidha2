@@ -3,10 +3,9 @@
     xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
     xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.9.xsd
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd
                         http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
 
-    
     <!--
         Added the entity Processo.
     -->
@@ -63,7 +62,7 @@
 
     <changeSet id="20210405142217-1-relations" author="jhipster">
 
-        <createTable tableName="processo_comarca">
+        <createTable tableName="rel_processo__comarca">
             <column name="comarca_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
@@ -72,9 +71,9 @@
             </column>
         </createTable>
 
-        <addPrimaryKey columnNames="processo_id, comarca_id" tableName="processo_comarca"/>
-        
-        <createTable tableName="processo_quilombo">
+        <addPrimaryKey columnNames="processo_id, comarca_id" tableName="rel_processo__comarca"/>
+
+        <createTable tableName="rel_processo__quilombo">
             <column name="quilombo_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
@@ -83,9 +82,9 @@
             </column>
         </createTable>
 
-        <addPrimaryKey columnNames="processo_id, quilombo_id" tableName="processo_quilombo"/>
-        
-        <createTable tableName="processo_municipio">
+        <addPrimaryKey columnNames="processo_id, quilombo_id" tableName="rel_processo__quilombo"/>
+
+        <createTable tableName="rel_processo__municipio">
             <column name="municipio_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
@@ -94,9 +93,9 @@
             </column>
         </createTable>
 
-        <addPrimaryKey columnNames="processo_id, municipio_id" tableName="processo_municipio"/>
-        
-        <createTable tableName="processo_territorio">
+        <addPrimaryKey columnNames="processo_id, municipio_id" tableName="rel_processo__municipio"/>
+
+        <createTable tableName="rel_processo__territorio">
             <column name="territorio_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
@@ -105,9 +104,9 @@
             </column>
         </createTable>
 
-        <addPrimaryKey columnNames="processo_id, territorio_id" tableName="processo_territorio"/>
-        
-        <createTable tableName="processo_atividade_exploracao_ilegal">
+        <addPrimaryKey columnNames="processo_id, territorio_id" tableName="rel_processo__territorio"/>
+
+        <createTable tableName="rel_processo__atividade_exploracao_ilegal">
             <column name="atividade_exploracao_ilegal_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
@@ -116,9 +115,9 @@
             </column>
         </createTable>
 
-        <addPrimaryKey columnNames="processo_id, atividade_exploracao_ilegal_id" tableName="processo_atividade_exploracao_ilegal"/>
-        
-        <createTable tableName="processo_unidade_conservacao">
+        <addPrimaryKey columnNames="processo_id, atividade_exploracao_ilegal_id" tableName="rel_processo__atividade_exploracao_ilegal"/>
+
+        <createTable tableName="rel_processo__unidade_conservacao">
             <column name="unidade_conservacao_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
@@ -127,9 +126,9 @@
             </column>
         </createTable>
 
-        <addPrimaryKey columnNames="processo_id, unidade_conservacao_id" tableName="processo_unidade_conservacao"/>
-        
-        <createTable tableName="processo_envolvidos_conflito_litigio">
+        <addPrimaryKey columnNames="processo_id, unidade_conservacao_id" tableName="rel_processo__unidade_conservacao"/>
+
+        <createTable tableName="rel_processo__envolvidos_conflito_litigio">
             <column name="envolvidos_conflito_litigio_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
@@ -138,9 +137,9 @@
             </column>
         </createTable>
 
-        <addPrimaryKey columnNames="processo_id, envolvidos_conflito_litigio_id" tableName="processo_envolvidos_conflito_litigio"/>
-        
-        <createTable tableName="processo_terra_indigena">
+        <addPrimaryKey columnNames="processo_id, envolvidos_conflito_litigio_id" tableName="rel_processo__envolvidos_conflito_litigio"/>
+
+        <createTable tableName="rel_processo__terra_indigena">
             <column name="terra_indigena_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
@@ -149,9 +148,9 @@
             </column>
         </createTable>
 
-        <addPrimaryKey columnNames="processo_id, terra_indigena_id" tableName="processo_terra_indigena"/>
-        
-        <createTable tableName="processo_processo_conflito">
+        <addPrimaryKey columnNames="processo_id, terra_indigena_id" tableName="rel_processo__terra_indigena"/>
+
+        <createTable tableName="rel_processo__processo_conflito">
             <column name="processo_conflito_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
@@ -160,9 +159,9 @@
             </column>
         </createTable>
 
-        <addPrimaryKey columnNames="processo_id, processo_conflito_id" tableName="processo_processo_conflito"/>
-        
-        <createTable tableName="processo_parte_interesssada">
+        <addPrimaryKey columnNames="processo_id, processo_conflito_id" tableName="rel_processo__processo_conflito"/>
+
+        <createTable tableName="rel_processo__parte_interesssada">
             <column name="parte_interesssada_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
@@ -171,9 +170,9 @@
             </column>
         </createTable>
 
-        <addPrimaryKey columnNames="processo_id, parte_interesssada_id" tableName="processo_parte_interesssada"/>
-        
-        <createTable tableName="processo_relator">
+        <addPrimaryKey columnNames="processo_id, parte_interesssada_id" tableName="rel_processo__parte_interesssada"/>
+
+        <createTable tableName="rel_processo__relator">
             <column name="relator_id" type="bigint">
                 <constraints nullable="false"/>
             </column>
@@ -182,9 +181,9 @@
             </column>
         </createTable>
 
-        <addPrimaryKey columnNames="processo_id, relator_id" tableName="processo_relator"/>
-        
+        <addPrimaryKey columnNames="processo_id, relator_id" tableName="rel_processo__relator"/>
     </changeSet>
+
     <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
 
     <!--
@@ -216,5 +215,4 @@
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>
-
 </databaseChangeLog>

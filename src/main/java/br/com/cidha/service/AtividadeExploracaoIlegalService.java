@@ -2,15 +2,13 @@ package br.com.cidha.service;
 
 import br.com.cidha.domain.AtividadeExploracaoIlegal;
 import br.com.cidha.repository.AtividadeExploracaoIlegalRepository;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 /**
  * Service Implementation for managing {@link AtividadeExploracaoIlegal}.
@@ -39,6 +37,29 @@ public class AtividadeExploracaoIlegalService {
     }
 
     /**
+     * Partially update a atividadeExploracaoIlegal.
+     *
+     * @param atividadeExploracaoIlegal the entity to update partially.
+     * @return the persisted entity.
+     */
+    public Optional<AtividadeExploracaoIlegal> partialUpdate(AtividadeExploracaoIlegal atividadeExploracaoIlegal) {
+        log.debug("Request to partially update AtividadeExploracaoIlegal : {}", atividadeExploracaoIlegal);
+
+        return atividadeExploracaoIlegalRepository
+            .findById(atividadeExploracaoIlegal.getId())
+            .map(
+                existingAtividadeExploracaoIlegal -> {
+                    if (atividadeExploracaoIlegal.getDescricao() != null) {
+                        existingAtividadeExploracaoIlegal.setDescricao(atividadeExploracaoIlegal.getDescricao());
+                    }
+
+                    return existingAtividadeExploracaoIlegal;
+                }
+            )
+            .map(atividadeExploracaoIlegalRepository::save);
+    }
+
+    /**
      * Get all the atividadeExploracaoIlegals.
      *
      * @param pageable the pagination information.
@@ -49,7 +70,6 @@ public class AtividadeExploracaoIlegalService {
         log.debug("Request to get all AtividadeExploracaoIlegals");
         return atividadeExploracaoIlegalRepository.findAll(pageable);
     }
-
 
     /**
      * Get one atividadeExploracaoIlegal by id.
