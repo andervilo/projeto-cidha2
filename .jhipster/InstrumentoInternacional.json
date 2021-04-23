@@ -22,7 +22,6 @@
       "otherEntityName": "problemaJuridico",
       "otherEntityRelationshipName": "instrumentoInternacional",
       "relationshipName": "problemaJuridico",
-      "otherEntityField": "id",
       "ownerSide": false
     }
   ],

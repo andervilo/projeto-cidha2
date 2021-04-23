@@ -45,10 +45,10 @@ public class TerraIndigena implements Serializable {
         value = {
             "concessaoLiminars",
             "concessaoLiminarCassadas",
-            "embargoRespRes",
-            "embargoDeclaracaoAgravos",
             "embargoDeclaracaos",
+            "embargoDeclaracaoAgravos",
             "embargoRecursoEspecials",
+            "embargoRespRes",
             "tipoDecisao",
             "tipoEmpreendimento",
             "comarcas",

@@ -11,8 +11,7 @@
       "relationshipType": "many-to-one",
       "otherEntityName": "processo",
       "otherEntityRelationshipName": "concessaoLiminarCassada",
-      "relationshipName": "processo",
-      "otherEntityField": "id"
+      "relationshipName": "processo"
     }
   ],
   "changelogDate": "20210405142717",

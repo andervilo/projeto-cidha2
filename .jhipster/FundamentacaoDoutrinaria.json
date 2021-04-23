@@ -22,7 +22,6 @@
       "otherEntityName": "problemaJuridico",
       "otherEntityRelationshipName": "fundamentacaoDoutrinaria",
       "relationshipName": "problemaJuridico",
-      "otherEntityField": "id",
       "ownerSide": false
     }
   ],

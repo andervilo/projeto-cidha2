@@ -40,10 +40,10 @@ public class Recurso implements Serializable {
         value = {
             "concessaoLiminars",
             "concessaoLiminarCassadas",
-            "embargoRespRes",
-            "embargoDeclaracaoAgravos",
             "embargoDeclaracaos",
+            "embargoDeclaracaoAgravos",
             "embargoRecursoEspecials",
+            "embargoRespRes",
             "tipoDecisao",
             "tipoEmpreendimento",
             "comarcas",

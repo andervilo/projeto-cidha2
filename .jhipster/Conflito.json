@@ -12,8 +12,7 @@
       "relationshipType": "many-to-one",
       "otherEntityName": "processoConflito",
       "otherEntityRelationshipName": "conflito",
-      "relationshipName": "processoConflito",
-      "otherEntityField": "id"
+      "relationshipName": "processoConflito"
     }
   ],
   "changelogDate": "20210405144917",

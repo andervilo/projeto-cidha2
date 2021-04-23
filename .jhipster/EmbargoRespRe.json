@@ -11,8 +11,7 @@
       "relationshipType": "many-to-one",
       "otherEntityName": "processo",
       "otherEntityRelationshipName": "embargoRespRe",
-      "relationshipName": "processo",
-      "otherEntityField": "id"
+      "relationshipName": "processo"
     }
   ],
   "changelogDate": "20210405142617",

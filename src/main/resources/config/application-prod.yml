@@ -33,12 +33,12 @@ spring:
       enabled: false
   datasource:
     type: com.zaxxer.hikari.HikariDataSource
-    # url: jdbc:postgresql://ec2-3-234-85-177.compute-1.amazonaws.com:5432/d940nr7d8h801q
-    # username: snmvlaicpxciqd
-    # password: 3a8afa2787d242adf9a84b7da7668828302f34a9bc14f06a060fa23266ac5e26
-    url: jdbc:postgresql://ec2-18-214-140-149.compute-1.amazonaws.com/dkuevdvbt5mtj
-    username: dvxguxetiwivzj
-    password: ea5a70f20630a5388e9c04c11e149a1777cdad131d98916c8fb395df79385d69
+    url: jdbc:postgresql://localhost:5432/cidha-react
+    username: postgres
+    password: 123456
+    #    url: jdbc:postgresql://ec2-18-214-140-149.compute-1.amazonaws.com/dkuevdvbt5mtj
+    #    username: dvxguxetiwivzj
+    #    password: ea5a70f20630a5388e9c04c11e149a1777cdad131d98916c8fb395df79385d69
     hikari:
       poolName: Hikari
       auto-commit: false

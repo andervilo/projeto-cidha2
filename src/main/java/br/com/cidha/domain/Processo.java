@@ -2,6 +2,7 @@ package br.com.cidha.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.*;
@@ -24,6 +25,9 @@ public class Processo implements Serializable {
     @SequenceGenerator(name = "sequenceGenerator")
     private Long id;
 
+    @Column(name = "numero_processo")
+    private String numeroProcesso;
+
     @Column(name = "oficio")
     private String oficio;
 
@@ -37,6 +41,9 @@ public class Processo implements Serializable {
 
     @Column(name = "link_trf")
     private String linkTrf;
+
+    @Column(name = "secao_judiciaria")
+    private String secaoJudiciaria;
 
     @Column(name = "subsecao_judiciaria")
     private String subsecaoJudiciaria;
@@ -61,8 +68,202 @@ public class Processo implements Serializable {
     @Column(name = "parecer")
     private Boolean parecer;
 
+    @Column(name = "folhas_processo_concessao_liminar")
+    private String folhasProcessoConcessaoLiminar;
+
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
+    @Column(name = "concessao_liminar_observacoes")
+    private String concessaoLiminarObservacoes;
+
+    @Column(name = "folhas_processo_cassacao")
+    private String folhasProcessoCassacao;
+
+    @Column(name = "folhas_parecer")
+    private String folhasParecer;
+
+    @Column(name = "folhas_embargo")
+    private String folhasEmbargo;
+
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
+    @Column(name = "acordao_embargo")
+    private String acordaoEmbargo;
+
+    @Column(name = "folhas_ciencia_julg_embargos")
+    private String folhasCienciaJulgEmbargos;
+
     @Column(name = "apelacao")
     private String apelacao;
+
+    @Column(name = "folhas_apelacao")
+    private String folhasApelacao;
+
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
+    @Column(name = "acordao_apelacao")
+    private String acordaoApelacao;
+
+    @Column(name = "folhas_ciencia_julg_apelacao")
+    private String folhasCienciaJulgApelacao;
+
+    @Column(name = "embargo_declaracao")
+    private Boolean embargoDeclaracao;
+
+    @Column(name = "folhas_recurso_especial")
+    private String folhasRecursoEspecial;
+
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
+    @Column(name = "acordao_recurso_especial")
+    private String acordaoRecursoEspecial;
+
+    @Column(name = "folhas_ciencia_julgamento_recurso_especial")
+    private String folhasCienciaJulgamentoRecursoEspecial;
+
+    @Column(name = "embargo_recurso_especial")
+    private Boolean embargoRecursoEspecial;
+
+    @Column(name = "folhas_ciencia")
+    private String folhasCiencia;
+
+    @Column(name = "agravo_resp_re")
+    private String agravoRespRe;
+
+    @Column(name = "folhas_resp_re")
+    private String folhasRespRe;
+
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
+    @Column(name = "acordao_agravo_resp_re")
+    private String acordaoAgravoRespRe;
+
+    @Column(name = "folhas_ciencia_julgamento_agravo_resp_re")
+    private String folhasCienciaJulgamentoAgravoRespRe;
+
+    @Column(name = "embargo_resp_re")
+    private String embargoRespRe;
+
+    @Column(name = "agravo_interno")
+    private String agravoInterno;
+
+    @Column(name = "folhas_agravo_interno")
+    private String folhasAgravoInterno;
+
+    @Column(name = "embargo_recurso_agravo")
+    private Boolean embargoRecursoAgravo;
+
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
+    @Column(name = "observacoes")
+    private String observacoes;
+
+    @Column(name = "recurso_stj")
+    private Boolean recursoSTJ;
+
+    @Column(name = "link_recurso_stj")
+    private String linkRecursoSTJ;
+
+    @Column(name = "folhas_recurso_stj")
+    private String folhasRecursoSTJ;
+
+    @Column(name = "recurso_stf")
+    private Boolean recursoSTF;
+
+    @Column(name = "link_recurso_stf")
+    private String linkRecursoSTF;
+
+    @Column(name = "folhas_recurso_stf")
+    private String folhasRecursoSTF;
+
+    @Column(name = "folhas_memorial_mpf")
+    private String folhasMemorialMPF;
+
+    @Column(name = "execusao_provisoria")
+    private Boolean execusaoProvisoria;
+
+    @Column(name = "numeracao_execusao_provisoria")
+    private String numeracaoExecusaoProvisoria;
+
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
+    @Column(name = "recuperacao_efetiva_cumprimento_sentenca")
+    private String recuperacaoEfetivaCumprimentoSentenca;
+
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
+    @Column(name = "recuperacao_efetiva_cumprimento_sentenca_observacoes")
+    private String recuperacaoEfetivaCumprimentoSentencaObservacoes;
+
+    @Column(name = "envolve_empreendimento")
+    private Boolean envolveEmpreendimento;
+
+    @Column(name = "envolve_exploracao_ilegal")
+    private Boolean envolveExploracaoIlegal;
+
+    @Column(name = "envolve_terra_quilombola")
+    private Boolean envolveTerraQuilombola;
+
+    @Column(name = "envolve_terra_comunidade_tradicional")
+    private Boolean envolveTerraComunidadeTradicional;
+
+    @Column(name = "envolve_terra_indigena")
+    private Boolean envolveTerraIndigena;
+
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
+    @Column(name = "resumo_fatos")
+    private String resumoFatos;
+
+    @Column(name = "tamanho_area", precision = 21, scale = 2)
+    private BigDecimal tamanhoArea;
+
+    @Column(name = "valor_area", precision = 21, scale = 2)
+    private BigDecimal valorArea;
+
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
+    @Column(name = "tamanho_area_observacao")
+    private String tamanhoAreaObservacao;
+
+    @Column(name = "dados_geograficos_litigio_conflito")
+    private Boolean dadosGeograficosLitigioConflito;
+
+    @Column(name = "latitude")
+    private String latitude;
+
+    @Column(name = "longitude")
+    private String longitude;
+
+    @Column(name = "numero_processo_mpf")
+    private String numeroProcessoMPF;
+
+    @Column(name = "numero_embargo")
+    private String numeroEmbargo;
+
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
+    @Column(name = "pauta_apelacao")
+    private String pautaApelacao;
+
+    @Column(name = "numero_recurso_especial")
+    private String numeroRecursoEspecial;
+
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
+    @Column(name = "admissiblidade")
+    private String admissiblidade;
+
+    @Column(name = "envolve_grande_projeto")
+    private Boolean envolveGrandeProjeto;
+
+    @Column(name = "envolve_unidade_conservacao")
+    private Boolean envolveUnidadeConservacao;
+
+    @Lob
+    @Type(type = "org.hibernate.type.TextType")
+    @Column(name = "link_referencia")
+    private String linkReferencia;
 
     @OneToMany(mappedBy = "processo")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
@@ -77,7 +278,7 @@ public class Processo implements Serializable {
     @OneToMany(mappedBy = "processo")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "processo" }, allowSetters = true)
-    private Set<EmbargoRespRe> embargoRespRes = new HashSet<>();
+    private Set<EmbargoDeclaracao> embargoDeclaracaos = new HashSet<>();
 
     @OneToMany(mappedBy = "processo")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
@@ -87,12 +288,12 @@ public class Processo implements Serializable {
     @OneToMany(mappedBy = "processo")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "processo" }, allowSetters = true)
-    private Set<EmbargoDeclaracao> embargoDeclaracaos = new HashSet<>();
+    private Set<EmbargoRecursoEspecial> embargoRecursoEspecials = new HashSet<>();
 
     @OneToMany(mappedBy = "processo")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "processo" }, allowSetters = true)
-    private Set<EmbargoRecursoEspecial> embargoRecursoEspecials = new HashSet<>();
+    private Set<EmbargoRespRe> embargoRespRes = new HashSet<>();
 
     @ManyToOne
     private TipoDecisao tipoDecisao;
@@ -232,6 +433,19 @@ public class Processo implements Serializable {
         return this;
     }
 
+    public String getNumeroProcesso() {
+        return this.numeroProcesso;
+    }
+
+    public Processo numeroProcesso(String numeroProcesso) {
+        this.numeroProcesso = numeroProcesso;
+        return this;
+    }
+
+    public void setNumeroProcesso(String numeroProcesso) {
+        this.numeroProcesso = numeroProcesso;
+    }
+
     public String getOficio() {
         return this.oficio;
     }
@@ -282,6 +496,19 @@ public class Processo implements Serializable {
 
     public void setLinkTrf(String linkTrf) {
         this.linkTrf = linkTrf;
+    }
+
+    public String getSecaoJudiciaria() {
+        return this.secaoJudiciaria;
+    }
+
+    public Processo secaoJudiciaria(String secaoJudiciaria) {
+        this.secaoJudiciaria = secaoJudiciaria;
+        return this;
+    }
+
+    public void setSecaoJudiciaria(String secaoJudiciaria) {
+        this.secaoJudiciaria = secaoJudiciaria;
     }
 
     public String getSubsecaoJudiciaria() {
@@ -375,6 +602,97 @@ public class Processo implements Serializable {
         this.parecer = parecer;
     }
 
+    public String getFolhasProcessoConcessaoLiminar() {
+        return this.folhasProcessoConcessaoLiminar;
+    }
+
+    public Processo folhasProcessoConcessaoLiminar(String folhasProcessoConcessaoLiminar) {
+        this.folhasProcessoConcessaoLiminar = folhasProcessoConcessaoLiminar;
+        return this;
+    }
+
+    public void setFolhasProcessoConcessaoLiminar(String folhasProcessoConcessaoLiminar) {
+        this.folhasProcessoConcessaoLiminar = folhasProcessoConcessaoLiminar;
+    }
+
+    public String getConcessaoLiminarObservacoes() {
+        return this.concessaoLiminarObservacoes;
+    }
+
+    public Processo concessaoLiminarObservacoes(String concessaoLiminarObservacoes) {
+        this.concessaoLiminarObservacoes = concessaoLiminarObservacoes;
+        return this;
+    }
+
+    public void setConcessaoLiminarObservacoes(String concessaoLiminarObservacoes) {
+        this.concessaoLiminarObservacoes = concessaoLiminarObservacoes;
+    }
+
+    public String getFolhasProcessoCassacao() {
+        return this.folhasProcessoCassacao;
+    }
+
+    public Processo folhasProcessoCassacao(String folhasProcessoCassacao) {
+        this.folhasProcessoCassacao = folhasProcessoCassacao;
+        return this;
+    }
+
+    public void setFolhasProcessoCassacao(String folhasProcessoCassacao) {
+        this.folhasProcessoCassacao = folhasProcessoCassacao;
+    }
+
+    public String getFolhasParecer() {
+        return this.folhasParecer;
+    }
+
+    public Processo folhasParecer(String folhasParecer) {
+        this.folhasParecer = folhasParecer;
+        return this;
+    }
+
+    public void setFolhasParecer(String folhasParecer) {
+        this.folhasParecer = folhasParecer;
+    }
+
+    public String getFolhasEmbargo() {
+        return this.folhasEmbargo;
+    }
+
+    public Processo folhasEmbargo(String folhasEmbargo) {
+        this.folhasEmbargo = folhasEmbargo;
+        return this;
+    }
+
+    public void setFolhasEmbargo(String folhasEmbargo) {
+        this.folhasEmbargo = folhasEmbargo;
+    }
+
+    public String getAcordaoEmbargo() {
+        return this.acordaoEmbargo;
+    }
+
+    public Processo acordaoEmbargo(String acordaoEmbargo) {
+        this.acordaoEmbargo = acordaoEmbargo;
+        return this;
+    }
+
+    public void setAcordaoEmbargo(String acordaoEmbargo) {
+        this.acordaoEmbargo = acordaoEmbargo;
+    }
+
+    public String getFolhasCienciaJulgEmbargos() {
+        return this.folhasCienciaJulgEmbargos;
+    }
+
+    public Processo folhasCienciaJulgEmbargos(String folhasCienciaJulgEmbargos) {
+        this.folhasCienciaJulgEmbargos = folhasCienciaJulgEmbargos;
+        return this;
+    }
+
+    public void setFolhasCienciaJulgEmbargos(String folhasCienciaJulgEmbargos) {
+        this.folhasCienciaJulgEmbargos = folhasCienciaJulgEmbargos;
+    }
+
     public String getApelacao() {
         return this.apelacao;
     }
@@ -386,6 +704,643 @@ public class Processo implements Serializable {
 
     public void setApelacao(String apelacao) {
         this.apelacao = apelacao;
+    }
+
+    public String getFolhasApelacao() {
+        return this.folhasApelacao;
+    }
+
+    public Processo folhasApelacao(String folhasApelacao) {
+        this.folhasApelacao = folhasApelacao;
+        return this;
+    }
+
+    public void setFolhasApelacao(String folhasApelacao) {
+        this.folhasApelacao = folhasApelacao;
+    }
+
+    public String getAcordaoApelacao() {
+        return this.acordaoApelacao;
+    }
+
+    public Processo acordaoApelacao(String acordaoApelacao) {
+        this.acordaoApelacao = acordaoApelacao;
+        return this;
+    }
+
+    public void setAcordaoApelacao(String acordaoApelacao) {
+        this.acordaoApelacao = acordaoApelacao;
+    }
+
+    public String getFolhasCienciaJulgApelacao() {
+        return this.folhasCienciaJulgApelacao;
+    }
+
+    public Processo folhasCienciaJulgApelacao(String folhasCienciaJulgApelacao) {
+        this.folhasCienciaJulgApelacao = folhasCienciaJulgApelacao;
+        return this;
+    }
+
+    public void setFolhasCienciaJulgApelacao(String folhasCienciaJulgApelacao) {
+        this.folhasCienciaJulgApelacao = folhasCienciaJulgApelacao;
+    }
+
+    public Boolean getEmbargoDeclaracao() {
+        return this.embargoDeclaracao;
+    }
+
+    public Processo embargoDeclaracao(Boolean embargoDeclaracao) {
+        this.embargoDeclaracao = embargoDeclaracao;
+        return this;
+    }
+
+    public void setEmbargoDeclaracao(Boolean embargoDeclaracao) {
+        this.embargoDeclaracao = embargoDeclaracao;
+    }
+
+    public String getFolhasRecursoEspecial() {
+        return this.folhasRecursoEspecial;
+    }
+
+    public Processo folhasRecursoEspecial(String folhasRecursoEspecial) {
+        this.folhasRecursoEspecial = folhasRecursoEspecial;
+        return this;
+    }
+
+    public void setFolhasRecursoEspecial(String folhasRecursoEspecial) {
+        this.folhasRecursoEspecial = folhasRecursoEspecial;
+    }
+
+    public String getAcordaoRecursoEspecial() {
+        return this.acordaoRecursoEspecial;
+    }
+
+    public Processo acordaoRecursoEspecial(String acordaoRecursoEspecial) {
+        this.acordaoRecursoEspecial = acordaoRecursoEspecial;
+        return this;
+    }
+
+    public void setAcordaoRecursoEspecial(String acordaoRecursoEspecial) {
+        this.acordaoRecursoEspecial = acordaoRecursoEspecial;
+    }
+
+    public String getFolhasCienciaJulgamentoRecursoEspecial() {
+        return this.folhasCienciaJulgamentoRecursoEspecial;
+    }
+
+    public Processo folhasCienciaJulgamentoRecursoEspecial(String folhasCienciaJulgamentoRecursoEspecial) {
+        this.folhasCienciaJulgamentoRecursoEspecial = folhasCienciaJulgamentoRecursoEspecial;
+        return this;
+    }
+
+    public void setFolhasCienciaJulgamentoRecursoEspecial(String folhasCienciaJulgamentoRecursoEspecial) {
+        this.folhasCienciaJulgamentoRecursoEspecial = folhasCienciaJulgamentoRecursoEspecial;
+    }
+
+    public Boolean getEmbargoRecursoEspecial() {
+        return this.embargoRecursoEspecial;
+    }
+
+    public Processo embargoRecursoEspecial(Boolean embargoRecursoEspecial) {
+        this.embargoRecursoEspecial = embargoRecursoEspecial;
+        return this;
+    }
+
+    public void setEmbargoRecursoEspecial(Boolean embargoRecursoEspecial) {
+        this.embargoRecursoEspecial = embargoRecursoEspecial;
+    }
+
+    public String getFolhasCiencia() {
+        return this.folhasCiencia;
+    }
+
+    public Processo folhasCiencia(String folhasCiencia) {
+        this.folhasCiencia = folhasCiencia;
+        return this;
+    }
+
+    public void setFolhasCiencia(String folhasCiencia) {
+        this.folhasCiencia = folhasCiencia;
+    }
+
+    public String getAgravoRespRe() {
+        return this.agravoRespRe;
+    }
+
+    public Processo agravoRespRe(String agravoRespRe) {
+        this.agravoRespRe = agravoRespRe;
+        return this;
+    }
+
+    public void setAgravoRespRe(String agravoRespRe) {
+        this.agravoRespRe = agravoRespRe;
+    }
+
+    public String getFolhasRespRe() {
+        return this.folhasRespRe;
+    }
+
+    public Processo folhasRespRe(String folhasRespRe) {
+        this.folhasRespRe = folhasRespRe;
+        return this;
+    }
+
+    public void setFolhasRespRe(String folhasRespRe) {
+        this.folhasRespRe = folhasRespRe;
+    }
+
+    public String getAcordaoAgravoRespRe() {
+        return this.acordaoAgravoRespRe;
+    }
+
+    public Processo acordaoAgravoRespRe(String acordaoAgravoRespRe) {
+        this.acordaoAgravoRespRe = acordaoAgravoRespRe;
+        return this;
+    }
+
+    public void setAcordaoAgravoRespRe(String acordaoAgravoRespRe) {
+        this.acordaoAgravoRespRe = acordaoAgravoRespRe;
+    }
+
+    public String getFolhasCienciaJulgamentoAgravoRespRe() {
+        return this.folhasCienciaJulgamentoAgravoRespRe;
+    }
+
+    public Processo folhasCienciaJulgamentoAgravoRespRe(String folhasCienciaJulgamentoAgravoRespRe) {
+        this.folhasCienciaJulgamentoAgravoRespRe = folhasCienciaJulgamentoAgravoRespRe;
+        return this;
+    }
+
+    public void setFolhasCienciaJulgamentoAgravoRespRe(String folhasCienciaJulgamentoAgravoRespRe) {
+        this.folhasCienciaJulgamentoAgravoRespRe = folhasCienciaJulgamentoAgravoRespRe;
+    }
+
+    public String getEmbargoRespRe() {
+        return this.embargoRespRe;
+    }
+
+    public Processo embargoRespRe(String embargoRespRe) {
+        this.embargoRespRe = embargoRespRe;
+        return this;
+    }
+
+    public void setEmbargoRespRe(String embargoRespRe) {
+        this.embargoRespRe = embargoRespRe;
+    }
+
+    public String getAgravoInterno() {
+        return this.agravoInterno;
+    }
+
+    public Processo agravoInterno(String agravoInterno) {
+        this.agravoInterno = agravoInterno;
+        return this;
+    }
+
+    public void setAgravoInterno(String agravoInterno) {
+        this.agravoInterno = agravoInterno;
+    }
+
+    public String getFolhasAgravoInterno() {
+        return this.folhasAgravoInterno;
+    }
+
+    public Processo folhasAgravoInterno(String folhasAgravoInterno) {
+        this.folhasAgravoInterno = folhasAgravoInterno;
+        return this;
+    }
+
+    public void setFolhasAgravoInterno(String folhasAgravoInterno) {
+        this.folhasAgravoInterno = folhasAgravoInterno;
+    }
+
+    public Boolean getEmbargoRecursoAgravo() {
+        return this.embargoRecursoAgravo;
+    }
+
+    public Processo embargoRecursoAgravo(Boolean embargoRecursoAgravo) {
+        this.embargoRecursoAgravo = embargoRecursoAgravo;
+        return this;
+    }
+
+    public void setEmbargoRecursoAgravo(Boolean embargoRecursoAgravo) {
+        this.embargoRecursoAgravo = embargoRecursoAgravo;
+    }
+
+    public String getObservacoes() {
+        return this.observacoes;
+    }
+
+    public Processo observacoes(String observacoes) {
+        this.observacoes = observacoes;
+        return this;
+    }
+
+    public void setObservacoes(String observacoes) {
+        this.observacoes = observacoes;
+    }
+
+    public Boolean getRecursoSTJ() {
+        return this.recursoSTJ;
+    }
+
+    public Processo recursoSTJ(Boolean recursoSTJ) {
+        this.recursoSTJ = recursoSTJ;
+        return this;
+    }
+
+    public void setRecursoSTJ(Boolean recursoSTJ) {
+        this.recursoSTJ = recursoSTJ;
+    }
+
+    public String getLinkRecursoSTJ() {
+        return this.linkRecursoSTJ;
+    }
+
+    public Processo linkRecursoSTJ(String linkRecursoSTJ) {
+        this.linkRecursoSTJ = linkRecursoSTJ;
+        return this;
+    }
+
+    public void setLinkRecursoSTJ(String linkRecursoSTJ) {
+        this.linkRecursoSTJ = linkRecursoSTJ;
+    }
+
+    public String getFolhasRecursoSTJ() {
+        return this.folhasRecursoSTJ;
+    }
+
+    public Processo folhasRecursoSTJ(String folhasRecursoSTJ) {
+        this.folhasRecursoSTJ = folhasRecursoSTJ;
+        return this;
+    }
+
+    public void setFolhasRecursoSTJ(String folhasRecursoSTJ) {
+        this.folhasRecursoSTJ = folhasRecursoSTJ;
+    }
+
+    public Boolean getRecursoSTF() {
+        return this.recursoSTF;
+    }
+
+    public Processo recursoSTF(Boolean recursoSTF) {
+        this.recursoSTF = recursoSTF;
+        return this;
+    }
+
+    public void setRecursoSTF(Boolean recursoSTF) {
+        this.recursoSTF = recursoSTF;
+    }
+
+    public String getLinkRecursoSTF() {
+        return this.linkRecursoSTF;
+    }
+
+    public Processo linkRecursoSTF(String linkRecursoSTF) {
+        this.linkRecursoSTF = linkRecursoSTF;
+        return this;
+    }
+
+    public void setLinkRecursoSTF(String linkRecursoSTF) {
+        this.linkRecursoSTF = linkRecursoSTF;
+    }
+
+    public String getFolhasRecursoSTF() {
+        return this.folhasRecursoSTF;
+    }
+
+    public Processo folhasRecursoSTF(String folhasRecursoSTF) {
+        this.folhasRecursoSTF = folhasRecursoSTF;
+        return this;
+    }
+
+    public void setFolhasRecursoSTF(String folhasRecursoSTF) {
+        this.folhasRecursoSTF = folhasRecursoSTF;
+    }
+
+    public String getFolhasMemorialMPF() {
+        return this.folhasMemorialMPF;
+    }
+
+    public Processo folhasMemorialMPF(String folhasMemorialMPF) {
+        this.folhasMemorialMPF = folhasMemorialMPF;
+        return this;
+    }
+
+    public void setFolhasMemorialMPF(String folhasMemorialMPF) {
+        this.folhasMemorialMPF = folhasMemorialMPF;
+    }
+
+    public Boolean getExecusaoProvisoria() {
+        return this.execusaoProvisoria;
+    }
+
+    public Processo execusaoProvisoria(Boolean execusaoProvisoria) {
+        this.execusaoProvisoria = execusaoProvisoria;
+        return this;
+    }
+
+    public void setExecusaoProvisoria(Boolean execusaoProvisoria) {
+        this.execusaoProvisoria = execusaoProvisoria;
+    }
+
+    public String getNumeracaoExecusaoProvisoria() {
+        return this.numeracaoExecusaoProvisoria;
+    }
+
+    public Processo numeracaoExecusaoProvisoria(String numeracaoExecusaoProvisoria) {
+        this.numeracaoExecusaoProvisoria = numeracaoExecusaoProvisoria;
+        return this;
+    }
+
+    public void setNumeracaoExecusaoProvisoria(String numeracaoExecusaoProvisoria) {
+        this.numeracaoExecusaoProvisoria = numeracaoExecusaoProvisoria;
+    }
+
+    public String getRecuperacaoEfetivaCumprimentoSentenca() {
+        return this.recuperacaoEfetivaCumprimentoSentenca;
+    }
+
+    public Processo recuperacaoEfetivaCumprimentoSentenca(String recuperacaoEfetivaCumprimentoSentenca) {
+        this.recuperacaoEfetivaCumprimentoSentenca = recuperacaoEfetivaCumprimentoSentenca;
+        return this;
+    }
+
+    public void setRecuperacaoEfetivaCumprimentoSentenca(String recuperacaoEfetivaCumprimentoSentenca) {
+        this.recuperacaoEfetivaCumprimentoSentenca = recuperacaoEfetivaCumprimentoSentenca;
+    }
+
+    public String getRecuperacaoEfetivaCumprimentoSentencaObservacoes() {
+        return this.recuperacaoEfetivaCumprimentoSentencaObservacoes;
+    }
+
+    public Processo recuperacaoEfetivaCumprimentoSentencaObservacoes(String recuperacaoEfetivaCumprimentoSentencaObservacoes) {
+        this.recuperacaoEfetivaCumprimentoSentencaObservacoes = recuperacaoEfetivaCumprimentoSentencaObservacoes;
+        return this;
+    }
+
+    public void setRecuperacaoEfetivaCumprimentoSentencaObservacoes(String recuperacaoEfetivaCumprimentoSentencaObservacoes) {
+        this.recuperacaoEfetivaCumprimentoSentencaObservacoes = recuperacaoEfetivaCumprimentoSentencaObservacoes;
+    }
+
+    public Boolean getEnvolveEmpreendimento() {
+        return this.envolveEmpreendimento;
+    }
+
+    public Processo envolveEmpreendimento(Boolean envolveEmpreendimento) {
+        this.envolveEmpreendimento = envolveEmpreendimento;
+        return this;
+    }
+
+    public void setEnvolveEmpreendimento(Boolean envolveEmpreendimento) {
+        this.envolveEmpreendimento = envolveEmpreendimento;
+    }
+
+    public Boolean getEnvolveExploracaoIlegal() {
+        return this.envolveExploracaoIlegal;
+    }
+
+    public Processo envolveExploracaoIlegal(Boolean envolveExploracaoIlegal) {
+        this.envolveExploracaoIlegal = envolveExploracaoIlegal;
+        return this;
+    }
+
+    public void setEnvolveExploracaoIlegal(Boolean envolveExploracaoIlegal) {
+        this.envolveExploracaoIlegal = envolveExploracaoIlegal;
+    }
+
+    public Boolean getEnvolveTerraQuilombola() {
+        return this.envolveTerraQuilombola;
+    }
+
+    public Processo envolveTerraQuilombola(Boolean envolveTerraQuilombola) {
+        this.envolveTerraQuilombola = envolveTerraQuilombola;
+        return this;
+    }
+
+    public void setEnvolveTerraQuilombola(Boolean envolveTerraQuilombola) {
+        this.envolveTerraQuilombola = envolveTerraQuilombola;
+    }
+
+    public Boolean getEnvolveTerraComunidadeTradicional() {
+        return this.envolveTerraComunidadeTradicional;
+    }
+
+    public Processo envolveTerraComunidadeTradicional(Boolean envolveTerraComunidadeTradicional) {
+        this.envolveTerraComunidadeTradicional = envolveTerraComunidadeTradicional;
+        return this;
+    }
+
+    public void setEnvolveTerraComunidadeTradicional(Boolean envolveTerraComunidadeTradicional) {
+        this.envolveTerraComunidadeTradicional = envolveTerraComunidadeTradicional;
+    }
+
+    public Boolean getEnvolveTerraIndigena() {
+        return this.envolveTerraIndigena;
+    }
+
+    public Processo envolveTerraIndigena(Boolean envolveTerraIndigena) {
+        this.envolveTerraIndigena = envolveTerraIndigena;
+        return this;
+    }
+
+    public void setEnvolveTerraIndigena(Boolean envolveTerraIndigena) {
+        this.envolveTerraIndigena = envolveTerraIndigena;
+    }
+
+    public String getResumoFatos() {
+        return this.resumoFatos;
+    }
+
+    public Processo resumoFatos(String resumoFatos) {
+        this.resumoFatos = resumoFatos;
+        return this;
+    }
+
+    public void setResumoFatos(String resumoFatos) {
+        this.resumoFatos = resumoFatos;
+    }
+
+    public BigDecimal getTamanhoArea() {
+        return this.tamanhoArea;
+    }
+
+    public Processo tamanhoArea(BigDecimal tamanhoArea) {
+        this.tamanhoArea = tamanhoArea;
+        return this;
+    }
+
+    public void setTamanhoArea(BigDecimal tamanhoArea) {
+        this.tamanhoArea = tamanhoArea;
+    }
+
+    public BigDecimal getValorArea() {
+        return this.valorArea;
+    }
+
+    public Processo valorArea(BigDecimal valorArea) {
+        this.valorArea = valorArea;
+        return this;
+    }
+
+    public void setValorArea(BigDecimal valorArea) {
+        this.valorArea = valorArea;
+    }
+
+    public String getTamanhoAreaObservacao() {
+        return this.tamanhoAreaObservacao;
+    }
+
+    public Processo tamanhoAreaObservacao(String tamanhoAreaObservacao) {
+        this.tamanhoAreaObservacao = tamanhoAreaObservacao;
+        return this;
+    }
+
+    public void setTamanhoAreaObservacao(String tamanhoAreaObservacao) {
+        this.tamanhoAreaObservacao = tamanhoAreaObservacao;
+    }
+
+    public Boolean getDadosGeograficosLitigioConflito() {
+        return this.dadosGeograficosLitigioConflito;
+    }
+
+    public Processo dadosGeograficosLitigioConflito(Boolean dadosGeograficosLitigioConflito) {
+        this.dadosGeograficosLitigioConflito = dadosGeograficosLitigioConflito;
+        return this;
+    }
+
+    public void setDadosGeograficosLitigioConflito(Boolean dadosGeograficosLitigioConflito) {
+        this.dadosGeograficosLitigioConflito = dadosGeograficosLitigioConflito;
+    }
+
+    public String getLatitude() {
+        return this.latitude;
+    }
+
+    public Processo latitude(String latitude) {
+        this.latitude = latitude;
+        return this;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
+    }
+
+    public String getLongitude() {
+        return this.longitude;
+    }
+
+    public Processo longitude(String longitude) {
+        this.longitude = longitude;
+        return this;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getNumeroProcessoMPF() {
+        return this.numeroProcessoMPF;
+    }
+
+    public Processo numeroProcessoMPF(String numeroProcessoMPF) {
+        this.numeroProcessoMPF = numeroProcessoMPF;
+        return this;
+    }
+
+    public void setNumeroProcessoMPF(String numeroProcessoMPF) {
+        this.numeroProcessoMPF = numeroProcessoMPF;
+    }
+
+    public String getNumeroEmbargo() {
+        return this.numeroEmbargo;
+    }
+
+    public Processo numeroEmbargo(String numeroEmbargo) {
+        this.numeroEmbargo = numeroEmbargo;
+        return this;
+    }
+
+    public void setNumeroEmbargo(String numeroEmbargo) {
+        this.numeroEmbargo = numeroEmbargo;
+    }
+
+    public String getPautaApelacao() {
+        return this.pautaApelacao;
+    }
+
+    public Processo pautaApelacao(String pautaApelacao) {
+        this.pautaApelacao = pautaApelacao;
+        return this;
+    }
+
+    public void setPautaApelacao(String pautaApelacao) {
+        this.pautaApelacao = pautaApelacao;
+    }
+
+    public String getNumeroRecursoEspecial() {
+        return this.numeroRecursoEspecial;
+    }
+
+    public Processo numeroRecursoEspecial(String numeroRecursoEspecial) {
+        this.numeroRecursoEspecial = numeroRecursoEspecial;
+        return this;
+    }
+
+    public void setNumeroRecursoEspecial(String numeroRecursoEspecial) {
+        this.numeroRecursoEspecial = numeroRecursoEspecial;
+    }
+
+    public String getAdmissiblidade() {
+        return this.admissiblidade;
+    }
+
+    public Processo admissiblidade(String admissiblidade) {
+        this.admissiblidade = admissiblidade;
+        return this;
+    }
+
+    public void setAdmissiblidade(String admissiblidade) {
+        this.admissiblidade = admissiblidade;
+    }
+
+    public Boolean getEnvolveGrandeProjeto() {
+        return this.envolveGrandeProjeto;
+    }
+
+    public Processo envolveGrandeProjeto(Boolean envolveGrandeProjeto) {
+        this.envolveGrandeProjeto = envolveGrandeProjeto;
+        return this;
+    }
+
+    public void setEnvolveGrandeProjeto(Boolean envolveGrandeProjeto) {
+        this.envolveGrandeProjeto = envolveGrandeProjeto;
+    }
+
+    public Boolean getEnvolveUnidadeConservacao() {
+        return this.envolveUnidadeConservacao;
+    }
+
+    public Processo envolveUnidadeConservacao(Boolean envolveUnidadeConservacao) {
+        this.envolveUnidadeConservacao = envolveUnidadeConservacao;
+        return this;
+    }
+
+    public void setEnvolveUnidadeConservacao(Boolean envolveUnidadeConservacao) {
+        this.envolveUnidadeConservacao = envolveUnidadeConservacao;
+    }
+
+    public String getLinkReferencia() {
+        return this.linkReferencia;
+    }
+
+    public Processo linkReferencia(String linkReferencia) {
+        this.linkReferencia = linkReferencia;
+        return this;
+    }
+
+    public void setLinkReferencia(String linkReferencia) {
+        this.linkReferencia = linkReferencia;
     }
 
     public Set<ConcessaoLiminar> getConcessaoLiminars() {
@@ -450,35 +1405,35 @@ public class Processo implements Serializable {
         this.concessaoLiminarCassadas = concessaoLiminarCassadas;
     }
 
-    public Set<EmbargoRespRe> getEmbargoRespRes() {
-        return this.embargoRespRes;
+    public Set<EmbargoDeclaracao> getEmbargoDeclaracaos() {
+        return this.embargoDeclaracaos;
     }
 
-    public Processo embargoRespRes(Set<EmbargoRespRe> embargoRespRes) {
-        this.setEmbargoRespRes(embargoRespRes);
+    public Processo embargoDeclaracaos(Set<EmbargoDeclaracao> embargoDeclaracaos) {
+        this.setEmbargoDeclaracaos(embargoDeclaracaos);
         return this;
     }
 
-    public Processo addEmbargoRespRe(EmbargoRespRe embargoRespRe) {
-        this.embargoRespRes.add(embargoRespRe);
-        embargoRespRe.setProcesso(this);
+    public Processo addEmbargoDeclaracao(EmbargoDeclaracao embargoDeclaracao) {
+        this.embargoDeclaracaos.add(embargoDeclaracao);
+        embargoDeclaracao.setProcesso(this);
         return this;
     }
 
-    public Processo removeEmbargoRespRe(EmbargoRespRe embargoRespRe) {
-        this.embargoRespRes.remove(embargoRespRe);
-        embargoRespRe.setProcesso(null);
+    public Processo removeEmbargoDeclaracao(EmbargoDeclaracao embargoDeclaracao) {
+        this.embargoDeclaracaos.remove(embargoDeclaracao);
+        embargoDeclaracao.setProcesso(null);
         return this;
     }
 
-    public void setEmbargoRespRes(Set<EmbargoRespRe> embargoRespRes) {
-        if (this.embargoRespRes != null) {
-            this.embargoRespRes.forEach(i -> i.setProcesso(null));
+    public void setEmbargoDeclaracaos(Set<EmbargoDeclaracao> embargoDeclaracaos) {
+        if (this.embargoDeclaracaos != null) {
+            this.embargoDeclaracaos.forEach(i -> i.setProcesso(null));
         }
-        if (embargoRespRes != null) {
-            embargoRespRes.forEach(i -> i.setProcesso(this));
+        if (embargoDeclaracaos != null) {
+            embargoDeclaracaos.forEach(i -> i.setProcesso(this));
         }
-        this.embargoRespRes = embargoRespRes;
+        this.embargoDeclaracaos = embargoDeclaracaos;
     }
 
     public Set<EmbargoDeclaracaoAgravo> getEmbargoDeclaracaoAgravos() {
@@ -512,37 +1467,6 @@ public class Processo implements Serializable {
         this.embargoDeclaracaoAgravos = embargoDeclaracaoAgravos;
     }
 
-    public Set<EmbargoDeclaracao> getEmbargoDeclaracaos() {
-        return this.embargoDeclaracaos;
-    }
-
-    public Processo embargoDeclaracaos(Set<EmbargoDeclaracao> embargoDeclaracaos) {
-        this.setEmbargoDeclaracaos(embargoDeclaracaos);
-        return this;
-    }
-
-    public Processo addEmbargoDeclaracao(EmbargoDeclaracao embargoDeclaracao) {
-        this.embargoDeclaracaos.add(embargoDeclaracao);
-        embargoDeclaracao.setProcesso(this);
-        return this;
-    }
-
-    public Processo removeEmbargoDeclaracao(EmbargoDeclaracao embargoDeclaracao) {
-        this.embargoDeclaracaos.remove(embargoDeclaracao);
-        embargoDeclaracao.setProcesso(null);
-        return this;
-    }
-
-    public void setEmbargoDeclaracaos(Set<EmbargoDeclaracao> embargoDeclaracaos) {
-        if (this.embargoDeclaracaos != null) {
-            this.embargoDeclaracaos.forEach(i -> i.setProcesso(null));
-        }
-        if (embargoDeclaracaos != null) {
-            embargoDeclaracaos.forEach(i -> i.setProcesso(this));
-        }
-        this.embargoDeclaracaos = embargoDeclaracaos;
-    }
-
     public Set<EmbargoRecursoEspecial> getEmbargoRecursoEspecials() {
         return this.embargoRecursoEspecials;
     }
@@ -572,6 +1496,37 @@ public class Processo implements Serializable {
             embargoRecursoEspecials.forEach(i -> i.setProcesso(this));
         }
         this.embargoRecursoEspecials = embargoRecursoEspecials;
+    }
+
+    public Set<EmbargoRespRe> getEmbargoRespRes() {
+        return this.embargoRespRes;
+    }
+
+    public Processo embargoRespRes(Set<EmbargoRespRe> embargoRespRes) {
+        this.setEmbargoRespRes(embargoRespRes);
+        return this;
+    }
+
+    public Processo addEmbargoRespRe(EmbargoRespRe embargoRespRe) {
+        this.embargoRespRes.add(embargoRespRe);
+        embargoRespRe.setProcesso(this);
+        return this;
+    }
+
+    public Processo removeEmbargoRespRe(EmbargoRespRe embargoRespRe) {
+        this.embargoRespRes.remove(embargoRespRe);
+        embargoRespRe.setProcesso(null);
+        return this;
+    }
+
+    public void setEmbargoRespRes(Set<EmbargoRespRe> embargoRespRes) {
+        if (this.embargoRespRes != null) {
+            this.embargoRespRes.forEach(i -> i.setProcesso(null));
+        }
+        if (embargoRespRes != null) {
+            embargoRespRes.forEach(i -> i.setProcesso(this));
+        }
+        this.embargoRespRes = embargoRespRes;
     }
 
     public TipoDecisao getTipoDecisao() {
@@ -930,10 +1885,12 @@ public class Processo implements Serializable {
     public String toString() {
         return "Processo{" +
             "id=" + getId() +
+            ", numeroProcesso='" + getNumeroProcesso() + "'" +
             ", oficio='" + getOficio() + "'" +
             ", assunto='" + getAssunto() + "'" +
             ", linkUnico='" + getLinkUnico() + "'" +
             ", linkTrf='" + getLinkTrf() + "'" +
+            ", secaoJudiciaria='" + getSecaoJudiciaria() + "'" +
             ", subsecaoJudiciaria='" + getSubsecaoJudiciaria() + "'" +
             ", turmaTrf1='" + getTurmaTrf1() + "'" +
             ", numeroProcessoAdministrativo='" + getNumeroProcessoAdministrativo() + "'" +
@@ -941,7 +1898,63 @@ public class Processo implements Serializable {
             ", numeroProcessoJudicialPrimeiraInstanciaLink='" + getNumeroProcessoJudicialPrimeiraInstanciaLink() + "'" +
             ", numeroProcessoJudicialPrimeiraInstanciaObservacoes='" + getNumeroProcessoJudicialPrimeiraInstanciaObservacoes() + "'" +
             ", parecer='" + getParecer() + "'" +
+            ", folhasProcessoConcessaoLiminar='" + getFolhasProcessoConcessaoLiminar() + "'" +
+            ", concessaoLiminarObservacoes='" + getConcessaoLiminarObservacoes() + "'" +
+            ", folhasProcessoCassacao='" + getFolhasProcessoCassacao() + "'" +
+            ", folhasParecer='" + getFolhasParecer() + "'" +
+            ", folhasEmbargo='" + getFolhasEmbargo() + "'" +
+            ", acordaoEmbargo='" + getAcordaoEmbargo() + "'" +
+            ", folhasCienciaJulgEmbargos='" + getFolhasCienciaJulgEmbargos() + "'" +
             ", apelacao='" + getApelacao() + "'" +
+            ", folhasApelacao='" + getFolhasApelacao() + "'" +
+            ", acordaoApelacao='" + getAcordaoApelacao() + "'" +
+            ", folhasCienciaJulgApelacao='" + getFolhasCienciaJulgApelacao() + "'" +
+            ", embargoDeclaracao='" + getEmbargoDeclaracao() + "'" +
+            ", folhasRecursoEspecial='" + getFolhasRecursoEspecial() + "'" +
+            ", acordaoRecursoEspecial='" + getAcordaoRecursoEspecial() + "'" +
+            ", folhasCienciaJulgamentoRecursoEspecial='" + getFolhasCienciaJulgamentoRecursoEspecial() + "'" +
+            ", embargoRecursoEspecial='" + getEmbargoRecursoEspecial() + "'" +
+            ", folhasCiencia='" + getFolhasCiencia() + "'" +
+            ", agravoRespRe='" + getAgravoRespRe() + "'" +
+            ", folhasRespRe='" + getFolhasRespRe() + "'" +
+            ", acordaoAgravoRespRe='" + getAcordaoAgravoRespRe() + "'" +
+            ", folhasCienciaJulgamentoAgravoRespRe='" + getFolhasCienciaJulgamentoAgravoRespRe() + "'" +
+            ", embargoRespRe='" + getEmbargoRespRe() + "'" +
+            ", agravoInterno='" + getAgravoInterno() + "'" +
+            ", folhasAgravoInterno='" + getFolhasAgravoInterno() + "'" +
+            ", embargoRecursoAgravo='" + getEmbargoRecursoAgravo() + "'" +
+            ", observacoes='" + getObservacoes() + "'" +
+            ", recursoSTJ='" + getRecursoSTJ() + "'" +
+            ", linkRecursoSTJ='" + getLinkRecursoSTJ() + "'" +
+            ", folhasRecursoSTJ='" + getFolhasRecursoSTJ() + "'" +
+            ", recursoSTF='" + getRecursoSTF() + "'" +
+            ", linkRecursoSTF='" + getLinkRecursoSTF() + "'" +
+            ", folhasRecursoSTF='" + getFolhasRecursoSTF() + "'" +
+            ", folhasMemorialMPF='" + getFolhasMemorialMPF() + "'" +
+            ", execusaoProvisoria='" + getExecusaoProvisoria() + "'" +
+            ", numeracaoExecusaoProvisoria='" + getNumeracaoExecusaoProvisoria() + "'" +
+            ", recuperacaoEfetivaCumprimentoSentenca='" + getRecuperacaoEfetivaCumprimentoSentenca() + "'" +
+            ", recuperacaoEfetivaCumprimentoSentencaObservacoes='" + getRecuperacaoEfetivaCumprimentoSentencaObservacoes() + "'" +
+            ", envolveEmpreendimento='" + getEnvolveEmpreendimento() + "'" +
+            ", envolveExploracaoIlegal='" + getEnvolveExploracaoIlegal() + "'" +
+            ", envolveTerraQuilombola='" + getEnvolveTerraQuilombola() + "'" +
+            ", envolveTerraComunidadeTradicional='" + getEnvolveTerraComunidadeTradicional() + "'" +
+            ", envolveTerraIndigena='" + getEnvolveTerraIndigena() + "'" +
+            ", resumoFatos='" + getResumoFatos() + "'" +
+            ", tamanhoArea=" + getTamanhoArea() +
+            ", valorArea=" + getValorArea() +
+            ", tamanhoAreaObservacao='" + getTamanhoAreaObservacao() + "'" +
+            ", dadosGeograficosLitigioConflito='" + getDadosGeograficosLitigioConflito() + "'" +
+            ", latitude='" + getLatitude() + "'" +
+            ", longitude='" + getLongitude() + "'" +
+            ", numeroProcessoMPF='" + getNumeroProcessoMPF() + "'" +
+            ", numeroEmbargo='" + getNumeroEmbargo() + "'" +
+            ", pautaApelacao='" + getPautaApelacao() + "'" +
+            ", numeroRecursoEspecial='" + getNumeroRecursoEspecial() + "'" +
+            ", admissiblidade='" + getAdmissiblidade() + "'" +
+            ", envolveGrandeProjeto='" + getEnvolveGrandeProjeto() + "'" +
+            ", envolveUnidadeConservacao='" + getEnvolveUnidadeConservacao() + "'" +
+            ", linkReferencia='" + getLinkReferencia() + "'" +
             "}";
     }
 }

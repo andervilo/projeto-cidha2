@@ -14,6 +14,9 @@
             <column name="id" type="bigint">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
+            <column name="numero_processo" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
             <column name="oficio" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
@@ -24,6 +27,9 @@
                 <constraints nullable="true" />
             </column>
             <column name="link_trf" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="secao_judiciaria" type="varchar(255)">
                 <constraints nullable="true" />
             </column>
             <column name="subsecao_judiciaria" type="varchar(255)">
@@ -47,7 +53,175 @@
             <column name="parecer" type="boolean">
                 <constraints nullable="true" />
             </column>
+            <column name="folhas_processo_concessao_liminar" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="concessao_liminar_observacoes" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_processo_cassacao" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_parecer" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_embargo" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="acordao_embargo" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_ciencia_julg_embargos" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
             <column name="apelacao" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_apelacao" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="acordao_apelacao" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_ciencia_julg_apelacao" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="embargo_declaracao" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_recurso_especial" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="acordao_recurso_especial" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_ciencia_julgamento_recurso_especial" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="embargo_recurso_especial" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_ciencia" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="agravo_resp_re" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_resp_re" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="acordao_agravo_resp_re" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_ciencia_julgamento_agravo_resp_re" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="embargo_resp_re" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="agravo_interno" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_agravo_interno" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="embargo_recurso_agravo" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="observacoes" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="recurso_stj" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="link_recurso_stj" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_recurso_stj" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="recurso_stf" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="link_recurso_stf" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_recurso_stf" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_memorial_mpf" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="execusao_provisoria" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="numeracao_execusao_provisoria" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="recuperacao_efetiva_cumprimento_sentenca" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="recuperacao_efetiva_cumprimento_sentenca_observacoes" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="envolve_empreendimento" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="envolve_exploracao_ilegal" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="envolve_terra_quilombola" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="envolve_terra_comunidade_tradicional" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="envolve_terra_indigena" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="resumo_fatos" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="tamanho_area" type="decimal(21,2)">
+                <constraints nullable="true" />
+            </column>
+            <column name="valor_area" type="decimal(21,2)">
+                <constraints nullable="true" />
+            </column>
+            <column name="tamanho_area_observacao" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="dados_geograficos_litigio_conflito" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="latitude" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="longitude" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="numero_processo_mpf" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="numero_embargo" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="pauta_apelacao" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="numero_recurso_especial" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="admissiblidade" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="envolve_grande_projeto" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="envolve_unidade_conservacao" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="link_referencia" type="${clobType}">
                 <constraints nullable="true" />
             </column>
             <column name="tipo_decisao_id" type="bigint">
@@ -200,10 +374,12 @@
                   separator=";"
                   tableName="processo">
             <column name="id" type="numeric"/>
+            <column name="numero_processo" type="string"/>
             <column name="oficio" type="string"/>
             <column name="assunto" type="clob"/>
             <column name="link_unico" type="string"/>
             <column name="link_trf" type="string"/>
+            <column name="secao_judiciaria" type="string"/>
             <column name="subsecao_judiciaria" type="string"/>
             <column name="turma_trf_1" type="string"/>
             <column name="numero_processo_administrativo" type="string"/>
@@ -211,7 +387,63 @@
             <column name="numero_processo_judicial_primeira_instancia_link" type="string"/>
             <column name="numero_processo_judicial_primeira_instancia_observacoes" type="clob"/>
             <column name="parecer" type="boolean"/>
+            <column name="folhas_processo_concessao_liminar" type="string"/>
+            <column name="concessao_liminar_observacoes" type="clob"/>
+            <column name="folhas_processo_cassacao" type="string"/>
+            <column name="folhas_parecer" type="string"/>
+            <column name="folhas_embargo" type="string"/>
+            <column name="acordao_embargo" type="clob"/>
+            <column name="folhas_ciencia_julg_embargos" type="string"/>
             <column name="apelacao" type="string"/>
+            <column name="folhas_apelacao" type="string"/>
+            <column name="acordao_apelacao" type="clob"/>
+            <column name="folhas_ciencia_julg_apelacao" type="string"/>
+            <column name="embargo_declaracao" type="boolean"/>
+            <column name="folhas_recurso_especial" type="string"/>
+            <column name="acordao_recurso_especial" type="clob"/>
+            <column name="folhas_ciencia_julgamento_recurso_especial" type="string"/>
+            <column name="embargo_recurso_especial" type="boolean"/>
+            <column name="folhas_ciencia" type="string"/>
+            <column name="agravo_resp_re" type="string"/>
+            <column name="folhas_resp_re" type="string"/>
+            <column name="acordao_agravo_resp_re" type="clob"/>
+            <column name="folhas_ciencia_julgamento_agravo_resp_re" type="string"/>
+            <column name="embargo_resp_re" type="string"/>
+            <column name="agravo_interno" type="string"/>
+            <column name="folhas_agravo_interno" type="string"/>
+            <column name="embargo_recurso_agravo" type="boolean"/>
+            <column name="observacoes" type="clob"/>
+            <column name="recurso_stj" type="boolean"/>
+            <column name="link_recurso_stj" type="string"/>
+            <column name="folhas_recurso_stj" type="string"/>
+            <column name="recurso_stf" type="boolean"/>
+            <column name="link_recurso_stf" type="string"/>
+            <column name="folhas_recurso_stf" type="string"/>
+            <column name="folhas_memorial_mpf" type="string"/>
+            <column name="execusao_provisoria" type="boolean"/>
+            <column name="numeracao_execusao_provisoria" type="string"/>
+            <column name="recuperacao_efetiva_cumprimento_sentenca" type="clob"/>
+            <column name="recuperacao_efetiva_cumprimento_sentenca_observacoes" type="clob"/>
+            <column name="envolve_empreendimento" type="boolean"/>
+            <column name="envolve_exploracao_ilegal" type="boolean"/>
+            <column name="envolve_terra_quilombola" type="boolean"/>
+            <column name="envolve_terra_comunidade_tradicional" type="boolean"/>
+            <column name="envolve_terra_indigena" type="boolean"/>
+            <column name="resumo_fatos" type="clob"/>
+            <column name="tamanho_area" type="numeric"/>
+            <column name="valor_area" type="numeric"/>
+            <column name="tamanho_area_observacao" type="clob"/>
+            <column name="dados_geograficos_litigio_conflito" type="boolean"/>
+            <column name="latitude" type="string"/>
+            <column name="longitude" type="string"/>
+            <column name="numero_processo_mpf" type="string"/>
+            <column name="numero_embargo" type="string"/>
+            <column name="pauta_apelacao" type="clob"/>
+            <column name="numero_recurso_especial" type="string"/>
+            <column name="admissiblidade" type="clob"/>
+            <column name="envolve_grande_projeto" type="boolean"/>
+            <column name="envolve_unidade_conservacao" type="boolean"/>
+            <column name="link_referencia" type="clob"/>
             <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
         </loadData>
     </changeSet>

@@ -76,7 +76,23 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
     updating,
   } = props;
 
-  const { assunto, numeroProcessoJudicialPrimeiraInstanciaObservacoes } = processoEntity;
+  const {
+    assunto,
+    numeroProcessoJudicialPrimeiraInstanciaObservacoes,
+    concessaoLiminarObservacoes,
+    acordaoEmbargo,
+    acordaoApelacao,
+    acordaoRecursoEspecial,
+    acordaoAgravoRespRe,
+    observacoes,
+    recuperacaoEfetivaCumprimentoSentenca,
+    recuperacaoEfetivaCumprimentoSentencaObservacoes,
+    resumoFatos,
+    tamanhoAreaObservacao,
+    pautaApelacao,
+    admissiblidade,
+    linkReferencia,
+  } = processoEntity;
 
   const handleClose = () => {
     props.history.push('/processo' + props.location.search);
@@ -171,6 +187,12 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
                 </AvGroup>
               ) : null}
               <AvGroup>
+                <Label id="numeroProcessoLabel" for="processo-numeroProcesso">
+                  <Translate contentKey="cidhaApp.processo.numeroProcesso">Numero Processo</Translate>
+                </Label>
+                <AvField id="processo-numeroProcesso" data-cy="numeroProcesso" type="text" name="numeroProcesso" />
+              </AvGroup>
+              <AvGroup>
                 <Label id="oficioLabel" for="processo-oficio">
                   <Translate contentKey="cidhaApp.processo.oficio">Oficio</Translate>
                 </Label>
@@ -193,6 +215,12 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
                   <Translate contentKey="cidhaApp.processo.linkTrf">Link Trf</Translate>
                 </Label>
                 <AvField id="processo-linkTrf" data-cy="linkTrf" type="text" name="linkTrf" />
+              </AvGroup>
+              <AvGroup>
+                <Label id="secaoJudiciariaLabel" for="processo-secaoJudiciaria">
+                  <Translate contentKey="cidhaApp.processo.secaoJudiciaria">Secao Judiciaria</Translate>
+                </Label>
+                <AvField id="processo-secaoJudiciaria" data-cy="secaoJudiciaria" type="text" name="secaoJudiciaria" />
               </AvGroup>
               <AvGroup>
                 <Label id="subsecaoJudiciariaLabel" for="processo-subsecaoJudiciaria">
@@ -266,10 +294,481 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
                 </Label>
               </AvGroup>
               <AvGroup>
+                <Label id="folhasProcessoConcessaoLiminarLabel" for="processo-folhasProcessoConcessaoLiminar">
+                  <Translate contentKey="cidhaApp.processo.folhasProcessoConcessaoLiminar">Folhas Processo Concessao Liminar</Translate>
+                </Label>
+                <AvField
+                  id="processo-folhasProcessoConcessaoLiminar"
+                  data-cy="folhasProcessoConcessaoLiminar"
+                  type="text"
+                  name="folhasProcessoConcessaoLiminar"
+                />
+              </AvGroup>
+              <AvGroup>
+                <Label id="concessaoLiminarObservacoesLabel" for="processo-concessaoLiminarObservacoes">
+                  <Translate contentKey="cidhaApp.processo.concessaoLiminarObservacoes">Concessao Liminar Observacoes</Translate>
+                </Label>
+                <AvInput
+                  id="processo-concessaoLiminarObservacoes"
+                  data-cy="concessaoLiminarObservacoes"
+                  type="textarea"
+                  name="concessaoLiminarObservacoes"
+                />
+              </AvGroup>
+              <AvGroup>
+                <Label id="folhasProcessoCassacaoLabel" for="processo-folhasProcessoCassacao">
+                  <Translate contentKey="cidhaApp.processo.folhasProcessoCassacao">Folhas Processo Cassacao</Translate>
+                </Label>
+                <AvField id="processo-folhasProcessoCassacao" data-cy="folhasProcessoCassacao" type="text" name="folhasProcessoCassacao" />
+              </AvGroup>
+              <AvGroup>
+                <Label id="folhasParecerLabel" for="processo-folhasParecer">
+                  <Translate contentKey="cidhaApp.processo.folhasParecer">Folhas Parecer</Translate>
+                </Label>
+                <AvField id="processo-folhasParecer" data-cy="folhasParecer" type="text" name="folhasParecer" />
+              </AvGroup>
+              <AvGroup>
+                <Label id="folhasEmbargoLabel" for="processo-folhasEmbargo">
+                  <Translate contentKey="cidhaApp.processo.folhasEmbargo">Folhas Embargo</Translate>
+                </Label>
+                <AvField id="processo-folhasEmbargo" data-cy="folhasEmbargo" type="text" name="folhasEmbargo" />
+              </AvGroup>
+              <AvGroup>
+                <Label id="acordaoEmbargoLabel" for="processo-acordaoEmbargo">
+                  <Translate contentKey="cidhaApp.processo.acordaoEmbargo">Acordao Embargo</Translate>
+                </Label>
+                <AvInput id="processo-acordaoEmbargo" data-cy="acordaoEmbargo" type="textarea" name="acordaoEmbargo" />
+              </AvGroup>
+              <AvGroup>
+                <Label id="folhasCienciaJulgEmbargosLabel" for="processo-folhasCienciaJulgEmbargos">
+                  <Translate contentKey="cidhaApp.processo.folhasCienciaJulgEmbargos">Folhas Ciencia Julg Embargos</Translate>
+                </Label>
+                <AvField
+                  id="processo-folhasCienciaJulgEmbargos"
+                  data-cy="folhasCienciaJulgEmbargos"
+                  type="text"
+                  name="folhasCienciaJulgEmbargos"
+                />
+              </AvGroup>
+              <AvGroup>
                 <Label id="apelacaoLabel" for="processo-apelacao">
                   <Translate contentKey="cidhaApp.processo.apelacao">Apelacao</Translate>
                 </Label>
                 <AvField id="processo-apelacao" data-cy="apelacao" type="text" name="apelacao" />
+              </AvGroup>
+              <AvGroup>
+                <Label id="folhasApelacaoLabel" for="processo-folhasApelacao">
+                  <Translate contentKey="cidhaApp.processo.folhasApelacao">Folhas Apelacao</Translate>
+                </Label>
+                <AvField id="processo-folhasApelacao" data-cy="folhasApelacao" type="text" name="folhasApelacao" />
+              </AvGroup>
+              <AvGroup>
+                <Label id="acordaoApelacaoLabel" for="processo-acordaoApelacao">
+                  <Translate contentKey="cidhaApp.processo.acordaoApelacao">Acordao Apelacao</Translate>
+                </Label>
+                <AvInput id="processo-acordaoApelacao" data-cy="acordaoApelacao" type="textarea" name="acordaoApelacao" />
+              </AvGroup>
+              <AvGroup>
+                <Label id="folhasCienciaJulgApelacaoLabel" for="processo-folhasCienciaJulgApelacao">
+                  <Translate contentKey="cidhaApp.processo.folhasCienciaJulgApelacao">Folhas Ciencia Julg Apelacao</Translate>
+                </Label>
+                <AvField
+                  id="processo-folhasCienciaJulgApelacao"
+                  data-cy="folhasCienciaJulgApelacao"
+                  type="text"
+                  name="folhasCienciaJulgApelacao"
+                />
+              </AvGroup>
+              <AvGroup check>
+                <Label id="embargoDeclaracaoLabel">
+                  <AvInput
+                    id="processo-embargoDeclaracao"
+                    data-cy="embargoDeclaracao"
+                    type="checkbox"
+                    className="form-check-input"
+                    name="embargoDeclaracao"
+                  />
+                  <Translate contentKey="cidhaApp.processo.embargoDeclaracao">Embargo Declaracao</Translate>
+                </Label>
+              </AvGroup>
+              <AvGroup>
+                <Label id="folhasRecursoEspecialLabel" for="processo-folhasRecursoEspecial">
+                  <Translate contentKey="cidhaApp.processo.folhasRecursoEspecial">Folhas Recurso Especial</Translate>
+                </Label>
+                <AvField id="processo-folhasRecursoEspecial" data-cy="folhasRecursoEspecial" type="text" name="folhasRecursoEspecial" />
+              </AvGroup>
+              <AvGroup>
+                <Label id="acordaoRecursoEspecialLabel" for="processo-acordaoRecursoEspecial">
+                  <Translate contentKey="cidhaApp.processo.acordaoRecursoEspecial">Acordao Recurso Especial</Translate>
+                </Label>
+                <AvInput
+                  id="processo-acordaoRecursoEspecial"
+                  data-cy="acordaoRecursoEspecial"
+                  type="textarea"
+                  name="acordaoRecursoEspecial"
+                />
+              </AvGroup>
+              <AvGroup>
+                <Label id="folhasCienciaJulgamentoRecursoEspecialLabel" for="processo-folhasCienciaJulgamentoRecursoEspecial">
+                  <Translate contentKey="cidhaApp.processo.folhasCienciaJulgamentoRecursoEspecial">
+                    Folhas Ciencia Julgamento Recurso Especial
+                  </Translate>
+                </Label>
+                <AvField
+                  id="processo-folhasCienciaJulgamentoRecursoEspecial"
+                  data-cy="folhasCienciaJulgamentoRecursoEspecial"
+                  type="text"
+                  name="folhasCienciaJulgamentoRecursoEspecial"
+                />
+              </AvGroup>
+              <AvGroup check>
+                <Label id="embargoRecursoEspecialLabel">
+                  <AvInput
+                    id="processo-embargoRecursoEspecial"
+                    data-cy="embargoRecursoEspecial"
+                    type="checkbox"
+                    className="form-check-input"
+                    name="embargoRecursoEspecial"
+                  />
+                  <Translate contentKey="cidhaApp.processo.embargoRecursoEspecial">Embargo Recurso Especial</Translate>
+                </Label>
+              </AvGroup>
+              <AvGroup>
+                <Label id="folhasCienciaLabel" for="processo-folhasCiencia">
+                  <Translate contentKey="cidhaApp.processo.folhasCiencia">Folhas Ciencia</Translate>
+                </Label>
+                <AvField id="processo-folhasCiencia" data-cy="folhasCiencia" type="text" name="folhasCiencia" />
+              </AvGroup>
+              <AvGroup>
+                <Label id="agravoRespReLabel" for="processo-agravoRespRe">
+                  <Translate contentKey="cidhaApp.processo.agravoRespRe">Agravo Resp Re</Translate>
+                </Label>
+                <AvField id="processo-agravoRespRe" data-cy="agravoRespRe" type="text" name="agravoRespRe" />
+              </AvGroup>
+              <AvGroup>
+                <Label id="folhasRespReLabel" for="processo-folhasRespRe">
+                  <Translate contentKey="cidhaApp.processo.folhasRespRe">Folhas Resp Re</Translate>
+                </Label>
+                <AvField id="processo-folhasRespRe" data-cy="folhasRespRe" type="text" name="folhasRespRe" />
+              </AvGroup>
+              <AvGroup>
+                <Label id="acordaoAgravoRespReLabel" for="processo-acordaoAgravoRespRe">
+                  <Translate contentKey="cidhaApp.processo.acordaoAgravoRespRe">Acordao Agravo Resp Re</Translate>
+                </Label>
+                <AvInput id="processo-acordaoAgravoRespRe" data-cy="acordaoAgravoRespRe" type="textarea" name="acordaoAgravoRespRe" />
+              </AvGroup>
+              <AvGroup>
+                <Label id="folhasCienciaJulgamentoAgravoRespReLabel" for="processo-folhasCienciaJulgamentoAgravoRespRe">
+                  <Translate contentKey="cidhaApp.processo.folhasCienciaJulgamentoAgravoRespRe">
+                    Folhas Ciencia Julgamento Agravo Resp Re
+                  </Translate>
+                </Label>
+                <AvField
+                  id="processo-folhasCienciaJulgamentoAgravoRespRe"
+                  data-cy="folhasCienciaJulgamentoAgravoRespRe"
+                  type="text"
+                  name="folhasCienciaJulgamentoAgravoRespRe"
+                />
+              </AvGroup>
+              <AvGroup>
+                <Label id="embargoRespReLabel" for="processo-embargoRespRe">
+                  <Translate contentKey="cidhaApp.processo.embargoRespRe">Embargo Resp Re</Translate>
+                </Label>
+                <AvField id="processo-embargoRespRe" data-cy="embargoRespRe" type="text" name="embargoRespRe" />
+              </AvGroup>
+              <AvGroup>
+                <Label id="agravoInternoLabel" for="processo-agravoInterno">
+                  <Translate contentKey="cidhaApp.processo.agravoInterno">Agravo Interno</Translate>
+                </Label>
+                <AvField id="processo-agravoInterno" data-cy="agravoInterno" type="text" name="agravoInterno" />
+              </AvGroup>
+              <AvGroup>
+                <Label id="folhasAgravoInternoLabel" for="processo-folhasAgravoInterno">
+                  <Translate contentKey="cidhaApp.processo.folhasAgravoInterno">Folhas Agravo Interno</Translate>
+                </Label>
+                <AvField id="processo-folhasAgravoInterno" data-cy="folhasAgravoInterno" type="text" name="folhasAgravoInterno" />
+              </AvGroup>
+              <AvGroup check>
+                <Label id="embargoRecursoAgravoLabel">
+                  <AvInput
+                    id="processo-embargoRecursoAgravo"
+                    data-cy="embargoRecursoAgravo"
+                    type="checkbox"
+                    className="form-check-input"
+                    name="embargoRecursoAgravo"
+                  />
+                  <Translate contentKey="cidhaApp.processo.embargoRecursoAgravo">Embargo Recurso Agravo</Translate>
+                </Label>
+              </AvGroup>
+              <AvGroup>
+                <Label id="observacoesLabel" for="processo-observacoes">
+                  <Translate contentKey="cidhaApp.processo.observacoes">Observacoes</Translate>
+                </Label>
+                <AvInput id="processo-observacoes" data-cy="observacoes" type="textarea" name="observacoes" />
+              </AvGroup>
+              <AvGroup check>
+                <Label id="recursoSTJLabel">
+                  <AvInput id="processo-recursoSTJ" data-cy="recursoSTJ" type="checkbox" className="form-check-input" name="recursoSTJ" />
+                  <Translate contentKey="cidhaApp.processo.recursoSTJ">Recurso STJ</Translate>
+                </Label>
+              </AvGroup>
+              <AvGroup>
+                <Label id="linkRecursoSTJLabel" for="processo-linkRecursoSTJ">
+                  <Translate contentKey="cidhaApp.processo.linkRecursoSTJ">Link Recurso STJ</Translate>
+                </Label>
+                <AvField id="processo-linkRecursoSTJ" data-cy="linkRecursoSTJ" type="text" name="linkRecursoSTJ" />
+              </AvGroup>
+              <AvGroup>
+                <Label id="folhasRecursoSTJLabel" for="processo-folhasRecursoSTJ">
+                  <Translate contentKey="cidhaApp.processo.folhasRecursoSTJ">Folhas Recurso STJ</Translate>
+                </Label>
+                <AvField id="processo-folhasRecursoSTJ" data-cy="folhasRecursoSTJ" type="text" name="folhasRecursoSTJ" />
+              </AvGroup>
+              <AvGroup check>
+                <Label id="recursoSTFLabel">
+                  <AvInput id="processo-recursoSTF" data-cy="recursoSTF" type="checkbox" className="form-check-input" name="recursoSTF" />
+                  <Translate contentKey="cidhaApp.processo.recursoSTF">Recurso STF</Translate>
+                </Label>
+              </AvGroup>
+              <AvGroup>
+                <Label id="linkRecursoSTFLabel" for="processo-linkRecursoSTF">
+                  <Translate contentKey="cidhaApp.processo.linkRecursoSTF">Link Recurso STF</Translate>
+                </Label>
+                <AvField id="processo-linkRecursoSTF" data-cy="linkRecursoSTF" type="text" name="linkRecursoSTF" />
+              </AvGroup>
+              <AvGroup>
+                <Label id="folhasRecursoSTFLabel" for="processo-folhasRecursoSTF">
+                  <Translate contentKey="cidhaApp.processo.folhasRecursoSTF">Folhas Recurso STF</Translate>
+                </Label>
+                <AvField id="processo-folhasRecursoSTF" data-cy="folhasRecursoSTF" type="text" name="folhasRecursoSTF" />
+              </AvGroup>
+              <AvGroup>
+                <Label id="folhasMemorialMPFLabel" for="processo-folhasMemorialMPF">
+                  <Translate contentKey="cidhaApp.processo.folhasMemorialMPF">Folhas Memorial MPF</Translate>
+                </Label>
+                <AvField id="processo-folhasMemorialMPF" data-cy="folhasMemorialMPF" type="text" name="folhasMemorialMPF" />
+              </AvGroup>
+              <AvGroup check>
+                <Label id="execusaoProvisoriaLabel">
+                  <AvInput
+                    id="processo-execusaoProvisoria"
+                    data-cy="execusaoProvisoria"
+                    type="checkbox"
+                    className="form-check-input"
+                    name="execusaoProvisoria"
+                  />
+                  <Translate contentKey="cidhaApp.processo.execusaoProvisoria">Execusao Provisoria</Translate>
+                </Label>
+              </AvGroup>
+              <AvGroup>
+                <Label id="numeracaoExecusaoProvisoriaLabel" for="processo-numeracaoExecusaoProvisoria">
+                  <Translate contentKey="cidhaApp.processo.numeracaoExecusaoProvisoria">Numeracao Execusao Provisoria</Translate>
+                </Label>
+                <AvField
+                  id="processo-numeracaoExecusaoProvisoria"
+                  data-cy="numeracaoExecusaoProvisoria"
+                  type="text"
+                  name="numeracaoExecusaoProvisoria"
+                />
+              </AvGroup>
+              <AvGroup>
+                <Label id="recuperacaoEfetivaCumprimentoSentencaLabel" for="processo-recuperacaoEfetivaCumprimentoSentenca">
+                  <Translate contentKey="cidhaApp.processo.recuperacaoEfetivaCumprimentoSentenca">
+                    Recuperacao Efetiva Cumprimento Sentenca
+                  </Translate>
+                </Label>
+                <AvInput
+                  id="processo-recuperacaoEfetivaCumprimentoSentenca"
+                  data-cy="recuperacaoEfetivaCumprimentoSentenca"
+                  type="textarea"
+                  name="recuperacaoEfetivaCumprimentoSentenca"
+                />
+              </AvGroup>
+              <AvGroup>
+                <Label
+                  id="recuperacaoEfetivaCumprimentoSentencaObservacoesLabel"
+                  for="processo-recuperacaoEfetivaCumprimentoSentencaObservacoes"
+                >
+                  <Translate contentKey="cidhaApp.processo.recuperacaoEfetivaCumprimentoSentencaObservacoes">
+                    Recuperacao Efetiva Cumprimento Sentenca Observacoes
+                  </Translate>
+                </Label>
+                <AvInput
+                  id="processo-recuperacaoEfetivaCumprimentoSentencaObservacoes"
+                  data-cy="recuperacaoEfetivaCumprimentoSentencaObservacoes"
+                  type="textarea"
+                  name="recuperacaoEfetivaCumprimentoSentencaObservacoes"
+                />
+              </AvGroup>
+              <AvGroup check>
+                <Label id="envolveEmpreendimentoLabel">
+                  <AvInput
+                    id="processo-envolveEmpreendimento"
+                    data-cy="envolveEmpreendimento"
+                    type="checkbox"
+                    className="form-check-input"
+                    name="envolveEmpreendimento"
+                  />
+                  <Translate contentKey="cidhaApp.processo.envolveEmpreendimento">Envolve Empreendimento</Translate>
+                </Label>
+              </AvGroup>
+              <AvGroup check>
+                <Label id="envolveExploracaoIlegalLabel">
+                  <AvInput
+                    id="processo-envolveExploracaoIlegal"
+                    data-cy="envolveExploracaoIlegal"
+                    type="checkbox"
+                    className="form-check-input"
+                    name="envolveExploracaoIlegal"
+                  />
+                  <Translate contentKey="cidhaApp.processo.envolveExploracaoIlegal">Envolve Exploracao Ilegal</Translate>
+                </Label>
+              </AvGroup>
+              <AvGroup check>
+                <Label id="envolveTerraQuilombolaLabel">
+                  <AvInput
+                    id="processo-envolveTerraQuilombola"
+                    data-cy="envolveTerraQuilombola"
+                    type="checkbox"
+                    className="form-check-input"
+                    name="envolveTerraQuilombola"
+                  />
+                  <Translate contentKey="cidhaApp.processo.envolveTerraQuilombola">Envolve Terra Quilombola</Translate>
+                </Label>
+              </AvGroup>
+              <AvGroup check>
+                <Label id="envolveTerraComunidadeTradicionalLabel">
+                  <AvInput
+                    id="processo-envolveTerraComunidadeTradicional"
+                    data-cy="envolveTerraComunidadeTradicional"
+                    type="checkbox"
+                    className="form-check-input"
+                    name="envolveTerraComunidadeTradicional"
+                  />
+                  <Translate contentKey="cidhaApp.processo.envolveTerraComunidadeTradicional">
+                    Envolve Terra Comunidade Tradicional
+                  </Translate>
+                </Label>
+              </AvGroup>
+              <AvGroup check>
+                <Label id="envolveTerraIndigenaLabel">
+                  <AvInput
+                    id="processo-envolveTerraIndigena"
+                    data-cy="envolveTerraIndigena"
+                    type="checkbox"
+                    className="form-check-input"
+                    name="envolveTerraIndigena"
+                  />
+                  <Translate contentKey="cidhaApp.processo.envolveTerraIndigena">Envolve Terra Indigena</Translate>
+                </Label>
+              </AvGroup>
+              <AvGroup>
+                <Label id="resumoFatosLabel" for="processo-resumoFatos">
+                  <Translate contentKey="cidhaApp.processo.resumoFatos">Resumo Fatos</Translate>
+                </Label>
+                <AvInput id="processo-resumoFatos" data-cy="resumoFatos" type="textarea" name="resumoFatos" />
+              </AvGroup>
+              <AvGroup>
+                <Label id="tamanhoAreaLabel" for="processo-tamanhoArea">
+                  <Translate contentKey="cidhaApp.processo.tamanhoArea">Tamanho Area</Translate>
+                </Label>
+                <AvField id="processo-tamanhoArea" data-cy="tamanhoArea" type="text" name="tamanhoArea" />
+              </AvGroup>
+              <AvGroup>
+                <Label id="valorAreaLabel" for="processo-valorArea">
+                  <Translate contentKey="cidhaApp.processo.valorArea">Valor Area</Translate>
+                </Label>
+                <AvField id="processo-valorArea" data-cy="valorArea" type="text" name="valorArea" />
+              </AvGroup>
+              <AvGroup>
+                <Label id="tamanhoAreaObservacaoLabel" for="processo-tamanhoAreaObservacao">
+                  <Translate contentKey="cidhaApp.processo.tamanhoAreaObservacao">Tamanho Area Observacao</Translate>
+                </Label>
+                <AvInput id="processo-tamanhoAreaObservacao" data-cy="tamanhoAreaObservacao" type="textarea" name="tamanhoAreaObservacao" />
+              </AvGroup>
+              <AvGroup check>
+                <Label id="dadosGeograficosLitigioConflitoLabel">
+                  <AvInput
+                    id="processo-dadosGeograficosLitigioConflito"
+                    data-cy="dadosGeograficosLitigioConflito"
+                    type="checkbox"
+                    className="form-check-input"
+                    name="dadosGeograficosLitigioConflito"
+                  />
+                  <Translate contentKey="cidhaApp.processo.dadosGeograficosLitigioConflito">Dados Geograficos Litigio Conflito</Translate>
+                </Label>
+              </AvGroup>
+              <AvGroup>
+                <Label id="latitudeLabel" for="processo-latitude">
+                  <Translate contentKey="cidhaApp.processo.latitude">Latitude</Translate>
+                </Label>
+                <AvField id="processo-latitude" data-cy="latitude" type="text" name="latitude" />
+              </AvGroup>
+              <AvGroup>
+                <Label id="longitudeLabel" for="processo-longitude">
+                  <Translate contentKey="cidhaApp.processo.longitude">Longitude</Translate>
+                </Label>
+                <AvField id="processo-longitude" data-cy="longitude" type="text" name="longitude" />
+              </AvGroup>
+              <AvGroup>
+                <Label id="numeroProcessoMPFLabel" for="processo-numeroProcessoMPF">
+                  <Translate contentKey="cidhaApp.processo.numeroProcessoMPF">Numero Processo MPF</Translate>
+                </Label>
+                <AvField id="processo-numeroProcessoMPF" data-cy="numeroProcessoMPF" type="text" name="numeroProcessoMPF" />
+              </AvGroup>
+              <AvGroup>
+                <Label id="numeroEmbargoLabel" for="processo-numeroEmbargo">
+                  <Translate contentKey="cidhaApp.processo.numeroEmbargo">Numero Embargo</Translate>
+                </Label>
+                <AvField id="processo-numeroEmbargo" data-cy="numeroEmbargo" type="text" name="numeroEmbargo" />
+              </AvGroup>
+              <AvGroup>
+                <Label id="pautaApelacaoLabel" for="processo-pautaApelacao">
+                  <Translate contentKey="cidhaApp.processo.pautaApelacao">Pauta Apelacao</Translate>
+                </Label>
+                <AvInput id="processo-pautaApelacao" data-cy="pautaApelacao" type="textarea" name="pautaApelacao" />
+              </AvGroup>
+              <AvGroup>
+                <Label id="numeroRecursoEspecialLabel" for="processo-numeroRecursoEspecial">
+                  <Translate contentKey="cidhaApp.processo.numeroRecursoEspecial">Numero Recurso Especial</Translate>
+                </Label>
+                <AvField id="processo-numeroRecursoEspecial" data-cy="numeroRecursoEspecial" type="text" name="numeroRecursoEspecial" />
+              </AvGroup>
+              <AvGroup>
+                <Label id="admissiblidadeLabel" for="processo-admissiblidade">
+                  <Translate contentKey="cidhaApp.processo.admissiblidade">Admissiblidade</Translate>
+                </Label>
+                <AvInput id="processo-admissiblidade" data-cy="admissiblidade" type="textarea" name="admissiblidade" />
+              </AvGroup>
+              <AvGroup check>
+                <Label id="envolveGrandeProjetoLabel">
+                  <AvInput
+                    id="processo-envolveGrandeProjeto"
+                    data-cy="envolveGrandeProjeto"
+                    type="checkbox"
+                    className="form-check-input"
+                    name="envolveGrandeProjeto"
+                  />
+                  <Translate contentKey="cidhaApp.processo.envolveGrandeProjeto">Envolve Grande Projeto</Translate>
+                </Label>
+              </AvGroup>
+              <AvGroup check>
+                <Label id="envolveUnidadeConservacaoLabel">
+                  <AvInput
+                    id="processo-envolveUnidadeConservacao"
+                    data-cy="envolveUnidadeConservacao"
+                    type="checkbox"
+                    className="form-check-input"
+                    name="envolveUnidadeConservacao"
+                  />
+                  <Translate contentKey="cidhaApp.processo.envolveUnidadeConservacao">Envolve Unidade Conservacao</Translate>
+                </Label>
+              </AvGroup>
+              <AvGroup>
+                <Label id="linkReferenciaLabel" for="processo-linkReferencia">
+                  <Translate contentKey="cidhaApp.processo.linkReferencia">Link Referencia</Translate>
+                </Label>
+                <AvInput id="processo-linkReferencia" data-cy="linkReferencia" type="textarea" name="linkReferencia" />
               </AvGroup>
               <AvGroup>
                 <Label for="processo-tipoDecisao">
