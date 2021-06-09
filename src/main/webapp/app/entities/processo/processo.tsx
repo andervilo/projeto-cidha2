@@ -108,13 +108,6 @@ export const Processo = (props: IProcessoProps) => {
                 <th className="hand" onClick={sort('linkTrf')}>
                   <Translate contentKey="cidhaApp.processo.linkTrf">Link Trf</Translate> <FontAwesomeIcon icon="sort" />
                 </th>
-                <th className="hand" onClick={sort('secaoJudiciaria')}>
-                  <Translate contentKey="cidhaApp.processo.secaoJudiciaria">Secao Judiciaria</Translate> <FontAwesomeIcon icon="sort" />
-                </th>
-                <th className="hand" onClick={sort('subsecaoJudiciaria')}>
-                  <Translate contentKey="cidhaApp.processo.subsecaoJudiciaria">Subsecao Judiciaria</Translate>{' '}
-                  <FontAwesomeIcon icon="sort" />
-                </th>
                 <th className="hand" onClick={sort('turmaTrf1')}>
                   <Translate contentKey="cidhaApp.processo.turmaTrf1">Turma Trf 1</Translate> <FontAwesomeIcon icon="sort" />
                 </th>
@@ -183,6 +176,10 @@ export const Processo = (props: IProcessoProps) => {
                 </th>
                 <th className="hand" onClick={sort('embargoDeclaracao')}>
                   <Translate contentKey="cidhaApp.processo.embargoDeclaracao">Embargo Declaracao</Translate> <FontAwesomeIcon icon="sort" />
+                </th>
+                <th className="hand" onClick={sort('embargoRecursoExtraordinario')}>
+                  <Translate contentKey="cidhaApp.processo.embargoRecursoExtraordinario">Embargo Recurso Extraordinario</Translate>{' '}
+                  <FontAwesomeIcon icon="sort" />
                 </th>
                 <th className="hand" onClick={sort('folhasRecursoEspecial')}>
                   <Translate contentKey="cidhaApp.processo.folhasRecursoEspecial">Folhas Recurso Especial</Translate>{' '}
@@ -353,12 +350,18 @@ export const Processo = (props: IProcessoProps) => {
                 <th className="hand" onClick={sort('linkReferencia')}>
                   <Translate contentKey="cidhaApp.processo.linkReferencia">Link Referencia</Translate> <FontAwesomeIcon icon="sort" />
                 </th>
+                <th className="hand" onClick={sort('statusProcesso')}>
+                  <Translate contentKey="cidhaApp.processo.statusProcesso">Status Processo</Translate> <FontAwesomeIcon icon="sort" />
+                </th>
                 <th>
                   <Translate contentKey="cidhaApp.processo.tipoDecisao">Tipo Decisao</Translate> <FontAwesomeIcon icon="sort" />
                 </th>
                 <th>
                   <Translate contentKey="cidhaApp.processo.tipoEmpreendimento">Tipo Empreendimento</Translate>{' '}
                   <FontAwesomeIcon icon="sort" />
+                </th>
+                <th>
+                  <Translate contentKey="cidhaApp.processo.secaoJudiciaria">Secao Judiciaria</Translate> <FontAwesomeIcon icon="sort" />
                 </th>
                 <th />
               </tr>
@@ -376,8 +379,6 @@ export const Processo = (props: IProcessoProps) => {
                   <td>{processo.assunto}</td>
                   <td>{processo.linkUnico}</td>
                   <td>{processo.linkTrf}</td>
-                  <td>{processo.secaoJudiciaria}</td>
-                  <td>{processo.subsecaoJudiciaria}</td>
                   <td>{processo.turmaTrf1}</td>
                   <td>{processo.numeroProcessoAdministrativo}</td>
                   <td>{processo.numeroProcessoJudicialPrimeiraInstancia}</td>
@@ -396,6 +397,7 @@ export const Processo = (props: IProcessoProps) => {
                   <td>{processo.acordaoApelacao}</td>
                   <td>{processo.folhasCienciaJulgApelacao}</td>
                   <td>{processo.embargoDeclaracao ? 'true' : 'false'}</td>
+                  <td>{processo.embargoRecursoExtraordinario ? 'true' : 'false'}</td>
                   <td>{processo.folhasRecursoEspecial}</td>
                   <td>{processo.acordaoRecursoEspecial}</td>
                   <td>{processo.folhasCienciaJulgamentoRecursoEspecial}</td>
@@ -442,6 +444,9 @@ export const Processo = (props: IProcessoProps) => {
                   <td>{processo.envolveUnidadeConservacao ? 'true' : 'false'}</td>
                   <td>{processo.linkReferencia}</td>
                   <td>
+                    <Translate contentKey={`cidhaApp.StatusProcesso.${processo.statusProcesso}`} />
+                  </td>
+                  <td>
                     {processo.tipoDecisao ? (
                       <Link to={`tipo-decisao/${processo.tipoDecisao.id}`}>{processo.tipoDecisao.descricao}</Link>
                     ) : (
@@ -451,6 +456,13 @@ export const Processo = (props: IProcessoProps) => {
                   <td>
                     {processo.tipoEmpreendimento ? (
                       <Link to={`tipo-empreendimento/${processo.tipoEmpreendimento.id}`}>{processo.tipoEmpreendimento.descricao}</Link>
+                    ) : (
+                      ''
+                    )}
+                  </td>
+                  <td>
+                    {processo.secaoJudiciaria ? (
+                      <Link to={`secao-judiciaria/${processo.secaoJudiciaria.id}`}>{processo.secaoJudiciaria.nome}</Link>
                     ) : (
                       ''
                     )}

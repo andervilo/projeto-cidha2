@@ -64,12 +64,6 @@ public class ProcessoService {
                     if (processo.getLinkTrf() != null) {
                         existingProcesso.setLinkTrf(processo.getLinkTrf());
                     }
-                    if (processo.getSecaoJudiciaria() != null) {
-                        existingProcesso.setSecaoJudiciaria(processo.getSecaoJudiciaria());
-                    }
-                    if (processo.getSubsecaoJudiciaria() != null) {
-                        existingProcesso.setSubsecaoJudiciaria(processo.getSubsecaoJudiciaria());
-                    }
                     if (processo.getTurmaTrf1() != null) {
                         existingProcesso.setTurmaTrf1(processo.getTurmaTrf1());
                     }
@@ -127,6 +121,9 @@ public class ProcessoService {
                     }
                     if (processo.getEmbargoDeclaracao() != null) {
                         existingProcesso.setEmbargoDeclaracao(processo.getEmbargoDeclaracao());
+                    }
+                    if (processo.getEmbargoRecursoExtraordinario() != null) {
+                        existingProcesso.setEmbargoRecursoExtraordinario(processo.getEmbargoRecursoExtraordinario());
                     }
                     if (processo.getFolhasRecursoEspecial() != null) {
                         existingProcesso.setFolhasRecursoEspecial(processo.getFolhasRecursoEspecial());
@@ -264,6 +261,9 @@ public class ProcessoService {
                     }
                     if (processo.getLinkReferencia() != null) {
                         existingProcesso.setLinkReferencia(processo.getLinkReferencia());
+                    }
+                    if (processo.getStatusProcesso() != null) {
+                        existingProcesso.setStatusProcesso(processo.getStatusProcesso());
                     }
 
                     return existingProcesso;

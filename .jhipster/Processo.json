@@ -23,14 +23,6 @@
       "fieldType": "String"
     },
     {
-      "fieldName": "secaoJudiciaria",
-      "fieldType": "String"
-    },
-    {
-      "fieldName": "subsecaoJudiciaria",
-      "fieldType": "String"
-    },
-    {
       "fieldName": "turmaTrf1",
       "fieldType": "String"
     },
@@ -104,6 +96,10 @@
     },
     {
       "fieldName": "embargoDeclaracao",
+      "fieldType": "Boolean"
+    },
+    {
+      "fieldName": "embargoRecursoExtraordinario",
       "fieldType": "Boolean"
     },
     {
@@ -295,6 +291,11 @@
       "fieldName": "linkReferencia",
       "fieldType": "byte[]",
       "fieldTypeBlobContent": "text"
+    },
+    {
+      "fieldName": "statusProcesso",
+      "fieldType": "StatusProcesso",
+      "fieldValues": "EM_ANDAMENTO,FINALIZADO"
     }
   ],
   "relationships": [
@@ -349,18 +350,17 @@
       "otherEntityField": "descricao"
     },
     {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "secaoJudiciaria",
+      "otherEntityRelationshipName": "processo",
+      "relationshipName": "secaoJudiciaria",
+      "otherEntityField": "nome"
+    },
+    {
       "relationshipType": "many-to-many",
       "otherEntityName": "comarca",
       "otherEntityRelationshipName": "processo",
       "relationshipName": "comarca",
-      "otherEntityField": "nome",
-      "ownerSide": true
-    },
-    {
-      "relationshipType": "many-to-many",
-      "otherEntityName": "quilombo",
-      "otherEntityRelationshipName": "processo",
-      "relationshipName": "quilombo",
       "otherEntityField": "nome",
       "ownerSide": true
     },
@@ -437,13 +437,20 @@
     },
     {
       "relationshipType": "many-to-many",
+      "otherEntityName": "quilombo",
+      "otherEntityRelationshipName": "processo",
+      "relationshipName": "quilombo",
+      "otherEntityField": "nome",
+      "ownerSide": true
+    },
+    {
+      "relationshipType": "many-to-many",
       "otherEntityName": "problemaJuridico",
       "otherEntityRelationshipName": "processo",
       "relationshipName": "problemaJuridico",
       "ownerSide": false
     }
   ],
-  "changelogDate": "20210405142217",
   "entityTableName": "processo",
   "dto": "no",
   "pagination": "pagination",
@@ -452,8 +459,6 @@
   "fluentMethods": true,
   "readOnly": false,
   "embedded": false,
-  "clientRootFolder": "",
   "applications": "*",
-  "searchEngine": false,
-  "databaseType": "sql"
+  "changelogDate": "20210608111933"
 }

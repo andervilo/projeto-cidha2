@@ -1,11 +1,26 @@
 package br.com.cidha.domain;
 
+import br.com.cidha.domain.enumeration.StatusProcesso;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.HashSet;
 import java.util.Set;
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.Lob;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
@@ -21,8 +36,7 @@ public class Processo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-    @SequenceGenerator(name = "sequenceGenerator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "numero_processo")
@@ -41,12 +55,6 @@ public class Processo implements Serializable {
 
     @Column(name = "link_trf")
     private String linkTrf;
-
-    @Column(name = "secao_judiciaria")
-    private String secaoJudiciaria;
-
-    @Column(name = "subsecao_judiciaria")
-    private String subsecaoJudiciaria;
 
     @Column(name = "turma_trf_1")
     private String turmaTrf1;
@@ -109,6 +117,9 @@ public class Processo implements Serializable {
 
     @Column(name = "embargo_declaracao")
     private Boolean embargoDeclaracao;
+
+    @Column(name = "embargo_recurso_extraordinario")
+    private Boolean embargoRecursoExtraordinario;
 
     @Column(name = "folhas_recurso_especial")
     private String folhasRecursoEspecial;
@@ -265,6 +276,10 @@ public class Processo implements Serializable {
     @Column(name = "link_referencia")
     private String linkReferencia;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status_processo")
+    private StatusProcesso statusProcesso;
+
     @OneToMany(mappedBy = "processo")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(value = { "processo" }, allowSetters = true)
@@ -301,6 +316,10 @@ public class Processo implements Serializable {
     @ManyToOne
     private TipoEmpreendimento tipoEmpreendimento;
 
+    @ManyToOne
+    @JsonIgnoreProperties(value = { "subsecaoJudiciaria" }, allowSetters = true)
+    private SecaoJudiciaria secaoJudiciaria;
+
     @ManyToMany
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JoinTable(
@@ -310,16 +329,6 @@ public class Processo implements Serializable {
     )
     @JsonIgnoreProperties(value = { "processos" }, allowSetters = true)
     private Set<Comarca> comarcas = new HashSet<>();
-
-    @ManyToMany
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @JoinTable(
-        name = "rel_processo__quilombo",
-        joinColumns = @JoinColumn(name = "processo_id"),
-        inverseJoinColumns = @JoinColumn(name = "quilombo_id")
-    )
-    @JsonIgnoreProperties(value = { "processos" }, allowSetters = true)
-    private Set<Quilombo> quilombos = new HashSet<>();
 
     @ManyToMany
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
@@ -411,6 +420,16 @@ public class Processo implements Serializable {
     @JsonIgnoreProperties(value = { "processos" }, allowSetters = true)
     private Set<Relator> relators = new HashSet<>();
 
+    @ManyToMany
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @JoinTable(
+        name = "rel_processo__quilombo",
+        joinColumns = @JoinColumn(name = "processo_id"),
+        inverseJoinColumns = @JoinColumn(name = "quilombo_id")
+    )
+    @JsonIgnoreProperties(value = { "processos" }, allowSetters = true)
+    private Set<Quilombo> quilombos = new HashSet<>();
+
     @ManyToMany(mappedBy = "processos")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
     @JsonIgnoreProperties(
@@ -496,32 +515,6 @@ public class Processo implements Serializable {
 
     public void setLinkTrf(String linkTrf) {
         this.linkTrf = linkTrf;
-    }
-
-    public String getSecaoJudiciaria() {
-        return this.secaoJudiciaria;
-    }
-
-    public Processo secaoJudiciaria(String secaoJudiciaria) {
-        this.secaoJudiciaria = secaoJudiciaria;
-        return this;
-    }
-
-    public void setSecaoJudiciaria(String secaoJudiciaria) {
-        this.secaoJudiciaria = secaoJudiciaria;
-    }
-
-    public String getSubsecaoJudiciaria() {
-        return this.subsecaoJudiciaria;
-    }
-
-    public Processo subsecaoJudiciaria(String subsecaoJudiciaria) {
-        this.subsecaoJudiciaria = subsecaoJudiciaria;
-        return this;
-    }
-
-    public void setSubsecaoJudiciaria(String subsecaoJudiciaria) {
-        this.subsecaoJudiciaria = subsecaoJudiciaria;
     }
 
     public String getTurmaTrf1() {
@@ -756,6 +749,19 @@ public class Processo implements Serializable {
 
     public void setEmbargoDeclaracao(Boolean embargoDeclaracao) {
         this.embargoDeclaracao = embargoDeclaracao;
+    }
+
+    public Boolean getEmbargoRecursoExtraordinario() {
+        return this.embargoRecursoExtraordinario;
+    }
+
+    public Processo embargoRecursoExtraordinario(Boolean embargoRecursoExtraordinario) {
+        this.embargoRecursoExtraordinario = embargoRecursoExtraordinario;
+        return this;
+    }
+
+    public void setEmbargoRecursoExtraordinario(Boolean embargoRecursoExtraordinario) {
+        this.embargoRecursoExtraordinario = embargoRecursoExtraordinario;
     }
 
     public String getFolhasRecursoEspecial() {
@@ -1343,6 +1349,19 @@ public class Processo implements Serializable {
         this.linkReferencia = linkReferencia;
     }
 
+    public StatusProcesso getStatusProcesso() {
+        return this.statusProcesso;
+    }
+
+    public Processo statusProcesso(StatusProcesso statusProcesso) {
+        this.statusProcesso = statusProcesso;
+        return this;
+    }
+
+    public void setStatusProcesso(StatusProcesso statusProcesso) {
+        this.statusProcesso = statusProcesso;
+    }
+
     public Set<ConcessaoLiminar> getConcessaoLiminars() {
         return this.concessaoLiminars;
     }
@@ -1555,6 +1574,19 @@ public class Processo implements Serializable {
         this.tipoEmpreendimento = tipoEmpreendimento;
     }
 
+    public SecaoJudiciaria getSecaoJudiciaria() {
+        return this.secaoJudiciaria;
+    }
+
+    public Processo secaoJudiciaria(SecaoJudiciaria secaoJudiciaria) {
+        this.setSecaoJudiciaria(secaoJudiciaria);
+        return this;
+    }
+
+    public void setSecaoJudiciaria(SecaoJudiciaria secaoJudiciaria) {
+        this.secaoJudiciaria = secaoJudiciaria;
+    }
+
     public Set<Comarca> getComarcas() {
         return this.comarcas;
     }
@@ -1578,31 +1610,6 @@ public class Processo implements Serializable {
 
     public void setComarcas(Set<Comarca> comarcas) {
         this.comarcas = comarcas;
-    }
-
-    public Set<Quilombo> getQuilombos() {
-        return this.quilombos;
-    }
-
-    public Processo quilombos(Set<Quilombo> quilombos) {
-        this.setQuilombos(quilombos);
-        return this;
-    }
-
-    public Processo addQuilombo(Quilombo quilombo) {
-        this.quilombos.add(quilombo);
-        quilombo.getProcessos().add(this);
-        return this;
-    }
-
-    public Processo removeQuilombo(Quilombo quilombo) {
-        this.quilombos.remove(quilombo);
-        quilombo.getProcessos().remove(this);
-        return this;
-    }
-
-    public void setQuilombos(Set<Quilombo> quilombos) {
-        this.quilombos = quilombos;
     }
 
     public Set<Municipio> getMunicipios() {
@@ -1830,6 +1837,31 @@ public class Processo implements Serializable {
         this.relators = relators;
     }
 
+    public Set<Quilombo> getQuilombos() {
+        return this.quilombos;
+    }
+
+    public Processo quilombos(Set<Quilombo> quilombos) {
+        this.setQuilombos(quilombos);
+        return this;
+    }
+
+    public Processo addQuilombo(Quilombo quilombo) {
+        this.quilombos.add(quilombo);
+        quilombo.getProcessos().add(this);
+        return this;
+    }
+
+    public Processo removeQuilombo(Quilombo quilombo) {
+        this.quilombos.remove(quilombo);
+        quilombo.getProcessos().remove(this);
+        return this;
+    }
+
+    public void setQuilombos(Set<Quilombo> quilombos) {
+        this.quilombos = quilombos;
+    }
+
     public Set<ProblemaJuridico> getProblemaJuridicos() {
         return this.problemaJuridicos;
     }
@@ -1890,8 +1922,6 @@ public class Processo implements Serializable {
             ", assunto='" + getAssunto() + "'" +
             ", linkUnico='" + getLinkUnico() + "'" +
             ", linkTrf='" + getLinkTrf() + "'" +
-            ", secaoJudiciaria='" + getSecaoJudiciaria() + "'" +
-            ", subsecaoJudiciaria='" + getSubsecaoJudiciaria() + "'" +
             ", turmaTrf1='" + getTurmaTrf1() + "'" +
             ", numeroProcessoAdministrativo='" + getNumeroProcessoAdministrativo() + "'" +
             ", numeroProcessoJudicialPrimeiraInstancia='" + getNumeroProcessoJudicialPrimeiraInstancia() + "'" +
@@ -1910,6 +1940,7 @@ public class Processo implements Serializable {
             ", acordaoApelacao='" + getAcordaoApelacao() + "'" +
             ", folhasCienciaJulgApelacao='" + getFolhasCienciaJulgApelacao() + "'" +
             ", embargoDeclaracao='" + getEmbargoDeclaracao() + "'" +
+            ", embargoRecursoExtraordinario='" + getEmbargoRecursoExtraordinario() + "'" +
             ", folhasRecursoEspecial='" + getFolhasRecursoEspecial() + "'" +
             ", acordaoRecursoEspecial='" + getAcordaoRecursoEspecial() + "'" +
             ", folhasCienciaJulgamentoRecursoEspecial='" + getFolhasCienciaJulgamentoRecursoEspecial() + "'" +
@@ -1955,6 +1986,7 @@ public class Processo implements Serializable {
             ", envolveGrandeProjeto='" + getEnvolveGrandeProjeto() + "'" +
             ", envolveUnidadeConservacao='" + getEnvolveUnidadeConservacao() + "'" +
             ", linkReferencia='" + getLinkReferencia() + "'" +
+            ", statusProcesso='" + getStatusProcesso() + "'" +
             "}";
     }
 }

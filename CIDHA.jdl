@@ -77,14 +77,23 @@ entity ProblemaJuridico {
   prolemaJuridicoRespondido TextBlob
   folhasProblemaJuridico String
 }
+
+entity SecaoJudiciaria {
+  sigla String
+  nome String
+}
+
+entity SubsecaoJudiciaria {
+  sigla String
+  nome String
+}
+
 entity Processo {
   numeroProcesso String
   oficio String
   assunto TextBlob
   linkUnico String
   linkTrf String
-  secaoJudiciaria String
-  subsecaoJudiciaria String
   turmaTrf1 String
   numeroProcessoAdministrativo String
   numeroProcessoJudicialPrimeiraInstancia String
@@ -103,6 +112,7 @@ entity Processo {
   acordaoApelacao TextBlob
   folhasCienciaJulgApelacao String 
   embargoDeclaracao Boolean
+  embargoRecursoExtraordinario Boolean
   folhasRecursoEspecial String 
   acordaoRecursoEspecial TextBlob
   folhasCienciaJulgamentoRecursoEspecial String 
@@ -148,6 +158,7 @@ entity Processo {
   envolveGrandeProjeto Boolean
   envolveUnidadeConservacao Boolean
   linkReferencia TextBlob
+  statusProcesso StatusProcesso
 
 }
 entity ProcessoConflito {
@@ -156,9 +167,22 @@ entity ProcessoConflito {
   nomeCasoComuidade String
   consultaPrevia Boolean
 }
-entity Quilombo {
-  nome String
+enum TipoQuilombo {
+  COMUNIDADE,
+  TERRITORIO,
+  AMBOS
 }
+
+entity Quilombo {
+  nome String  
+  tipoQuilombo TipoQuilombo
+}
+
+enum StatusProcesso {
+	EM_ANDAMENTO,
+	FINALIZADO
+}
+
 entity Recurso {
   observacoes TextBlob
 }
@@ -212,6 +236,8 @@ relationship ManyToOne {
   Processo{tipoEmpreendimento(descricao)} to TipoEmpreendimento
   Recurso{processo(oficio)} to Processo
   RepresentanteLegal{tipoRepresentante(descricao)} to TipoRepresentante
+  Processo{secaoJudiciaria(Nome)} to SecaoJudiciaria
+  SecaoJudiciaria{subsecaoJudiciaria(Nome)} to SubsecaoJudiciaria
 }
 relationship ManyToMany {
   ParteInteresssada{representanteLegal(nome)} to RepresentanteLegal{processoConflito(nomeCasoComuidade)}
@@ -221,7 +247,6 @@ relationship ManyToMany {
   ProblemaJuridico{instrumentoInternacional(instrumentoInternacionalCitadoDescricao)} to InstrumentoInternacional{problemaJuridico}
   ProblemaJuridico{processo(oficio)} to Processo{problemaJuridico}
   Processo{comarca(nome)} to Comarca{processo(oficio)}
-  Processo{quilombo(nome)} to Quilombo{processo(oficio)}
   Processo{municipio(nome)} to Municipio{processo(oficio)}
   Processo{territorio(nome)} to Territorio{processo(oficio)}
   Processo{atividadeExploracaoIlegal(descricao)} to AtividadeExploracaoIlegal{processo(oficio)}
@@ -232,9 +257,10 @@ relationship ManyToMany {
   Processo{parteInteresssada(nome)} to ParteInteresssada{processo(oficio)}
   Processo{relator(nome)} to Relator{processo(oficio)}
   ProcessoConflito{direito(descricao)} to Direito{processoConflito(nomeCasoComuidade)}
+  Processo{quilombo(nome)} to Quilombo{processo(oficio)}
   TerraIndigena{etnia(nome)} to EtniaIndigena{terraIndigena(descricao)}
 }
 
-paginate AtividadeExploracaoIlegal, Comarca, ConcessaoLiminar, ConcessaoLiminarCassada, Conflito, Data, Direito, EmbargoDeclaracao, EmbargoDeclaracaoAgravo, EmbargoRecursoEspecial, EmbargoRespRe, EnvolvidosConflitoLitigio, EtniaIndigena, FundamentacaoDoutrinaria, FundamentacaoLegal, InstrumentoInternacional, Jurisprudencia, Municipio, OpcaoRecurso, ParteInteresssada, ProblemaJuridico, Processo, ProcessoConflito, Quilombo, Recurso, Relator, RepresentanteLegal, TerraIndigena, Territorio, TipoData, TipoDecisao, TipoEmpreendimento, TipoRecurso, TipoRepresentante, UnidadeConservacao with pagination
-service AtividadeExploracaoIlegal, Comarca, ConcessaoLiminar, ConcessaoLiminarCassada, Conflito, Data, Direito, EmbargoDeclaracao, EmbargoDeclaracaoAgravo, EmbargoRecursoEspecial, EmbargoRespRe, EnvolvidosConflitoLitigio, EtniaIndigena, FundamentacaoDoutrinaria, FundamentacaoLegal, InstrumentoInternacional, Jurisprudencia, Municipio, OpcaoRecurso, ParteInteresssada, ProblemaJuridico, Processo, ProcessoConflito, Quilombo, Recurso, Relator, RepresentanteLegal, TerraIndigena, Territorio, TipoData, TipoDecisao, TipoEmpreendimento, TipoRecurso, TipoRepresentante, UnidadeConservacao with serviceClass
-filter AtividadeExploracaoIlegal, Comarca, ConcessaoLiminar, ConcessaoLiminarCassada, Conflito, Data, Direito, EmbargoDeclaracao, EmbargoDeclaracaoAgravo, EmbargoRecursoEspecial, EmbargoRespRe, EnvolvidosConflitoLitigio, EtniaIndigena, FundamentacaoDoutrinaria, FundamentacaoLegal, InstrumentoInternacional, Jurisprudencia, Municipio, OpcaoRecurso, ParteInteresssada, ProblemaJuridico, Processo, ProcessoConflito, Quilombo, Recurso, Relator, RepresentanteLegal, TerraIndigena, Territorio, TipoData, TipoDecisao, TipoEmpreendimento, TipoRecurso, TipoRepresentante, UnidadeConservacao
+paginate AtividadeExploracaoIlegal, Comarca, ConcessaoLiminar, ConcessaoLiminarCassada, Conflito, Data, Direito, EmbargoDeclaracao, EmbargoDeclaracaoAgravo, EmbargoRecursoEspecial, EmbargoRespRe, EnvolvidosConflitoLitigio, EtniaIndigena, FundamentacaoDoutrinaria, FundamentacaoLegal, InstrumentoInternacional, Jurisprudencia, Municipio, OpcaoRecurso, ParteInteresssada, ProblemaJuridico, Quilombo, Processo, ProcessoConflito, Recurso, Relator, RepresentanteLegal, TerraIndigena, Territorio, TipoData, TipoDecisao, TipoEmpreendimento, TipoRecurso, TipoRepresentante, UnidadeConservacao with pagination
+service AtividadeExploracaoIlegal, Comarca, ConcessaoLiminar, ConcessaoLiminarCassada, Conflito, Data, Direito, EmbargoDeclaracao, EmbargoDeclaracaoAgravo, EmbargoRecursoEspecial, EmbargoRespRe, EnvolvidosConflitoLitigio, EtniaIndigena, FundamentacaoDoutrinaria, FundamentacaoLegal, InstrumentoInternacional, Jurisprudencia, Municipio, OpcaoRecurso, ParteInteresssada, ProblemaJuridico, Quilombo, Processo, ProcessoConflito, Recurso, Relator, RepresentanteLegal, TerraIndigena, Territorio, TipoData, TipoDecisao, TipoEmpreendimento, TipoRecurso, TipoRepresentante, UnidadeConservacao with serviceClass
+filter AtividadeExploracaoIlegal, Comarca, ConcessaoLiminar, ConcessaoLiminarCassada, Conflito, Data, Direito, EmbargoDeclaracao, EmbargoDeclaracaoAgravo, EmbargoRecursoEspecial, EmbargoRespRe, EnvolvidosConflitoLitigio, EtniaIndigena, FundamentacaoDoutrinaria, FundamentacaoLegal, InstrumentoInternacional, Jurisprudencia, Municipio, OpcaoRecurso, ParteInteresssada, ProblemaJuridico, Quilombo, Processo, ProcessoConflito, Recurso, Relator, RepresentanteLegal, TerraIndigena, Territorio, TipoData, TipoDecisao, TipoEmpreendimento, TipoRecurso, TipoRepresentante, UnidadeConservacao

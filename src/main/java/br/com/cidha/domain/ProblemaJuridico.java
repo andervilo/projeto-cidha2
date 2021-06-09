@@ -20,8 +20,7 @@ public class ProblemaJuridico implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-    @SequenceGenerator(name = "sequenceGenerator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Lob
@@ -89,8 +88,8 @@ public class ProblemaJuridico implements Serializable {
             "embargoRespRes",
             "tipoDecisao",
             "tipoEmpreendimento",
+            "secaoJudiciaria",
             "comarcas",
-            "quilombos",
             "municipios",
             "territorios",
             "atividadeExploracaoIlegals",
@@ -100,6 +99,7 @@ public class ProblemaJuridico implements Serializable {
             "processoConflitos",
             "parteInteresssadas",
             "relators",
+            "quilombos",
             "problemaJuridicos",
         },
         allowSetters = true

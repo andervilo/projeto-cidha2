@@ -23,7 +23,6 @@
       "otherEntityField": "oficio"
     }
   ],
-  "changelogDate": "20210405143517",
   "entityTableName": "data",
   "dto": "no",
   "pagination": "pagination",
@@ -32,6 +31,6 @@
   "fluentMethods": true,
   "readOnly": false,
   "embedded": false,
-  "clientRootFolder": "",
-  "applications": "*"
+  "applications": "*",
+  "changelogDate": "20210608111915"
 }

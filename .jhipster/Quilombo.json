@@ -4,6 +4,11 @@
     {
       "fieldName": "nome",
       "fieldType": "String"
+    },
+    {
+      "fieldName": "tipoQuilombo",
+      "fieldType": "TipoQuilombo",
+      "fieldValues": "COMUNIDADE,TERRITORIO,AMBOS"
     }
   ],
   "relationships": [
@@ -16,7 +21,6 @@
       "ownerSide": false
     }
   ],
-  "changelogDate": "20210405142117",
   "entityTableName": "quilombo",
   "dto": "no",
   "pagination": "pagination",
@@ -25,6 +29,6 @@
   "fluentMethods": true,
   "readOnly": false,
   "embedded": false,
-  "clientRootFolder": "",
-  "applications": "*"
+  "applications": "*",
+  "changelogDate": "20210609115750"
 }

@@ -50,8 +50,6 @@ public class CacheConfiguration {
             createCache(cm, br.com.cidha.domain.User.class.getName() + ".authorities");
             createCache(cm, br.com.cidha.domain.Comarca.class.getName());
             createCache(cm, br.com.cidha.domain.Comarca.class.getName() + ".processos");
-            createCache(cm, br.com.cidha.domain.Quilombo.class.getName());
-            createCache(cm, br.com.cidha.domain.Quilombo.class.getName() + ".processos");
             createCache(cm, br.com.cidha.domain.Processo.class.getName());
             createCache(cm, br.com.cidha.domain.Processo.class.getName() + ".concessaoLiminars");
             createCache(cm, br.com.cidha.domain.Processo.class.getName() + ".concessaoLiminarCassadas");
@@ -132,6 +130,10 @@ public class CacheConfiguration {
             createCache(cm, br.com.cidha.domain.Processo.class.getName() + ".embargoDeclaracaos");
             createCache(cm, br.com.cidha.domain.Processo.class.getName() + ".embargoDeclaracaoAgravos");
             createCache(cm, br.com.cidha.domain.Processo.class.getName() + ".embargoRecursoEspecials");
+            createCache(cm, br.com.cidha.domain.SecaoJudiciaria.class.getName());
+            createCache(cm, br.com.cidha.domain.SubsecaoJudiciaria.class.getName());
+            createCache(cm, br.com.cidha.domain.Quilombo.class.getName());
+            createCache(cm, br.com.cidha.domain.Quilombo.class.getName() + ".processos");
             // jhipster-needle-ehcache-add-entry
         };
     }

@@ -1,0 +1,30 @@
+{
+  "name": "EtniaIndigena",
+  "fields": [
+    {
+      "fieldName": "nome",
+      "fieldType": "String"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "many-to-many",
+      "otherEntityName": "terraIndigena",
+      "otherEntityRelationshipName": "etnia",
+      "relationshipName": "terraIndigena",
+      "otherEntityField": "descricao",
+      "ownerSide": false
+    }
+  ],
+  "changelogDate": "20210405144717",
+  "entityTableName": "etnia_indigena",
+  "dto": "no",
+  "pagination": "pagination",
+  "service": "serviceClass",
+  "jpaMetamodelFiltering": true,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": "*"
+}

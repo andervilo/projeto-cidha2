@@ -1,5 +1,6 @@
 package br.com.cidha.domain;
 
+import br.com.cidha.domain.enumeration.TipoQuilombo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.io.Serializable;
 import java.util.HashSet;
@@ -19,12 +20,15 @@ public class Quilombo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "sequenceGenerator")
-    @SequenceGenerator(name = "sequenceGenerator")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "nome")
     private String nome;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "tipo_quilombo")
+    private TipoQuilombo tipoQuilombo;
 
     @ManyToMany(mappedBy = "quilombos")
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
@@ -38,8 +42,8 @@ public class Quilombo implements Serializable {
             "embargoRespRes",
             "tipoDecisao",
             "tipoEmpreendimento",
+            "secaoJudiciaria",
             "comarcas",
-            "quilombos",
             "municipios",
             "territorios",
             "atividadeExploracaoIlegals",
@@ -49,6 +53,7 @@ public class Quilombo implements Serializable {
             "processoConflitos",
             "parteInteresssadas",
             "relators",
+            "quilombos",
             "problemaJuridicos",
         },
         allowSetters = true
@@ -80,6 +85,19 @@ public class Quilombo implements Serializable {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public TipoQuilombo getTipoQuilombo() {
+        return this.tipoQuilombo;
+    }
+
+    public Quilombo tipoQuilombo(TipoQuilombo tipoQuilombo) {
+        this.tipoQuilombo = tipoQuilombo;
+        return this;
+    }
+
+    public void setTipoQuilombo(TipoQuilombo tipoQuilombo) {
+        this.tipoQuilombo = tipoQuilombo;
     }
 
     public Set<Processo> getProcessos() {
@@ -138,6 +156,7 @@ public class Quilombo implements Serializable {
         return "Quilombo{" +
             "id=" + getId() +
             ", nome='" + getNome() + "'" +
+            ", tipoQuilombo='" + getTipoQuilombo() + "'" +
             "}";
     }
 }

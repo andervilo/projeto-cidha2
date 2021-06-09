@@ -20,7 +20,6 @@
       "ownerSide": false
     }
   ],
-  "changelogDate": "20210405142017",
   "entityTableName": "comarca",
   "dto": "no",
   "pagination": "pagination",
@@ -29,6 +28,6 @@
   "fluentMethods": true,
   "readOnly": false,
   "embedded": false,
-  "clientRootFolder": "",
-  "applications": "*"
+  "applications": "*",
+  "changelogDate": "20210608111911"
 }

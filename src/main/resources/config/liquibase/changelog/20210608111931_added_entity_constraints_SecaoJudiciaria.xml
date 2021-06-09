@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd">
+    <!--
+        Added the constraints for entity SecaoJudiciaria.
+    -->
+    <changeSet id="20210608111931-2" author="jhipster">
+
+        <addForeignKeyConstraint baseColumnNames="subsecao_judiciaria_id"
+                                 baseTableName="secao_judiciaria"
+                                 constraintName="fk_secao_judiciaria__subsecao_judiciaria_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="subsecao_judiciaria"/>
+    </changeSet>
+</databaseChangeLog>

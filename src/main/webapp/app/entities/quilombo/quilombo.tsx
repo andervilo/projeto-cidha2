@@ -96,6 +96,9 @@ export const Quilombo = (props: IQuilomboProps) => {
                 <th className="hand" onClick={sort('nome')}>
                   <Translate contentKey="cidhaApp.quilombo.nome">Nome</Translate> <FontAwesomeIcon icon="sort" />
                 </th>
+                <th className="hand" onClick={sort('tipoQuilombo')}>
+                  <Translate contentKey="cidhaApp.quilombo.tipoQuilombo">Tipo Quilombo</Translate> <FontAwesomeIcon icon="sort" />
+                </th>
                 <th />
               </tr>
             </thead>
@@ -108,6 +111,9 @@ export const Quilombo = (props: IQuilomboProps) => {
                     </Button>
                   </td>
                   <td>{quilombo.nome}</td>
+                  <td>
+                    <Translate contentKey={`cidhaApp.TipoQuilombo.${quilombo.tipoQuilombo}`} />
+                  </td>
                   <td className="text-right">
                     <div className="btn-group flex-btn-group-container">
                       <Button tag={Link} to={`${match.url}/${quilombo.id}`} color="info" size="sm" data-cy="entityDetailsButton">

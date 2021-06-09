@@ -16,7 +16,6 @@
       "ownerSide": false
     }
   ],
-  "changelogDate": "20210405144417",
   "entityTableName": "atividade_exploracao_ilegal",
   "dto": "no",
   "pagination": "pagination",
@@ -25,6 +24,6 @@
   "fluentMethods": true,
   "readOnly": false,
   "embedded": false,
-  "clientRootFolder": "",
-  "applications": "*"
+  "applications": "*",
+  "changelogDate": "20210608111910"
 }

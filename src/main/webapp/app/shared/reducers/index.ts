@@ -152,6 +152,14 @@ import parteInteresssada, {
 import relator, {
   RelatorState
 } from 'app/entities/relator/relator.reducer';
+// prettier-ignore
+import secaoJudiciaria, {
+  SecaoJudiciariaState
+} from 'app/entities/secao-judiciaria/secao-judiciaria.reducer';
+// prettier-ignore
+import subsecaoJudiciaria, {
+  SubsecaoJudiciariaState
+} from 'app/entities/subsecao-judiciaria/subsecao-judiciaria.reducer';
 /* jhipster-needle-add-reducer-import - JHipster will add reducer here */
 
 export interface IRootState {
@@ -200,6 +208,8 @@ export interface IRootState {
   readonly representanteLegal: RepresentanteLegalState;
   readonly parteInteresssada: ParteInteresssadaState;
   readonly relator: RelatorState;
+  readonly secaoJudiciaria: SecaoJudiciariaState;
+  readonly subsecaoJudiciaria: SubsecaoJudiciariaState;
   /* jhipster-needle-add-reducer-type - JHipster will add reducer type here */
   readonly loadingBar: any;
 }
@@ -250,6 +260,8 @@ const rootReducer = combineReducers<IRootState>({
   representanteLegal,
   parteInteresssada,
   relator,
+  secaoJudiciaria,
+  subsecaoJudiciaria,
   /* jhipster-needle-add-reducer-combine - JHipster will add reducer here */
   loadingBar,
 });

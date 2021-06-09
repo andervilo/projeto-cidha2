@@ -1,5 +1,6 @@
 package br.com.cidha.service.criteria;
 
+import br.com.cidha.domain.enumeration.TipoQuilombo;
 import java.io.Serializable;
 import java.util.Objects;
 import tech.jhipster.service.Criteria;
@@ -22,11 +23,30 @@ import tech.jhipster.service.filter.StringFilter;
  */
 public class QuilomboCriteria implements Serializable, Criteria {
 
+    /**
+     * Class for filtering TipoQuilombo
+     */
+    public static class TipoQuilomboFilter extends Filter<TipoQuilombo> {
+
+        public TipoQuilomboFilter() {}
+
+        public TipoQuilomboFilter(TipoQuilomboFilter filter) {
+            super(filter);
+        }
+
+        @Override
+        public TipoQuilomboFilter copy() {
+            return new TipoQuilomboFilter(this);
+        }
+    }
+
     private static final long serialVersionUID = 1L;
 
     private LongFilter id;
 
     private StringFilter nome;
+
+    private TipoQuilomboFilter tipoQuilombo;
 
     private LongFilter processoId;
 
@@ -35,6 +55,7 @@ public class QuilomboCriteria implements Serializable, Criteria {
     public QuilomboCriteria(QuilomboCriteria other) {
         this.id = other.id == null ? null : other.id.copy();
         this.nome = other.nome == null ? null : other.nome.copy();
+        this.tipoQuilombo = other.tipoQuilombo == null ? null : other.tipoQuilombo.copy();
         this.processoId = other.processoId == null ? null : other.processoId.copy();
     }
 
@@ -73,6 +94,21 @@ public class QuilomboCriteria implements Serializable, Criteria {
         this.nome = nome;
     }
 
+    public TipoQuilomboFilter getTipoQuilombo() {
+        return tipoQuilombo;
+    }
+
+    public TipoQuilomboFilter tipoQuilombo() {
+        if (tipoQuilombo == null) {
+            tipoQuilombo = new TipoQuilomboFilter();
+        }
+        return tipoQuilombo;
+    }
+
+    public void setTipoQuilombo(TipoQuilomboFilter tipoQuilombo) {
+        this.tipoQuilombo = tipoQuilombo;
+    }
+
     public LongFilter getProcessoId() {
         return processoId;
     }
@@ -97,12 +133,17 @@ public class QuilomboCriteria implements Serializable, Criteria {
             return false;
         }
         final QuilomboCriteria that = (QuilomboCriteria) o;
-        return Objects.equals(id, that.id) && Objects.equals(nome, that.nome) && Objects.equals(processoId, that.processoId);
+        return (
+            Objects.equals(id, that.id) &&
+            Objects.equals(nome, that.nome) &&
+            Objects.equals(tipoQuilombo, that.tipoQuilombo) &&
+            Objects.equals(processoId, that.processoId)
+        );
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, nome, processoId);
+        return Objects.hash(id, nome, tipoQuilombo, processoId);
     }
 
     // prettier-ignore
@@ -111,6 +152,7 @@ public class QuilomboCriteria implements Serializable, Criteria {
         return "QuilomboCriteria{" +
             (id != null ? "id=" + id + ", " : "") +
             (nome != null ? "nome=" + nome + ", " : "") +
+            (tipoQuilombo != null ? "tipoQuilombo=" + tipoQuilombo + ", " : "") +
             (processoId != null ? "processoId=" + processoId + ", " : "") +
             "}";
     }

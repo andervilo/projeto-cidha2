@@ -15,18 +15,18 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ProcessoRepository extends JpaRepository<Processo, Long>, JpaSpecificationExecutor<Processo> {
     @Query(
-        value = "select distinct processo from Processo processo left join fetch processo.comarcas left join fetch processo.quilombos left join fetch processo.municipios left join fetch processo.territorios left join fetch processo.atividadeExploracaoIlegals left join fetch processo.unidadeConservacaos left join fetch processo.envolvidosConflitoLitigios left join fetch processo.terraIndigenas left join fetch processo.processoConflitos left join fetch processo.parteInteresssadas left join fetch processo.relators",
+        value = "select distinct processo from Processo processo left join fetch processo.comarcas left join fetch processo.municipios left join fetch processo.territorios left join fetch processo.atividadeExploracaoIlegals left join fetch processo.unidadeConservacaos left join fetch processo.envolvidosConflitoLitigios left join fetch processo.terraIndigenas left join fetch processo.processoConflitos left join fetch processo.parteInteresssadas left join fetch processo.relators left join fetch processo.quilombos",
         countQuery = "select count(distinct processo) from Processo processo"
     )
     Page<Processo> findAllWithEagerRelationships(Pageable pageable);
 
     @Query(
-        "select distinct processo from Processo processo left join fetch processo.comarcas left join fetch processo.quilombos left join fetch processo.municipios left join fetch processo.territorios left join fetch processo.atividadeExploracaoIlegals left join fetch processo.unidadeConservacaos left join fetch processo.envolvidosConflitoLitigios left join fetch processo.terraIndigenas left join fetch processo.processoConflitos left join fetch processo.parteInteresssadas left join fetch processo.relators"
+        "select distinct processo from Processo processo left join fetch processo.comarcas left join fetch processo.municipios left join fetch processo.territorios left join fetch processo.atividadeExploracaoIlegals left join fetch processo.unidadeConservacaos left join fetch processo.envolvidosConflitoLitigios left join fetch processo.terraIndigenas left join fetch processo.processoConflitos left join fetch processo.parteInteresssadas left join fetch processo.relators left join fetch processo.quilombos"
     )
     List<Processo> findAllWithEagerRelationships();
 
     @Query(
-        "select processo from Processo processo left join fetch processo.comarcas left join fetch processo.quilombos left join fetch processo.municipios left join fetch processo.territorios left join fetch processo.atividadeExploracaoIlegals left join fetch processo.unidadeConservacaos left join fetch processo.envolvidosConflitoLitigios left join fetch processo.terraIndigenas left join fetch processo.processoConflitos left join fetch processo.parteInteresssadas left join fetch processo.relators where processo.id =:id"
+        "select processo from Processo processo left join fetch processo.comarcas left join fetch processo.municipios left join fetch processo.territorios left join fetch processo.atividadeExploracaoIlegals left join fetch processo.unidadeConservacaos left join fetch processo.envolvidosConflitoLitigios left join fetch processo.terraIndigenas left join fetch processo.processoConflitos left join fetch processo.parteInteresssadas left join fetch processo.relators left join fetch processo.quilombos where processo.id =:id"
     )
     Optional<Processo> findOneWithEagerRelationships(@Param("id") Long id);
 }

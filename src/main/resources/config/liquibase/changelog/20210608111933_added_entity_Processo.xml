@@ -1,0 +1,453 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.3.xsd
+                        http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <!--
+        Added the entity Processo.
+    -->
+    <changeSet id="20210608111933-1" author="jhipster">
+        <createTable tableName="processo">
+            <column name="id" type="bigint">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="numero_processo" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="oficio" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="assunto" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="link_unico" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="link_trf" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="turma_trf_1" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="numero_processo_administrativo" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="numero_processo_judicial_primeira_instancia" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="numero_processo_judicial_primeira_instancia_link" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="numero_processo_judicial_primeira_instancia_observacoes" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="parecer" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_processo_concessao_liminar" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="concessao_liminar_observacoes" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_processo_cassacao" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_parecer" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_embargo" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="acordao_embargo" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_ciencia_julg_embargos" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="apelacao" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_apelacao" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="acordao_apelacao" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_ciencia_julg_apelacao" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="embargo_declaracao" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="embargo_recurso_extraordinario" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_recurso_especial" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="acordao_recurso_especial" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_ciencia_julgamento_recurso_especial" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="embargo_recurso_especial" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_ciencia" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="agravo_resp_re" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_resp_re" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="acordao_agravo_resp_re" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_ciencia_julgamento_agravo_resp_re" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="embargo_resp_re" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="agravo_interno" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_agravo_interno" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="embargo_recurso_agravo" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="observacoes" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="recurso_stj" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="link_recurso_stj" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_recurso_stj" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="recurso_stf" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="link_recurso_stf" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_recurso_stf" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="folhas_memorial_mpf" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="execusao_provisoria" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="numeracao_execusao_provisoria" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="recuperacao_efetiva_cumprimento_sentenca" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="recuperacao_efetiva_cumprimento_sentenca_observacoes" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="envolve_empreendimento" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="envolve_exploracao_ilegal" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="envolve_terra_quilombola" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="envolve_terra_comunidade_tradicional" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="envolve_terra_indigena" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="resumo_fatos" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="tamanho_area" type="decimal(21,2)">
+                <constraints nullable="true" />
+            </column>
+            <column name="valor_area" type="decimal(21,2)">
+                <constraints nullable="true" />
+            </column>
+            <column name="tamanho_area_observacao" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="dados_geograficos_litigio_conflito" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="latitude" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="longitude" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="numero_processo_mpf" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="numero_embargo" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="pauta_apelacao" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="numero_recurso_especial" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="admissiblidade" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="envolve_grande_projeto" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="envolve_unidade_conservacao" type="boolean">
+                <constraints nullable="true" />
+            </column>
+            <column name="link_referencia" type="${clobType}">
+                <constraints nullable="true" />
+            </column>
+            <column name="status_processo" type="varchar(255)">
+                <constraints nullable="true" />
+            </column>
+            <column name="tipo_decisao_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+            <column name="tipo_empreendimento_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+            <column name="secao_judiciaria_id" type="bigint">
+                <constraints nullable="true" />
+            </column>
+            <!-- jhipster-needle-liquibase-add-column - JHipster will add columns here -->
+        </createTable>
+    </changeSet>
+
+    <changeSet id="20210608111933-1-relations" author="jhipster">
+
+        <createTable tableName="rel_processo__comarca">
+            <column name="comarca_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processo_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="processo_id, comarca_id" tableName="rel_processo__comarca"/>
+
+        <createTable tableName="rel_processo__municipio">
+            <column name="municipio_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processo_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="processo_id, municipio_id" tableName="rel_processo__municipio"/>
+
+        <createTable tableName="rel_processo__territorio">
+            <column name="territorio_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processo_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="processo_id, territorio_id" tableName="rel_processo__territorio"/>
+
+        <createTable tableName="rel_processo__atividade_exploracao_ilegal">
+            <column name="atividade_exploracao_ilegal_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processo_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="processo_id, atividade_exploracao_ilegal_id" tableName="rel_processo__atividade_exploracao_ilegal"/>
+
+        <createTable tableName="rel_processo__unidade_conservacao">
+            <column name="unidade_conservacao_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processo_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="processo_id, unidade_conservacao_id" tableName="rel_processo__unidade_conservacao"/>
+
+        <createTable tableName="rel_processo__envolvidos_conflito_litigio">
+            <column name="envolvidos_conflito_litigio_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processo_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="processo_id, envolvidos_conflito_litigio_id" tableName="rel_processo__envolvidos_conflito_litigio"/>
+
+        <createTable tableName="rel_processo__terra_indigena">
+            <column name="terra_indigena_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processo_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="processo_id, terra_indigena_id" tableName="rel_processo__terra_indigena"/>
+
+        <createTable tableName="rel_processo__processo_conflito">
+            <column name="processo_conflito_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processo_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="processo_id, processo_conflito_id" tableName="rel_processo__processo_conflito"/>
+
+        <createTable tableName="rel_processo__parte_interesssada">
+            <column name="parte_interesssada_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processo_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="processo_id, parte_interesssada_id" tableName="rel_processo__parte_interesssada"/>
+
+        <createTable tableName="rel_processo__relator">
+            <column name="relator_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processo_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="processo_id, relator_id" tableName="rel_processo__relator"/>
+
+        <createTable tableName="rel_processo__quilombo">
+            <column name="quilombo_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+            <column name="processo_id" type="bigint">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <addPrimaryKey columnNames="processo_id, quilombo_id" tableName="rel_processo__quilombo"/>
+    </changeSet>
+
+    <!-- jhipster-needle-liquibase-add-changeset - JHipster will add changesets here -->
+
+    <!--
+        Load sample data generated with Faker.js
+        - This data can be easily edited using a CSV editor (or even MS Excel) and
+          is located in the 'src/main/resources/config/liquibase/fake-data' directory
+        - By default this data is applied when running with the JHipster 'dev' profile.
+          This can be customized by adding or removing 'faker' in the 'spring.liquibase.contexts'
+          Spring Boot configuration key.
+    -->
+    <changeSet id="20210608111933-1-data" author="jhipster" context="faker">
+        <loadData
+                  file="config/liquibase/fake-data/processo.csv"
+                  separator=";"
+                  tableName="processo">
+            <column name="id" type="numeric"/>
+            <column name="numero_processo" type="string"/>
+            <column name="oficio" type="string"/>
+            <column name="assunto" type="clob"/>
+            <column name="link_unico" type="string"/>
+            <column name="link_trf" type="string"/>
+            <column name="turma_trf_1" type="string"/>
+            <column name="numero_processo_administrativo" type="string"/>
+            <column name="numero_processo_judicial_primeira_instancia" type="string"/>
+            <column name="numero_processo_judicial_primeira_instancia_link" type="string"/>
+            <column name="numero_processo_judicial_primeira_instancia_observacoes" type="clob"/>
+            <column name="parecer" type="boolean"/>
+            <column name="folhas_processo_concessao_liminar" type="string"/>
+            <column name="concessao_liminar_observacoes" type="clob"/>
+            <column name="folhas_processo_cassacao" type="string"/>
+            <column name="folhas_parecer" type="string"/>
+            <column name="folhas_embargo" type="string"/>
+            <column name="acordao_embargo" type="clob"/>
+            <column name="folhas_ciencia_julg_embargos" type="string"/>
+            <column name="apelacao" type="string"/>
+            <column name="folhas_apelacao" type="string"/>
+            <column name="acordao_apelacao" type="clob"/>
+            <column name="folhas_ciencia_julg_apelacao" type="string"/>
+            <column name="embargo_declaracao" type="boolean"/>
+            <column name="embargo_recurso_extraordinario" type="boolean"/>
+            <column name="folhas_recurso_especial" type="string"/>
+            <column name="acordao_recurso_especial" type="clob"/>
+            <column name="folhas_ciencia_julgamento_recurso_especial" type="string"/>
+            <column name="embargo_recurso_especial" type="boolean"/>
+            <column name="folhas_ciencia" type="string"/>
+            <column name="agravo_resp_re" type="string"/>
+            <column name="folhas_resp_re" type="string"/>
+            <column name="acordao_agravo_resp_re" type="clob"/>
+            <column name="folhas_ciencia_julgamento_agravo_resp_re" type="string"/>
+            <column name="embargo_resp_re" type="string"/>
+            <column name="agravo_interno" type="string"/>
+            <column name="folhas_agravo_interno" type="string"/>
+            <column name="embargo_recurso_agravo" type="boolean"/>
+            <column name="observacoes" type="clob"/>
+            <column name="recurso_stj" type="boolean"/>
+            <column name="link_recurso_stj" type="string"/>
+            <column name="folhas_recurso_stj" type="string"/>
+            <column name="recurso_stf" type="boolean"/>
+            <column name="link_recurso_stf" type="string"/>
+            <column name="folhas_recurso_stf" type="string"/>
+            <column name="folhas_memorial_mpf" type="string"/>
+            <column name="execusao_provisoria" type="boolean"/>
+            <column name="numeracao_execusao_provisoria" type="string"/>
+            <column name="recuperacao_efetiva_cumprimento_sentenca" type="clob"/>
+            <column name="recuperacao_efetiva_cumprimento_sentenca_observacoes" type="clob"/>
+            <column name="envolve_empreendimento" type="boolean"/>
+            <column name="envolve_exploracao_ilegal" type="boolean"/>
+            <column name="envolve_terra_quilombola" type="boolean"/>
+            <column name="envolve_terra_comunidade_tradicional" type="boolean"/>
+            <column name="envolve_terra_indigena" type="boolean"/>
+            <column name="resumo_fatos" type="clob"/>
+            <column name="tamanho_area" type="numeric"/>
+            <column name="valor_area" type="numeric"/>
+            <column name="tamanho_area_observacao" type="clob"/>
+            <column name="dados_geograficos_litigio_conflito" type="boolean"/>
+            <column name="latitude" type="string"/>
+            <column name="longitude" type="string"/>
+            <column name="numero_processo_mpf" type="string"/>
+            <column name="numero_embargo" type="string"/>
+            <column name="pauta_apelacao" type="clob"/>
+            <column name="numero_recurso_especial" type="string"/>
+            <column name="admissiblidade" type="clob"/>
+            <column name="envolve_grande_projeto" type="boolean"/>
+            <column name="envolve_unidade_conservacao" type="boolean"/>
+            <column name="link_referencia" type="clob"/>
+            <column name="status_processo" type="string"/>
+            <!-- jhipster-needle-liquibase-add-loadcolumn - JHipster (and/or extensions) can add load columns here -->
+        </loadData>
+    </changeSet>
+</databaseChangeLog>

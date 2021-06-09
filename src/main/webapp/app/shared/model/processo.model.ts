@@ -6,8 +6,8 @@ import { IEmbargoRecursoEspecial } from 'app/shared/model/embargo-recurso-especi
 import { IEmbargoRespRe } from 'app/shared/model/embargo-resp-re.model';
 import { ITipoDecisao } from 'app/shared/model/tipo-decisao.model';
 import { ITipoEmpreendimento } from 'app/shared/model/tipo-empreendimento.model';
+import { ISecaoJudiciaria } from 'app/shared/model/secao-judiciaria.model';
 import { IComarca } from 'app/shared/model/comarca.model';
-import { IQuilombo } from 'app/shared/model/quilombo.model';
 import { IMunicipio } from 'app/shared/model/municipio.model';
 import { ITerritorio } from 'app/shared/model/territorio.model';
 import { IAtividadeExploracaoIlegal } from 'app/shared/model/atividade-exploracao-ilegal.model';
@@ -17,7 +17,9 @@ import { ITerraIndigena } from 'app/shared/model/terra-indigena.model';
 import { IProcessoConflito } from 'app/shared/model/processo-conflito.model';
 import { IParteInteresssada } from 'app/shared/model/parte-interesssada.model';
 import { IRelator } from 'app/shared/model/relator.model';
+import { IQuilombo } from 'app/shared/model/quilombo.model';
 import { IProblemaJuridico } from 'app/shared/model/problema-juridico.model';
+import { StatusProcesso } from 'app/shared/model/enumerations/status-processo.model';
 
 export interface IProcesso {
   id?: number;
@@ -26,8 +28,6 @@ export interface IProcesso {
   assunto?: string | null;
   linkUnico?: string | null;
   linkTrf?: string | null;
-  secaoJudiciaria?: string | null;
-  subsecaoJudiciaria?: string | null;
   turmaTrf1?: string | null;
   numeroProcessoAdministrativo?: string | null;
   numeroProcessoJudicialPrimeiraInstancia?: string | null;
@@ -46,6 +46,7 @@ export interface IProcesso {
   acordaoApelacao?: string | null;
   folhasCienciaJulgApelacao?: string | null;
   embargoDeclaracao?: boolean | null;
+  embargoRecursoExtraordinario?: boolean | null;
   folhasRecursoEspecial?: string | null;
   acordaoRecursoEspecial?: string | null;
   folhasCienciaJulgamentoRecursoEspecial?: string | null;
@@ -91,6 +92,7 @@ export interface IProcesso {
   envolveGrandeProjeto?: boolean | null;
   envolveUnidadeConservacao?: boolean | null;
   linkReferencia?: string | null;
+  statusProcesso?: StatusProcesso | null;
   concessaoLiminars?: IConcessaoLiminar[] | null;
   concessaoLiminarCassadas?: IConcessaoLiminarCassada[] | null;
   embargoDeclaracaos?: IEmbargoDeclaracao[] | null;
@@ -99,8 +101,8 @@ export interface IProcesso {
   embargoRespRes?: IEmbargoRespRe[] | null;
   tipoDecisao?: ITipoDecisao | null;
   tipoEmpreendimento?: ITipoEmpreendimento | null;
+  secaoJudiciaria?: ISecaoJudiciaria | null;
   comarcas?: IComarca[] | null;
-  quilombos?: IQuilombo[] | null;
   municipios?: IMunicipio[] | null;
   territorios?: ITerritorio[] | null;
   atividadeExploracaoIlegals?: IAtividadeExploracaoIlegal[] | null;
@@ -110,12 +112,14 @@ export interface IProcesso {
   processoConflitos?: IProcessoConflito[] | null;
   parteInteresssadas?: IParteInteresssada[] | null;
   relators?: IRelator[] | null;
+  quilombos?: IQuilombo[] | null;
   problemaJuridicos?: IProblemaJuridico[] | null;
 }
 
 export const defaultValue: Readonly<IProcesso> = {
   parecer: false,
   embargoDeclaracao: false,
+  embargoRecursoExtraordinario: false,
   embargoRecursoEspecial: false,
   embargoRecursoAgravo: false,
   recursoSTJ: false,

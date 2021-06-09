@@ -85,6 +85,23 @@ export const QuilomboUpdate = (props: IQuilomboUpdateProps) => {
                 </Label>
                 <AvField id="quilombo-nome" data-cy="nome" type="text" name="nome" />
               </AvGroup>
+              <AvGroup>
+                <Label id="tipoQuilomboLabel" for="quilombo-tipoQuilombo">
+                  <Translate contentKey="cidhaApp.quilombo.tipoQuilombo">Tipo Quilombo</Translate>
+                </Label>
+                <AvInput
+                  id="quilombo-tipoQuilombo"
+                  data-cy="tipoQuilombo"
+                  type="select"
+                  className="form-control"
+                  name="tipoQuilombo"
+                  value={(!isNew && quilomboEntity.tipoQuilombo) || 'COMUNIDADE'}
+                >
+                  <option value="COMUNIDADE">{translate('cidhaApp.TipoQuilombo.COMUNIDADE')}</option>
+                  <option value="TERRITORIO">{translate('cidhaApp.TipoQuilombo.TERRITORIO')}</option>
+                  <option value="AMBOS">{translate('cidhaApp.TipoQuilombo.AMBOS')}</option>
+                </AvInput>
+              </AvGroup>
               <Button tag={Link} id="cancel-save" to="/quilombo" replace color="info">
                 <FontAwesomeIcon icon="arrow-left" />
                 &nbsp;

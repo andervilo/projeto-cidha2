@@ -1,0 +1,9 @@
+{
+  "cidhaApp": {
+    "StatusProcesso": {
+      "null": "",
+      "EM_ANDAMENTO": "EM_ANDAMENTO",
+      "FINALIZADO": "FINALIZADO"
+    }
+  }
+}

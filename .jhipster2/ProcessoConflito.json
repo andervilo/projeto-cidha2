@@ -1,0 +1,58 @@
+{
+  "name": "ProcessoConflito",
+  "fields": [
+    {
+      "fieldName": "inicioConflitoObservacoes",
+      "fieldType": "byte[]",
+      "fieldTypeBlobContent": "text"
+    },
+    {
+      "fieldName": "historicoConlito",
+      "fieldType": "byte[]",
+      "fieldTypeBlobContent": "text"
+    },
+    {
+      "fieldName": "nomeCasoComuidade",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "consultaPrevia",
+      "fieldType": "Boolean"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "one-to-many",
+      "otherEntityName": "conflito",
+      "otherEntityRelationshipName": "processoConflito",
+      "relationshipName": "conflito"
+    },
+    {
+      "relationshipType": "many-to-many",
+      "otherEntityName": "direito",
+      "otherEntityRelationshipName": "processoConflito",
+      "relationshipName": "direito",
+      "otherEntityField": "descricao",
+      "ownerSide": true
+    },
+    {
+      "relationshipType": "many-to-many",
+      "otherEntityName": "processo",
+      "otherEntityRelationshipName": "processoConflito",
+      "relationshipName": "processo",
+      "otherEntityField": "oficio",
+      "ownerSide": false
+    }
+  ],
+  "changelogDate": "20210405145017",
+  "entityTableName": "processo_conflito",
+  "dto": "no",
+  "pagination": "pagination",
+  "service": "serviceClass",
+  "jpaMetamodelFiltering": true,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": "*"
+}

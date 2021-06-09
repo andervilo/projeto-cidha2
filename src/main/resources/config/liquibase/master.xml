@@ -50,6 +50,43 @@
     <include file="config/liquibase/changelog/20210405145217_added_entity_RepresentanteLegal.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20210405145317_added_entity_ParteInteresssada.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20210405145417_added_entity_Relator.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111910_added_entity_AtividadeExploracaoIlegal.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111911_added_entity_Comarca.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111912_added_entity_ConcessaoLiminar.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111913_added_entity_ConcessaoLiminarCassada.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111914_added_entity_Conflito.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111915_added_entity_Data.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111916_added_entity_Direito.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111917_added_entity_EmbargoDeclaracao.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111918_added_entity_EmbargoDeclaracaoAgravo.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111919_added_entity_EmbargoRecursoEspecial.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111920_added_entity_EmbargoRespRe.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111921_added_entity_EnvolvidosConflitoLitigio.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111922_added_entity_EtniaIndigena.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111923_added_entity_FundamentacaoDoutrinaria.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111924_added_entity_FundamentacaoLegal.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111925_added_entity_InstrumentoInternacional.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111926_added_entity_Jurisprudencia.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111927_added_entity_Municipio.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111928_added_entity_OpcaoRecurso.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111929_added_entity_ParteInteresssada.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111930_added_entity_ProblemaJuridico.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111931_added_entity_SecaoJudiciaria.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111932_added_entity_SubsecaoJudiciaria.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111933_added_entity_Processo.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111934_added_entity_ProcessoConflito.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111935_added_entity_Recurso.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111936_added_entity_Relator.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111937_added_entity_RepresentanteLegal.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111938_added_entity_TerraIndigena.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111939_added_entity_Territorio.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111940_added_entity_TipoData.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111941_added_entity_TipoDecisao.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111942_added_entity_TipoEmpreendimento.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111943_added_entity_TipoRecurso.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111944_added_entity_TipoRepresentante.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111945_added_entity_UnidadeConservacao.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210609115750_added_entity_Quilombo.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-changelog - JHipster will add liquibase changelogs here -->
     <include file="config/liquibase/changelog/20210405142217_added_entity_constraints_Processo.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20210405142317_added_entity_constraints_ConcessaoLiminar.xml" relativeToChangelogFile="false"/>
@@ -66,6 +103,22 @@
     <include file="config/liquibase/changelog/20210405145017_added_entity_constraints_ProcessoConflito.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20210405145217_added_entity_constraints_RepresentanteLegal.xml" relativeToChangelogFile="false"/>
     <include file="config/liquibase/changelog/20210405145317_added_entity_constraints_ParteInteresssada.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111912_added_entity_constraints_ConcessaoLiminar.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111913_added_entity_constraints_ConcessaoLiminarCassada.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111914_added_entity_constraints_Conflito.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111915_added_entity_constraints_Data.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111917_added_entity_constraints_EmbargoDeclaracao.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111918_added_entity_constraints_EmbargoDeclaracaoAgravo.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111919_added_entity_constraints_EmbargoRecursoEspecial.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111920_added_entity_constraints_EmbargoRespRe.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111929_added_entity_constraints_ParteInteresssada.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111930_added_entity_constraints_ProblemaJuridico.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111931_added_entity_constraints_SecaoJudiciaria.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111933_added_entity_constraints_Processo.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111934_added_entity_constraints_ProcessoConflito.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111935_added_entity_constraints_Recurso.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111937_added_entity_constraints_RepresentanteLegal.xml" relativeToChangelogFile="false"/>
+    <include file="config/liquibase/changelog/20210608111938_added_entity_constraints_TerraIndigena.xml" relativeToChangelogFile="false"/>
     <!-- jhipster-needle-liquibase-add-constraints-changelog - JHipster will add liquibase constraints changelogs here -->
     <!-- jhipster-needle-liquibase-add-incremental-changelog - JHipster will add incremental liquibase changelogs here -->
 </databaseChangeLog>

@@ -23,8 +23,6 @@
       "assunto": "Assunto",
       "linkUnico": "Link Unico",
       "linkTrf": "Link Trf",
-      "secaoJudiciaria": "Secao Judiciaria",
-      "subsecaoJudiciaria": "Subsecao Judiciaria",
       "turmaTrf1": "Turma Trf 1",
       "numeroProcessoAdministrativo": "Numero Processo Administrativo",
       "numeroProcessoJudicialPrimeiraInstancia": "Numero Processo Judicial Primeira Instancia",
@@ -43,6 +41,7 @@
       "acordaoApelacao": "Acordao Apelacao",
       "folhasCienciaJulgApelacao": "Folhas Ciencia Julg Apelacao",
       "embargoDeclaracao": "Embargo Declaracao",
+      "embargoRecursoExtraordinario": "Embargo Recurso Extraordinario",
       "folhasRecursoEspecial": "Folhas Recurso Especial",
       "acordaoRecursoEspecial": "Acordao Recurso Especial",
       "folhasCienciaJulgamentoRecursoEspecial": "Folhas Ciencia Julgamento Recurso Especial",
@@ -88,6 +87,7 @@
       "envolveGrandeProjeto": "Envolve Grande Projeto",
       "envolveUnidadeConservacao": "Envolve Unidade Conservacao",
       "linkReferencia": "Link Referencia",
+      "statusProcesso": "Status Processo",
       "concessaoLiminar": "Concessao Liminar",
       "concessaoLiminarCassada": "Concessao Liminar Cassada",
       "embargoDeclaracao": "Embargo Declaracao",
@@ -96,8 +96,8 @@
       "embargoRespRe": "Embargo Resp Re",
       "tipoDecisao": "Tipo Decisao",
       "tipoEmpreendimento": "Tipo Empreendimento",
+      "secaoJudiciaria": "Secao Judiciaria",
       "comarca": "Comarca",
-      "quilombo": "Quilombo",
       "municipio": "Municipio",
       "territorio": "Territorio",
       "atividadeExploracaoIlegal": "Atividade Exploracao Ilegal",
@@ -107,6 +107,7 @@
       "processoConflito": "Processo Conflito",
       "parteInteresssada": "Parte Interesssada",
       "relator": "Relator",
+      "quilombo": "Quilombo",
       "problemaJuridico": "Problema Juridico"
     }
   }

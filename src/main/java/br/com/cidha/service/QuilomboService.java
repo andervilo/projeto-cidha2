@@ -52,6 +52,9 @@ public class QuilomboService {
                     if (quilombo.getNome() != null) {
                         existingQuilombo.setNome(quilombo.getNome());
                     }
+                    if (quilombo.getTipoQuilombo() != null) {
+                        existingQuilombo.setTipoQuilombo(quilombo.getTipoQuilombo());
+                    }
 
                     return existingQuilombo;
                 }

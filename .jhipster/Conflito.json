@@ -15,7 +15,6 @@
       "relationshipName": "processoConflito"
     }
   ],
-  "changelogDate": "20210405144917",
   "entityTableName": "conflito",
   "dto": "no",
   "pagination": "pagination",
@@ -24,6 +23,6 @@
   "fluentMethods": true,
   "readOnly": false,
   "embedded": false,
-  "clientRootFolder": "",
-  "applications": "*"
+  "applications": "*",
+  "changelogDate": "20210608111914"
 }

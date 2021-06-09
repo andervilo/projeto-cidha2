@@ -24,11 +24,13 @@ import br.com.cidha.domain.Processo;
 import br.com.cidha.domain.ProcessoConflito;
 import br.com.cidha.domain.Quilombo;
 import br.com.cidha.domain.Relator;
+import br.com.cidha.domain.SecaoJudiciaria;
 import br.com.cidha.domain.TerraIndigena;
 import br.com.cidha.domain.Territorio;
 import br.com.cidha.domain.TipoDecisao;
 import br.com.cidha.domain.TipoEmpreendimento;
 import br.com.cidha.domain.UnidadeConservacao;
+import br.com.cidha.domain.enumeration.StatusProcesso;
 import br.com.cidha.repository.ProcessoRepository;
 import br.com.cidha.service.ProcessoService;
 import br.com.cidha.service.criteria.ProcessoCriteria;
@@ -76,12 +78,6 @@ class ProcessoResourceIT {
 
     private static final String DEFAULT_LINK_TRF = "AAAAAAAAAA";
     private static final String UPDATED_LINK_TRF = "BBBBBBBBBB";
-
-    private static final String DEFAULT_SECAO_JUDICIARIA = "AAAAAAAAAA";
-    private static final String UPDATED_SECAO_JUDICIARIA = "BBBBBBBBBB";
-
-    private static final String DEFAULT_SUBSECAO_JUDICIARIA = "AAAAAAAAAA";
-    private static final String UPDATED_SUBSECAO_JUDICIARIA = "BBBBBBBBBB";
 
     private static final String DEFAULT_TURMA_TRF_1 = "AAAAAAAAAA";
     private static final String UPDATED_TURMA_TRF_1 = "BBBBBBBBBB";
@@ -136,6 +132,9 @@ class ProcessoResourceIT {
 
     private static final Boolean DEFAULT_EMBARGO_DECLARACAO = false;
     private static final Boolean UPDATED_EMBARGO_DECLARACAO = true;
+
+    private static final Boolean DEFAULT_EMBARGO_RECURSO_EXTRAORDINARIO = false;
+    private static final Boolean UPDATED_EMBARGO_RECURSO_EXTRAORDINARIO = true;
 
     private static final String DEFAULT_FOLHAS_RECURSO_ESPECIAL = "AAAAAAAAAA";
     private static final String UPDATED_FOLHAS_RECURSO_ESPECIAL = "BBBBBBBBBB";
@@ -274,6 +273,9 @@ class ProcessoResourceIT {
     private static final String DEFAULT_LINK_REFERENCIA = "AAAAAAAAAA";
     private static final String UPDATED_LINK_REFERENCIA = "BBBBBBBBBB";
 
+    private static final StatusProcesso DEFAULT_STATUS_PROCESSO = StatusProcesso.EM_ANDAMENTO;
+    private static final StatusProcesso UPDATED_STATUS_PROCESSO = StatusProcesso.FINALIZADO;
+
     private static final String ENTITY_API_URL = "/api/processos";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
@@ -310,8 +312,6 @@ class ProcessoResourceIT {
             .assunto(DEFAULT_ASSUNTO)
             .linkUnico(DEFAULT_LINK_UNICO)
             .linkTrf(DEFAULT_LINK_TRF)
-            .secaoJudiciaria(DEFAULT_SECAO_JUDICIARIA)
-            .subsecaoJudiciaria(DEFAULT_SUBSECAO_JUDICIARIA)
             .turmaTrf1(DEFAULT_TURMA_TRF_1)
             .numeroProcessoAdministrativo(DEFAULT_NUMERO_PROCESSO_ADMINISTRATIVO)
             .numeroProcessoJudicialPrimeiraInstancia(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA)
@@ -330,6 +330,7 @@ class ProcessoResourceIT {
             .acordaoApelacao(DEFAULT_ACORDAO_APELACAO)
             .folhasCienciaJulgApelacao(DEFAULT_FOLHAS_CIENCIA_JULG_APELACAO)
             .embargoDeclaracao(DEFAULT_EMBARGO_DECLARACAO)
+            .embargoRecursoExtraordinario(DEFAULT_EMBARGO_RECURSO_EXTRAORDINARIO)
             .folhasRecursoEspecial(DEFAULT_FOLHAS_RECURSO_ESPECIAL)
             .acordaoRecursoEspecial(DEFAULT_ACORDAO_RECURSO_ESPECIAL)
             .folhasCienciaJulgamentoRecursoEspecial(DEFAULT_FOLHAS_CIENCIA_JULGAMENTO_RECURSO_ESPECIAL)
@@ -374,7 +375,8 @@ class ProcessoResourceIT {
             .admissiblidade(DEFAULT_ADMISSIBLIDADE)
             .envolveGrandeProjeto(DEFAULT_ENVOLVE_GRANDE_PROJETO)
             .envolveUnidadeConservacao(DEFAULT_ENVOLVE_UNIDADE_CONSERVACAO)
-            .linkReferencia(DEFAULT_LINK_REFERENCIA);
+            .linkReferencia(DEFAULT_LINK_REFERENCIA)
+            .statusProcesso(DEFAULT_STATUS_PROCESSO);
         return processo;
     }
 
@@ -391,8 +393,6 @@ class ProcessoResourceIT {
             .assunto(UPDATED_ASSUNTO)
             .linkUnico(UPDATED_LINK_UNICO)
             .linkTrf(UPDATED_LINK_TRF)
-            .secaoJudiciaria(UPDATED_SECAO_JUDICIARIA)
-            .subsecaoJudiciaria(UPDATED_SUBSECAO_JUDICIARIA)
             .turmaTrf1(UPDATED_TURMA_TRF_1)
             .numeroProcessoAdministrativo(UPDATED_NUMERO_PROCESSO_ADMINISTRATIVO)
             .numeroProcessoJudicialPrimeiraInstancia(UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA)
@@ -411,6 +411,7 @@ class ProcessoResourceIT {
             .acordaoApelacao(UPDATED_ACORDAO_APELACAO)
             .folhasCienciaJulgApelacao(UPDATED_FOLHAS_CIENCIA_JULG_APELACAO)
             .embargoDeclaracao(UPDATED_EMBARGO_DECLARACAO)
+            .embargoRecursoExtraordinario(UPDATED_EMBARGO_RECURSO_EXTRAORDINARIO)
             .folhasRecursoEspecial(UPDATED_FOLHAS_RECURSO_ESPECIAL)
             .acordaoRecursoEspecial(UPDATED_ACORDAO_RECURSO_ESPECIAL)
             .folhasCienciaJulgamentoRecursoEspecial(UPDATED_FOLHAS_CIENCIA_JULGAMENTO_RECURSO_ESPECIAL)
@@ -455,7 +456,8 @@ class ProcessoResourceIT {
             .admissiblidade(UPDATED_ADMISSIBLIDADE)
             .envolveGrandeProjeto(UPDATED_ENVOLVE_GRANDE_PROJETO)
             .envolveUnidadeConservacao(UPDATED_ENVOLVE_UNIDADE_CONSERVACAO)
-            .linkReferencia(UPDATED_LINK_REFERENCIA);
+            .linkReferencia(UPDATED_LINK_REFERENCIA)
+            .statusProcesso(UPDATED_STATUS_PROCESSO);
         return processo;
     }
 
@@ -482,8 +484,6 @@ class ProcessoResourceIT {
         assertThat(testProcesso.getAssunto()).isEqualTo(DEFAULT_ASSUNTO);
         assertThat(testProcesso.getLinkUnico()).isEqualTo(DEFAULT_LINK_UNICO);
         assertThat(testProcesso.getLinkTrf()).isEqualTo(DEFAULT_LINK_TRF);
-        assertThat(testProcesso.getSecaoJudiciaria()).isEqualTo(DEFAULT_SECAO_JUDICIARIA);
-        assertThat(testProcesso.getSubsecaoJudiciaria()).isEqualTo(DEFAULT_SUBSECAO_JUDICIARIA);
         assertThat(testProcesso.getTurmaTrf1()).isEqualTo(DEFAULT_TURMA_TRF_1);
         assertThat(testProcesso.getNumeroProcessoAdministrativo()).isEqualTo(DEFAULT_NUMERO_PROCESSO_ADMINISTRATIVO);
         assertThat(testProcesso.getNumeroProcessoJudicialPrimeiraInstancia())
@@ -505,6 +505,7 @@ class ProcessoResourceIT {
         assertThat(testProcesso.getAcordaoApelacao()).isEqualTo(DEFAULT_ACORDAO_APELACAO);
         assertThat(testProcesso.getFolhasCienciaJulgApelacao()).isEqualTo(DEFAULT_FOLHAS_CIENCIA_JULG_APELACAO);
         assertThat(testProcesso.getEmbargoDeclaracao()).isEqualTo(DEFAULT_EMBARGO_DECLARACAO);
+        assertThat(testProcesso.getEmbargoRecursoExtraordinario()).isEqualTo(DEFAULT_EMBARGO_RECURSO_EXTRAORDINARIO);
         assertThat(testProcesso.getFolhasRecursoEspecial()).isEqualTo(DEFAULT_FOLHAS_RECURSO_ESPECIAL);
         assertThat(testProcesso.getAcordaoRecursoEspecial()).isEqualTo(DEFAULT_ACORDAO_RECURSO_ESPECIAL);
         assertThat(testProcesso.getFolhasCienciaJulgamentoRecursoEspecial()).isEqualTo(DEFAULT_FOLHAS_CIENCIA_JULGAMENTO_RECURSO_ESPECIAL);
@@ -551,6 +552,7 @@ class ProcessoResourceIT {
         assertThat(testProcesso.getEnvolveGrandeProjeto()).isEqualTo(DEFAULT_ENVOLVE_GRANDE_PROJETO);
         assertThat(testProcesso.getEnvolveUnidadeConservacao()).isEqualTo(DEFAULT_ENVOLVE_UNIDADE_CONSERVACAO);
         assertThat(testProcesso.getLinkReferencia()).isEqualTo(DEFAULT_LINK_REFERENCIA);
+        assertThat(testProcesso.getStatusProcesso()).isEqualTo(DEFAULT_STATUS_PROCESSO);
     }
 
     @Test
@@ -588,8 +590,6 @@ class ProcessoResourceIT {
             .andExpect(jsonPath("$.[*].assunto").value(hasItem(DEFAULT_ASSUNTO.toString())))
             .andExpect(jsonPath("$.[*].linkUnico").value(hasItem(DEFAULT_LINK_UNICO)))
             .andExpect(jsonPath("$.[*].linkTrf").value(hasItem(DEFAULT_LINK_TRF)))
-            .andExpect(jsonPath("$.[*].secaoJudiciaria").value(hasItem(DEFAULT_SECAO_JUDICIARIA)))
-            .andExpect(jsonPath("$.[*].subsecaoJudiciaria").value(hasItem(DEFAULT_SUBSECAO_JUDICIARIA)))
             .andExpect(jsonPath("$.[*].turmaTrf1").value(hasItem(DEFAULT_TURMA_TRF_1)))
             .andExpect(jsonPath("$.[*].numeroProcessoAdministrativo").value(hasItem(DEFAULT_NUMERO_PROCESSO_ADMINISTRATIVO)))
             .andExpect(
@@ -617,6 +617,7 @@ class ProcessoResourceIT {
             .andExpect(jsonPath("$.[*].acordaoApelacao").value(hasItem(DEFAULT_ACORDAO_APELACAO.toString())))
             .andExpect(jsonPath("$.[*].folhasCienciaJulgApelacao").value(hasItem(DEFAULT_FOLHAS_CIENCIA_JULG_APELACAO)))
             .andExpect(jsonPath("$.[*].embargoDeclaracao").value(hasItem(DEFAULT_EMBARGO_DECLARACAO.booleanValue())))
+            .andExpect(jsonPath("$.[*].embargoRecursoExtraordinario").value(hasItem(DEFAULT_EMBARGO_RECURSO_EXTRAORDINARIO.booleanValue())))
             .andExpect(jsonPath("$.[*].folhasRecursoEspecial").value(hasItem(DEFAULT_FOLHAS_RECURSO_ESPECIAL)))
             .andExpect(jsonPath("$.[*].acordaoRecursoEspecial").value(hasItem(DEFAULT_ACORDAO_RECURSO_ESPECIAL.toString())))
             .andExpect(
@@ -676,7 +677,8 @@ class ProcessoResourceIT {
             .andExpect(jsonPath("$.[*].admissiblidade").value(hasItem(DEFAULT_ADMISSIBLIDADE.toString())))
             .andExpect(jsonPath("$.[*].envolveGrandeProjeto").value(hasItem(DEFAULT_ENVOLVE_GRANDE_PROJETO.booleanValue())))
             .andExpect(jsonPath("$.[*].envolveUnidadeConservacao").value(hasItem(DEFAULT_ENVOLVE_UNIDADE_CONSERVACAO.booleanValue())))
-            .andExpect(jsonPath("$.[*].linkReferencia").value(hasItem(DEFAULT_LINK_REFERENCIA.toString())));
+            .andExpect(jsonPath("$.[*].linkReferencia").value(hasItem(DEFAULT_LINK_REFERENCIA.toString())))
+            .andExpect(jsonPath("$.[*].statusProcesso").value(hasItem(DEFAULT_STATUS_PROCESSO.toString())));
     }
 
     @SuppressWarnings({ "unchecked" })
@@ -714,8 +716,6 @@ class ProcessoResourceIT {
             .andExpect(jsonPath("$.assunto").value(DEFAULT_ASSUNTO.toString()))
             .andExpect(jsonPath("$.linkUnico").value(DEFAULT_LINK_UNICO))
             .andExpect(jsonPath("$.linkTrf").value(DEFAULT_LINK_TRF))
-            .andExpect(jsonPath("$.secaoJudiciaria").value(DEFAULT_SECAO_JUDICIARIA))
-            .andExpect(jsonPath("$.subsecaoJudiciaria").value(DEFAULT_SUBSECAO_JUDICIARIA))
             .andExpect(jsonPath("$.turmaTrf1").value(DEFAULT_TURMA_TRF_1))
             .andExpect(jsonPath("$.numeroProcessoAdministrativo").value(DEFAULT_NUMERO_PROCESSO_ADMINISTRATIVO))
             .andExpect(jsonPath("$.numeroProcessoJudicialPrimeiraInstancia").value(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA))
@@ -739,6 +739,7 @@ class ProcessoResourceIT {
             .andExpect(jsonPath("$.acordaoApelacao").value(DEFAULT_ACORDAO_APELACAO.toString()))
             .andExpect(jsonPath("$.folhasCienciaJulgApelacao").value(DEFAULT_FOLHAS_CIENCIA_JULG_APELACAO))
             .andExpect(jsonPath("$.embargoDeclaracao").value(DEFAULT_EMBARGO_DECLARACAO.booleanValue()))
+            .andExpect(jsonPath("$.embargoRecursoExtraordinario").value(DEFAULT_EMBARGO_RECURSO_EXTRAORDINARIO.booleanValue()))
             .andExpect(jsonPath("$.folhasRecursoEspecial").value(DEFAULT_FOLHAS_RECURSO_ESPECIAL))
             .andExpect(jsonPath("$.acordaoRecursoEspecial").value(DEFAULT_ACORDAO_RECURSO_ESPECIAL.toString()))
             .andExpect(jsonPath("$.folhasCienciaJulgamentoRecursoEspecial").value(DEFAULT_FOLHAS_CIENCIA_JULGAMENTO_RECURSO_ESPECIAL))
@@ -788,7 +789,8 @@ class ProcessoResourceIT {
             .andExpect(jsonPath("$.admissiblidade").value(DEFAULT_ADMISSIBLIDADE.toString()))
             .andExpect(jsonPath("$.envolveGrandeProjeto").value(DEFAULT_ENVOLVE_GRANDE_PROJETO.booleanValue()))
             .andExpect(jsonPath("$.envolveUnidadeConservacao").value(DEFAULT_ENVOLVE_UNIDADE_CONSERVACAO.booleanValue()))
-            .andExpect(jsonPath("$.linkReferencia").value(DEFAULT_LINK_REFERENCIA.toString()));
+            .andExpect(jsonPath("$.linkReferencia").value(DEFAULT_LINK_REFERENCIA.toString()))
+            .andExpect(jsonPath("$.statusProcesso").value(DEFAULT_STATUS_PROCESSO.toString()));
     }
 
     @Test
@@ -1119,162 +1121,6 @@ class ProcessoResourceIT {
 
         // Get all the processoList where linkTrf does not contain UPDATED_LINK_TRF
         defaultProcessoShouldBeFound("linkTrf.doesNotContain=" + UPDATED_LINK_TRF);
-    }
-
-    @Test
-    @Transactional
-    void getAllProcessosBySecaoJudiciariaIsEqualToSomething() throws Exception {
-        // Initialize the database
-        processoRepository.saveAndFlush(processo);
-
-        // Get all the processoList where secaoJudiciaria equals to DEFAULT_SECAO_JUDICIARIA
-        defaultProcessoShouldBeFound("secaoJudiciaria.equals=" + DEFAULT_SECAO_JUDICIARIA);
-
-        // Get all the processoList where secaoJudiciaria equals to UPDATED_SECAO_JUDICIARIA
-        defaultProcessoShouldNotBeFound("secaoJudiciaria.equals=" + UPDATED_SECAO_JUDICIARIA);
-    }
-
-    @Test
-    @Transactional
-    void getAllProcessosBySecaoJudiciariaIsNotEqualToSomething() throws Exception {
-        // Initialize the database
-        processoRepository.saveAndFlush(processo);
-
-        // Get all the processoList where secaoJudiciaria not equals to DEFAULT_SECAO_JUDICIARIA
-        defaultProcessoShouldNotBeFound("secaoJudiciaria.notEquals=" + DEFAULT_SECAO_JUDICIARIA);
-
-        // Get all the processoList where secaoJudiciaria not equals to UPDATED_SECAO_JUDICIARIA
-        defaultProcessoShouldBeFound("secaoJudiciaria.notEquals=" + UPDATED_SECAO_JUDICIARIA);
-    }
-
-    @Test
-    @Transactional
-    void getAllProcessosBySecaoJudiciariaIsInShouldWork() throws Exception {
-        // Initialize the database
-        processoRepository.saveAndFlush(processo);
-
-        // Get all the processoList where secaoJudiciaria in DEFAULT_SECAO_JUDICIARIA or UPDATED_SECAO_JUDICIARIA
-        defaultProcessoShouldBeFound("secaoJudiciaria.in=" + DEFAULT_SECAO_JUDICIARIA + "," + UPDATED_SECAO_JUDICIARIA);
-
-        // Get all the processoList where secaoJudiciaria equals to UPDATED_SECAO_JUDICIARIA
-        defaultProcessoShouldNotBeFound("secaoJudiciaria.in=" + UPDATED_SECAO_JUDICIARIA);
-    }
-
-    @Test
-    @Transactional
-    void getAllProcessosBySecaoJudiciariaIsNullOrNotNull() throws Exception {
-        // Initialize the database
-        processoRepository.saveAndFlush(processo);
-
-        // Get all the processoList where secaoJudiciaria is not null
-        defaultProcessoShouldBeFound("secaoJudiciaria.specified=true");
-
-        // Get all the processoList where secaoJudiciaria is null
-        defaultProcessoShouldNotBeFound("secaoJudiciaria.specified=false");
-    }
-
-    @Test
-    @Transactional
-    void getAllProcessosBySecaoJudiciariaContainsSomething() throws Exception {
-        // Initialize the database
-        processoRepository.saveAndFlush(processo);
-
-        // Get all the processoList where secaoJudiciaria contains DEFAULT_SECAO_JUDICIARIA
-        defaultProcessoShouldBeFound("secaoJudiciaria.contains=" + DEFAULT_SECAO_JUDICIARIA);
-
-        // Get all the processoList where secaoJudiciaria contains UPDATED_SECAO_JUDICIARIA
-        defaultProcessoShouldNotBeFound("secaoJudiciaria.contains=" + UPDATED_SECAO_JUDICIARIA);
-    }
-
-    @Test
-    @Transactional
-    void getAllProcessosBySecaoJudiciariaNotContainsSomething() throws Exception {
-        // Initialize the database
-        processoRepository.saveAndFlush(processo);
-
-        // Get all the processoList where secaoJudiciaria does not contain DEFAULT_SECAO_JUDICIARIA
-        defaultProcessoShouldNotBeFound("secaoJudiciaria.doesNotContain=" + DEFAULT_SECAO_JUDICIARIA);
-
-        // Get all the processoList where secaoJudiciaria does not contain UPDATED_SECAO_JUDICIARIA
-        defaultProcessoShouldBeFound("secaoJudiciaria.doesNotContain=" + UPDATED_SECAO_JUDICIARIA);
-    }
-
-    @Test
-    @Transactional
-    void getAllProcessosBySubsecaoJudiciariaIsEqualToSomething() throws Exception {
-        // Initialize the database
-        processoRepository.saveAndFlush(processo);
-
-        // Get all the processoList where subsecaoJudiciaria equals to DEFAULT_SUBSECAO_JUDICIARIA
-        defaultProcessoShouldBeFound("subsecaoJudiciaria.equals=" + DEFAULT_SUBSECAO_JUDICIARIA);
-
-        // Get all the processoList where subsecaoJudiciaria equals to UPDATED_SUBSECAO_JUDICIARIA
-        defaultProcessoShouldNotBeFound("subsecaoJudiciaria.equals=" + UPDATED_SUBSECAO_JUDICIARIA);
-    }
-
-    @Test
-    @Transactional
-    void getAllProcessosBySubsecaoJudiciariaIsNotEqualToSomething() throws Exception {
-        // Initialize the database
-        processoRepository.saveAndFlush(processo);
-
-        // Get all the processoList where subsecaoJudiciaria not equals to DEFAULT_SUBSECAO_JUDICIARIA
-        defaultProcessoShouldNotBeFound("subsecaoJudiciaria.notEquals=" + DEFAULT_SUBSECAO_JUDICIARIA);
-
-        // Get all the processoList where subsecaoJudiciaria not equals to UPDATED_SUBSECAO_JUDICIARIA
-        defaultProcessoShouldBeFound("subsecaoJudiciaria.notEquals=" + UPDATED_SUBSECAO_JUDICIARIA);
-    }
-
-    @Test
-    @Transactional
-    void getAllProcessosBySubsecaoJudiciariaIsInShouldWork() throws Exception {
-        // Initialize the database
-        processoRepository.saveAndFlush(processo);
-
-        // Get all the processoList where subsecaoJudiciaria in DEFAULT_SUBSECAO_JUDICIARIA or UPDATED_SUBSECAO_JUDICIARIA
-        defaultProcessoShouldBeFound("subsecaoJudiciaria.in=" + DEFAULT_SUBSECAO_JUDICIARIA + "," + UPDATED_SUBSECAO_JUDICIARIA);
-
-        // Get all the processoList where subsecaoJudiciaria equals to UPDATED_SUBSECAO_JUDICIARIA
-        defaultProcessoShouldNotBeFound("subsecaoJudiciaria.in=" + UPDATED_SUBSECAO_JUDICIARIA);
-    }
-
-    @Test
-    @Transactional
-    void getAllProcessosBySubsecaoJudiciariaIsNullOrNotNull() throws Exception {
-        // Initialize the database
-        processoRepository.saveAndFlush(processo);
-
-        // Get all the processoList where subsecaoJudiciaria is not null
-        defaultProcessoShouldBeFound("subsecaoJudiciaria.specified=true");
-
-        // Get all the processoList where subsecaoJudiciaria is null
-        defaultProcessoShouldNotBeFound("subsecaoJudiciaria.specified=false");
-    }
-
-    @Test
-    @Transactional
-    void getAllProcessosBySubsecaoJudiciariaContainsSomething() throws Exception {
-        // Initialize the database
-        processoRepository.saveAndFlush(processo);
-
-        // Get all the processoList where subsecaoJudiciaria contains DEFAULT_SUBSECAO_JUDICIARIA
-        defaultProcessoShouldBeFound("subsecaoJudiciaria.contains=" + DEFAULT_SUBSECAO_JUDICIARIA);
-
-        // Get all the processoList where subsecaoJudiciaria contains UPDATED_SUBSECAO_JUDICIARIA
-        defaultProcessoShouldNotBeFound("subsecaoJudiciaria.contains=" + UPDATED_SUBSECAO_JUDICIARIA);
-    }
-
-    @Test
-    @Transactional
-    void getAllProcessosBySubsecaoJudiciariaNotContainsSomething() throws Exception {
-        // Initialize the database
-        processoRepository.saveAndFlush(processo);
-
-        // Get all the processoList where subsecaoJudiciaria does not contain DEFAULT_SUBSECAO_JUDICIARIA
-        defaultProcessoShouldNotBeFound("subsecaoJudiciaria.doesNotContain=" + DEFAULT_SUBSECAO_JUDICIARIA);
-
-        // Get all the processoList where subsecaoJudiciaria does not contain UPDATED_SUBSECAO_JUDICIARIA
-        defaultProcessoShouldBeFound("subsecaoJudiciaria.doesNotContain=" + UPDATED_SUBSECAO_JUDICIARIA);
     }
 
     @Test
@@ -2326,19 +2172,6 @@ class ProcessoResourceIT {
 
     @Test
     @Transactional
-    void getAllProcessosByEmbargoDeclaracaoIsEqualToSomething2() throws Exception {
-        // Initialize the database
-        processoRepository.saveAndFlush(processo);
-
-        // Get all the processoList where embargoDeclaracao equals to DEFAULT_EMBARGO_DECLARACAO
-        defaultProcessoShouldBeFound("embargoDeclaracao.equals=" + DEFAULT_EMBARGO_DECLARACAO);
-
-        // Get all the processoList where embargoDeclaracao equals to UPDATED_EMBARGO_DECLARACAO
-        defaultProcessoShouldNotBeFound("embargoDeclaracao.equals=" + UPDATED_EMBARGO_DECLARACAO);
-    }
-
-    @Test
-    @Transactional
     void getAllProcessosByEmbargoDeclaracaoIsNotEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
@@ -2374,6 +2207,60 @@ class ProcessoResourceIT {
 
         // Get all the processoList where embargoDeclaracao is null
         defaultProcessoShouldNotBeFound("embargoDeclaracao.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllProcessosByEmbargoRecursoExtraordinarioIsEqualToSomething() throws Exception {
+        // Initialize the database
+        processoRepository.saveAndFlush(processo);
+
+        // Get all the processoList where embargoRecursoExtraordinario equals to DEFAULT_EMBARGO_RECURSO_EXTRAORDINARIO
+        defaultProcessoShouldBeFound("embargoRecursoExtraordinario.equals=" + DEFAULT_EMBARGO_RECURSO_EXTRAORDINARIO);
+
+        // Get all the processoList where embargoRecursoExtraordinario equals to UPDATED_EMBARGO_RECURSO_EXTRAORDINARIO
+        defaultProcessoShouldNotBeFound("embargoRecursoExtraordinario.equals=" + UPDATED_EMBARGO_RECURSO_EXTRAORDINARIO);
+    }
+
+    @Test
+    @Transactional
+    void getAllProcessosByEmbargoRecursoExtraordinarioIsNotEqualToSomething() throws Exception {
+        // Initialize the database
+        processoRepository.saveAndFlush(processo);
+
+        // Get all the processoList where embargoRecursoExtraordinario not equals to DEFAULT_EMBARGO_RECURSO_EXTRAORDINARIO
+        defaultProcessoShouldNotBeFound("embargoRecursoExtraordinario.notEquals=" + DEFAULT_EMBARGO_RECURSO_EXTRAORDINARIO);
+
+        // Get all the processoList where embargoRecursoExtraordinario not equals to UPDATED_EMBARGO_RECURSO_EXTRAORDINARIO
+        defaultProcessoShouldBeFound("embargoRecursoExtraordinario.notEquals=" + UPDATED_EMBARGO_RECURSO_EXTRAORDINARIO);
+    }
+
+    @Test
+    @Transactional
+    void getAllProcessosByEmbargoRecursoExtraordinarioIsInShouldWork() throws Exception {
+        // Initialize the database
+        processoRepository.saveAndFlush(processo);
+
+        // Get all the processoList where embargoRecursoExtraordinario in DEFAULT_EMBARGO_RECURSO_EXTRAORDINARIO or UPDATED_EMBARGO_RECURSO_EXTRAORDINARIO
+        defaultProcessoShouldBeFound(
+            "embargoRecursoExtraordinario.in=" + DEFAULT_EMBARGO_RECURSO_EXTRAORDINARIO + "," + UPDATED_EMBARGO_RECURSO_EXTRAORDINARIO
+        );
+
+        // Get all the processoList where embargoRecursoExtraordinario equals to UPDATED_EMBARGO_RECURSO_EXTRAORDINARIO
+        defaultProcessoShouldNotBeFound("embargoRecursoExtraordinario.in=" + UPDATED_EMBARGO_RECURSO_EXTRAORDINARIO);
+    }
+
+    @Test
+    @Transactional
+    void getAllProcessosByEmbargoRecursoExtraordinarioIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        processoRepository.saveAndFlush(processo);
+
+        // Get all the processoList where embargoRecursoExtraordinario is not null
+        defaultProcessoShouldBeFound("embargoRecursoExtraordinario.specified=true");
+
+        // Get all the processoList where embargoRecursoExtraordinario is null
+        defaultProcessoShouldNotBeFound("embargoRecursoExtraordinario.specified=false");
     }
 
     @Test
@@ -2549,19 +2436,6 @@ class ProcessoResourceIT {
         defaultProcessoShouldBeFound(
             "folhasCienciaJulgamentoRecursoEspecial.doesNotContain=" + UPDATED_FOLHAS_CIENCIA_JULGAMENTO_RECURSO_ESPECIAL
         );
-    }
-
-    @Test
-    @Transactional
-    void getAllProcessosByEmbargoRecursoEspecialIsEqualToSomething2() throws Exception {
-        // Initialize the database
-        processoRepository.saveAndFlush(processo);
-
-        // Get all the processoList where embargoRecursoEspecial equals to DEFAULT_EMBARGO_RECURSO_ESPECIAL
-        defaultProcessoShouldBeFound("embargoRecursoEspecial.equals=" + DEFAULT_EMBARGO_RECURSO_ESPECIAL);
-
-        // Get all the processoList where embargoRecursoEspecial equals to UPDATED_EMBARGO_RECURSO_ESPECIAL
-        defaultProcessoShouldNotBeFound("embargoRecursoEspecial.equals=" + UPDATED_EMBARGO_RECURSO_ESPECIAL);
     }
 
     @Test
@@ -2926,19 +2800,6 @@ class ProcessoResourceIT {
         defaultProcessoShouldBeFound(
             "folhasCienciaJulgamentoAgravoRespRe.doesNotContain=" + UPDATED_FOLHAS_CIENCIA_JULGAMENTO_AGRAVO_RESP_RE
         );
-    }
-
-    @Test
-    @Transactional
-    void getAllProcessosByEmbargoRespReIsEqualToSomething2() throws Exception {
-        // Initialize the database
-        processoRepository.saveAndFlush(processo);
-
-        // Get all the processoList where embargoRespRe equals to DEFAULT_EMBARGO_RESP_RE
-        defaultProcessoShouldBeFound("embargoRespRe.equals=" + DEFAULT_EMBARGO_RESP_RE);
-
-        // Get all the processoList where embargoRespRe equals to UPDATED_EMBARGO_RESP_RE
-        defaultProcessoShouldNotBeFound("embargoRespRe.equals=" + UPDATED_EMBARGO_RESP_RE);
     }
 
     @Test
@@ -4872,6 +4733,58 @@ class ProcessoResourceIT {
 
     @Test
     @Transactional
+    void getAllProcessosByStatusProcessoIsEqualToSomething() throws Exception {
+        // Initialize the database
+        processoRepository.saveAndFlush(processo);
+
+        // Get all the processoList where statusProcesso equals to DEFAULT_STATUS_PROCESSO
+        defaultProcessoShouldBeFound("statusProcesso.equals=" + DEFAULT_STATUS_PROCESSO);
+
+        // Get all the processoList where statusProcesso equals to UPDATED_STATUS_PROCESSO
+        defaultProcessoShouldNotBeFound("statusProcesso.equals=" + UPDATED_STATUS_PROCESSO);
+    }
+
+    @Test
+    @Transactional
+    void getAllProcessosByStatusProcessoIsNotEqualToSomething() throws Exception {
+        // Initialize the database
+        processoRepository.saveAndFlush(processo);
+
+        // Get all the processoList where statusProcesso not equals to DEFAULT_STATUS_PROCESSO
+        defaultProcessoShouldNotBeFound("statusProcesso.notEquals=" + DEFAULT_STATUS_PROCESSO);
+
+        // Get all the processoList where statusProcesso not equals to UPDATED_STATUS_PROCESSO
+        defaultProcessoShouldBeFound("statusProcesso.notEquals=" + UPDATED_STATUS_PROCESSO);
+    }
+
+    @Test
+    @Transactional
+    void getAllProcessosByStatusProcessoIsInShouldWork() throws Exception {
+        // Initialize the database
+        processoRepository.saveAndFlush(processo);
+
+        // Get all the processoList where statusProcesso in DEFAULT_STATUS_PROCESSO or UPDATED_STATUS_PROCESSO
+        defaultProcessoShouldBeFound("statusProcesso.in=" + DEFAULT_STATUS_PROCESSO + "," + UPDATED_STATUS_PROCESSO);
+
+        // Get all the processoList where statusProcesso equals to UPDATED_STATUS_PROCESSO
+        defaultProcessoShouldNotBeFound("statusProcesso.in=" + UPDATED_STATUS_PROCESSO);
+    }
+
+    @Test
+    @Transactional
+    void getAllProcessosByStatusProcessoIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        processoRepository.saveAndFlush(processo);
+
+        // Get all the processoList where statusProcesso is not null
+        defaultProcessoShouldBeFound("statusProcesso.specified=true");
+
+        // Get all the processoList where statusProcesso is null
+        defaultProcessoShouldNotBeFound("statusProcesso.specified=false");
+    }
+
+    @Test
+    @Transactional
     void getAllProcessosByConcessaoLiminarIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
@@ -5024,6 +4937,25 @@ class ProcessoResourceIT {
 
     @Test
     @Transactional
+    void getAllProcessosBySecaoJudiciariaIsEqualToSomething() throws Exception {
+        // Initialize the database
+        processoRepository.saveAndFlush(processo);
+        SecaoJudiciaria secaoJudiciaria = SecaoJudiciariaResourceIT.createEntity(em);
+        em.persist(secaoJudiciaria);
+        em.flush();
+        processo.setSecaoJudiciaria(secaoJudiciaria);
+        processoRepository.saveAndFlush(processo);
+        Long secaoJudiciariaId = secaoJudiciaria.getId();
+
+        // Get all the processoList where secaoJudiciaria equals to secaoJudiciariaId
+        defaultProcessoShouldBeFound("secaoJudiciariaId.equals=" + secaoJudiciariaId);
+
+        // Get all the processoList where secaoJudiciaria equals to (secaoJudiciariaId + 1)
+        defaultProcessoShouldNotBeFound("secaoJudiciariaId.equals=" + (secaoJudiciariaId + 1));
+    }
+
+    @Test
+    @Transactional
     void getAllProcessosByComarcaIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
@@ -5039,25 +4971,6 @@ class ProcessoResourceIT {
 
         // Get all the processoList where comarca equals to (comarcaId + 1)
         defaultProcessoShouldNotBeFound("comarcaId.equals=" + (comarcaId + 1));
-    }
-
-    @Test
-    @Transactional
-    void getAllProcessosByQuilomboIsEqualToSomething() throws Exception {
-        // Initialize the database
-        processoRepository.saveAndFlush(processo);
-        Quilombo quilombo = QuilomboResourceIT.createEntity(em);
-        em.persist(quilombo);
-        em.flush();
-        processo.addQuilombo(quilombo);
-        processoRepository.saveAndFlush(processo);
-        Long quilomboId = quilombo.getId();
-
-        // Get all the processoList where quilombo equals to quilomboId
-        defaultProcessoShouldBeFound("quilomboId.equals=" + quilomboId);
-
-        // Get all the processoList where quilombo equals to (quilomboId + 1)
-        defaultProcessoShouldNotBeFound("quilomboId.equals=" + (quilomboId + 1));
     }
 
     @Test
@@ -5233,6 +5146,25 @@ class ProcessoResourceIT {
 
     @Test
     @Transactional
+    void getAllProcessosByQuilomboIsEqualToSomething() throws Exception {
+        // Initialize the database
+        processoRepository.saveAndFlush(processo);
+        Quilombo quilombo = QuilomboResourceIT.createEntity(em);
+        em.persist(quilombo);
+        em.flush();
+        processo.addQuilombo(quilombo);
+        processoRepository.saveAndFlush(processo);
+        Long quilomboId = quilombo.getId();
+
+        // Get all the processoList where quilombo equals to quilomboId
+        defaultProcessoShouldBeFound("quilomboId.equals=" + quilomboId);
+
+        // Get all the processoList where quilombo equals to (quilomboId + 1)
+        defaultProcessoShouldNotBeFound("quilomboId.equals=" + (quilomboId + 1));
+    }
+
+    @Test
+    @Transactional
     void getAllProcessosByProblemaJuridicoIsEqualToSomething() throws Exception {
         // Initialize the database
         processoRepository.saveAndFlush(processo);
@@ -5264,8 +5196,6 @@ class ProcessoResourceIT {
             .andExpect(jsonPath("$.[*].assunto").value(hasItem(DEFAULT_ASSUNTO.toString())))
             .andExpect(jsonPath("$.[*].linkUnico").value(hasItem(DEFAULT_LINK_UNICO)))
             .andExpect(jsonPath("$.[*].linkTrf").value(hasItem(DEFAULT_LINK_TRF)))
-            .andExpect(jsonPath("$.[*].secaoJudiciaria").value(hasItem(DEFAULT_SECAO_JUDICIARIA)))
-            .andExpect(jsonPath("$.[*].subsecaoJudiciaria").value(hasItem(DEFAULT_SUBSECAO_JUDICIARIA)))
             .andExpect(jsonPath("$.[*].turmaTrf1").value(hasItem(DEFAULT_TURMA_TRF_1)))
             .andExpect(jsonPath("$.[*].numeroProcessoAdministrativo").value(hasItem(DEFAULT_NUMERO_PROCESSO_ADMINISTRATIVO)))
             .andExpect(
@@ -5293,6 +5223,7 @@ class ProcessoResourceIT {
             .andExpect(jsonPath("$.[*].acordaoApelacao").value(hasItem(DEFAULT_ACORDAO_APELACAO.toString())))
             .andExpect(jsonPath("$.[*].folhasCienciaJulgApelacao").value(hasItem(DEFAULT_FOLHAS_CIENCIA_JULG_APELACAO)))
             .andExpect(jsonPath("$.[*].embargoDeclaracao").value(hasItem(DEFAULT_EMBARGO_DECLARACAO.booleanValue())))
+            .andExpect(jsonPath("$.[*].embargoRecursoExtraordinario").value(hasItem(DEFAULT_EMBARGO_RECURSO_EXTRAORDINARIO.booleanValue())))
             .andExpect(jsonPath("$.[*].folhasRecursoEspecial").value(hasItem(DEFAULT_FOLHAS_RECURSO_ESPECIAL)))
             .andExpect(jsonPath("$.[*].acordaoRecursoEspecial").value(hasItem(DEFAULT_ACORDAO_RECURSO_ESPECIAL.toString())))
             .andExpect(
@@ -5352,7 +5283,8 @@ class ProcessoResourceIT {
             .andExpect(jsonPath("$.[*].admissiblidade").value(hasItem(DEFAULT_ADMISSIBLIDADE.toString())))
             .andExpect(jsonPath("$.[*].envolveGrandeProjeto").value(hasItem(DEFAULT_ENVOLVE_GRANDE_PROJETO.booleanValue())))
             .andExpect(jsonPath("$.[*].envolveUnidadeConservacao").value(hasItem(DEFAULT_ENVOLVE_UNIDADE_CONSERVACAO.booleanValue())))
-            .andExpect(jsonPath("$.[*].linkReferencia").value(hasItem(DEFAULT_LINK_REFERENCIA.toString())));
+            .andExpect(jsonPath("$.[*].linkReferencia").value(hasItem(DEFAULT_LINK_REFERENCIA.toString())))
+            .andExpect(jsonPath("$.[*].statusProcesso").value(hasItem(DEFAULT_STATUS_PROCESSO.toString())));
 
         // Check, that the count call also returns 1
         restProcessoMockMvc
@@ -5406,8 +5338,6 @@ class ProcessoResourceIT {
             .assunto(UPDATED_ASSUNTO)
             .linkUnico(UPDATED_LINK_UNICO)
             .linkTrf(UPDATED_LINK_TRF)
-            .secaoJudiciaria(UPDATED_SECAO_JUDICIARIA)
-            .subsecaoJudiciaria(UPDATED_SUBSECAO_JUDICIARIA)
             .turmaTrf1(UPDATED_TURMA_TRF_1)
             .numeroProcessoAdministrativo(UPDATED_NUMERO_PROCESSO_ADMINISTRATIVO)
             .numeroProcessoJudicialPrimeiraInstancia(UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA)
@@ -5426,6 +5356,7 @@ class ProcessoResourceIT {
             .acordaoApelacao(UPDATED_ACORDAO_APELACAO)
             .folhasCienciaJulgApelacao(UPDATED_FOLHAS_CIENCIA_JULG_APELACAO)
             .embargoDeclaracao(UPDATED_EMBARGO_DECLARACAO)
+            .embargoRecursoExtraordinario(UPDATED_EMBARGO_RECURSO_EXTRAORDINARIO)
             .folhasRecursoEspecial(UPDATED_FOLHAS_RECURSO_ESPECIAL)
             .acordaoRecursoEspecial(UPDATED_ACORDAO_RECURSO_ESPECIAL)
             .folhasCienciaJulgamentoRecursoEspecial(UPDATED_FOLHAS_CIENCIA_JULGAMENTO_RECURSO_ESPECIAL)
@@ -5470,7 +5401,8 @@ class ProcessoResourceIT {
             .admissiblidade(UPDATED_ADMISSIBLIDADE)
             .envolveGrandeProjeto(UPDATED_ENVOLVE_GRANDE_PROJETO)
             .envolveUnidadeConservacao(UPDATED_ENVOLVE_UNIDADE_CONSERVACAO)
-            .linkReferencia(UPDATED_LINK_REFERENCIA);
+            .linkReferencia(UPDATED_LINK_REFERENCIA)
+            .statusProcesso(UPDATED_STATUS_PROCESSO);
 
         restProcessoMockMvc
             .perform(
@@ -5489,8 +5421,6 @@ class ProcessoResourceIT {
         assertThat(testProcesso.getAssunto()).isEqualTo(UPDATED_ASSUNTO);
         assertThat(testProcesso.getLinkUnico()).isEqualTo(UPDATED_LINK_UNICO);
         assertThat(testProcesso.getLinkTrf()).isEqualTo(UPDATED_LINK_TRF);
-        assertThat(testProcesso.getSecaoJudiciaria()).isEqualTo(UPDATED_SECAO_JUDICIARIA);
-        assertThat(testProcesso.getSubsecaoJudiciaria()).isEqualTo(UPDATED_SUBSECAO_JUDICIARIA);
         assertThat(testProcesso.getTurmaTrf1()).isEqualTo(UPDATED_TURMA_TRF_1);
         assertThat(testProcesso.getNumeroProcessoAdministrativo()).isEqualTo(UPDATED_NUMERO_PROCESSO_ADMINISTRATIVO);
         assertThat(testProcesso.getNumeroProcessoJudicialPrimeiraInstancia())
@@ -5512,6 +5442,7 @@ class ProcessoResourceIT {
         assertThat(testProcesso.getAcordaoApelacao()).isEqualTo(UPDATED_ACORDAO_APELACAO);
         assertThat(testProcesso.getFolhasCienciaJulgApelacao()).isEqualTo(UPDATED_FOLHAS_CIENCIA_JULG_APELACAO);
         assertThat(testProcesso.getEmbargoDeclaracao()).isEqualTo(UPDATED_EMBARGO_DECLARACAO);
+        assertThat(testProcesso.getEmbargoRecursoExtraordinario()).isEqualTo(UPDATED_EMBARGO_RECURSO_EXTRAORDINARIO);
         assertThat(testProcesso.getFolhasRecursoEspecial()).isEqualTo(UPDATED_FOLHAS_RECURSO_ESPECIAL);
         assertThat(testProcesso.getAcordaoRecursoEspecial()).isEqualTo(UPDATED_ACORDAO_RECURSO_ESPECIAL);
         assertThat(testProcesso.getFolhasCienciaJulgamentoRecursoEspecial()).isEqualTo(UPDATED_FOLHAS_CIENCIA_JULGAMENTO_RECURSO_ESPECIAL);
@@ -5558,6 +5489,7 @@ class ProcessoResourceIT {
         assertThat(testProcesso.getEnvolveGrandeProjeto()).isEqualTo(UPDATED_ENVOLVE_GRANDE_PROJETO);
         assertThat(testProcesso.getEnvolveUnidadeConservacao()).isEqualTo(UPDATED_ENVOLVE_UNIDADE_CONSERVACAO);
         assertThat(testProcesso.getLinkReferencia()).isEqualTo(UPDATED_LINK_REFERENCIA);
+        assertThat(testProcesso.getStatusProcesso()).isEqualTo(UPDATED_STATUS_PROCESSO);
     }
 
     @Test
@@ -5633,43 +5565,43 @@ class ProcessoResourceIT {
             .assunto(UPDATED_ASSUNTO)
             .linkUnico(UPDATED_LINK_UNICO)
             .linkTrf(UPDATED_LINK_TRF)
-            .secaoJudiciaria(UPDATED_SECAO_JUDICIARIA)
-            .subsecaoJudiciaria(UPDATED_SUBSECAO_JUDICIARIA)
+            .turmaTrf1(UPDATED_TURMA_TRF_1)
             .numeroProcessoAdministrativo(UPDATED_NUMERO_PROCESSO_ADMINISTRATIVO)
-            .numeroProcessoJudicialPrimeiraInstanciaObservacoes(UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_OBSERVACOES)
-            .parecer(UPDATED_PARECER)
+            .numeroProcessoJudicialPrimeiraInstanciaLink(UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK)
+            .folhasProcessoConcessaoLiminar(UPDATED_FOLHAS_PROCESSO_CONCESSAO_LIMINAR)
             .concessaoLiminarObservacoes(UPDATED_CONCESSAO_LIMINAR_OBSERVACOES)
-            .folhasEmbargo(UPDATED_FOLHAS_EMBARGO)
+            .folhasParecer(UPDATED_FOLHAS_PARECER)
             .folhasCienciaJulgEmbargos(UPDATED_FOLHAS_CIENCIA_JULG_EMBARGOS)
             .folhasApelacao(UPDATED_FOLHAS_APELACAO)
             .folhasCienciaJulgApelacao(UPDATED_FOLHAS_CIENCIA_JULG_APELACAO)
-            .acordaoRecursoEspecial(UPDATED_ACORDAO_RECURSO_ESPECIAL)
+            .embargoRecursoExtraordinario(UPDATED_EMBARGO_RECURSO_EXTRAORDINARIO)
             .folhasCienciaJulgamentoRecursoEspecial(UPDATED_FOLHAS_CIENCIA_JULGAMENTO_RECURSO_ESPECIAL)
-            .folhasCiencia(UPDATED_FOLHAS_CIENCIA)
-            .folhasRespRe(UPDATED_FOLHAS_RESP_RE)
+            .embargoRecursoEspecial(UPDATED_EMBARGO_RECURSO_ESPECIAL)
+            .agravoRespRe(UPDATED_AGRAVO_RESP_RE)
             .acordaoAgravoRespRe(UPDATED_ACORDAO_AGRAVO_RESP_RE)
             .folhasCienciaJulgamentoAgravoRespRe(UPDATED_FOLHAS_CIENCIA_JULGAMENTO_AGRAVO_RESP_RE)
             .embargoRespRe(UPDATED_EMBARGO_RESP_RE)
-            .folhasAgravoInterno(UPDATED_FOLHAS_AGRAVO_INTERNO)
-            .observacoes(UPDATED_OBSERVACOES)
+            .agravoInterno(UPDATED_AGRAVO_INTERNO)
+            .embargoRecursoAgravo(UPDATED_EMBARGO_RECURSO_AGRAVO)
             .recursoSTJ(UPDATED_RECURSO_STJ)
-            .recursoSTF(UPDATED_RECURSO_STF)
-            .execusaoProvisoria(UPDATED_EXECUSAO_PROVISORIA)
+            .linkRecursoSTJ(UPDATED_LINK_RECURSO_STJ)
+            .linkRecursoSTF(UPDATED_LINK_RECURSO_STF)
             .numeracaoExecusaoProvisoria(UPDATED_NUMERACAO_EXECUSAO_PROVISORIA)
             .recuperacaoEfetivaCumprimentoSentenca(UPDATED_RECUPERACAO_EFETIVA_CUMPRIMENTO_SENTENCA)
-            .envolveExploracaoIlegal(UPDATED_ENVOLVE_EXPLORACAO_ILEGAL)
-            .envolveTerraComunidadeTradicional(UPDATED_ENVOLVE_TERRA_COMUNIDADE_TRADICIONAL)
+            .recuperacaoEfetivaCumprimentoSentencaObservacoes(UPDATED_RECUPERACAO_EFETIVA_CUMPRIMENTO_SENTENCA_OBSERVACOES)
+            .envolveTerraQuilombola(UPDATED_ENVOLVE_TERRA_QUILOMBOLA)
             .envolveTerraIndigena(UPDATED_ENVOLVE_TERRA_INDIGENA)
             .resumoFatos(UPDATED_RESUMO_FATOS)
             .tamanhoArea(UPDATED_TAMANHO_AREA)
             .valorArea(UPDATED_VALOR_AREA)
             .tamanhoAreaObservacao(UPDATED_TAMANHO_AREA_OBSERVACAO)
             .dadosGeograficosLitigioConflito(UPDATED_DADOS_GEOGRAFICOS_LITIGIO_CONFLITO)
-            .longitude(UPDATED_LONGITUDE)
-            .numeroRecursoEspecial(UPDATED_NUMERO_RECURSO_ESPECIAL)
-            .envolveGrandeProjeto(UPDATED_ENVOLVE_GRANDE_PROJETO)
+            .latitude(UPDATED_LATITUDE)
+            .numeroProcessoMPF(UPDATED_NUMERO_PROCESSO_MPF)
+            .admissiblidade(UPDATED_ADMISSIBLIDADE)
             .envolveUnidadeConservacao(UPDATED_ENVOLVE_UNIDADE_CONSERVACAO)
-            .linkReferencia(UPDATED_LINK_REFERENCIA);
+            .linkReferencia(UPDATED_LINK_REFERENCIA)
+            .statusProcesso(UPDATED_STATUS_PROCESSO);
 
         restProcessoMockMvc
             .perform(
@@ -5688,22 +5620,20 @@ class ProcessoResourceIT {
         assertThat(testProcesso.getAssunto()).isEqualTo(UPDATED_ASSUNTO);
         assertThat(testProcesso.getLinkUnico()).isEqualTo(UPDATED_LINK_UNICO);
         assertThat(testProcesso.getLinkTrf()).isEqualTo(UPDATED_LINK_TRF);
-        assertThat(testProcesso.getSecaoJudiciaria()).isEqualTo(UPDATED_SECAO_JUDICIARIA);
-        assertThat(testProcesso.getSubsecaoJudiciaria()).isEqualTo(UPDATED_SUBSECAO_JUDICIARIA);
-        assertThat(testProcesso.getTurmaTrf1()).isEqualTo(DEFAULT_TURMA_TRF_1);
+        assertThat(testProcesso.getTurmaTrf1()).isEqualTo(UPDATED_TURMA_TRF_1);
         assertThat(testProcesso.getNumeroProcessoAdministrativo()).isEqualTo(UPDATED_NUMERO_PROCESSO_ADMINISTRATIVO);
         assertThat(testProcesso.getNumeroProcessoJudicialPrimeiraInstancia())
             .isEqualTo(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA);
         assertThat(testProcesso.getNumeroProcessoJudicialPrimeiraInstanciaLink())
-            .isEqualTo(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK);
+            .isEqualTo(UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_LINK);
         assertThat(testProcesso.getNumeroProcessoJudicialPrimeiraInstanciaObservacoes())
-            .isEqualTo(UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_OBSERVACOES);
-        assertThat(testProcesso.getParecer()).isEqualTo(UPDATED_PARECER);
-        assertThat(testProcesso.getFolhasProcessoConcessaoLiminar()).isEqualTo(DEFAULT_FOLHAS_PROCESSO_CONCESSAO_LIMINAR);
+            .isEqualTo(DEFAULT_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA_OBSERVACOES);
+        assertThat(testProcesso.getParecer()).isEqualTo(DEFAULT_PARECER);
+        assertThat(testProcesso.getFolhasProcessoConcessaoLiminar()).isEqualTo(UPDATED_FOLHAS_PROCESSO_CONCESSAO_LIMINAR);
         assertThat(testProcesso.getConcessaoLiminarObservacoes()).isEqualTo(UPDATED_CONCESSAO_LIMINAR_OBSERVACOES);
         assertThat(testProcesso.getFolhasProcessoCassacao()).isEqualTo(DEFAULT_FOLHAS_PROCESSO_CASSACAO);
-        assertThat(testProcesso.getFolhasParecer()).isEqualTo(DEFAULT_FOLHAS_PARECER);
-        assertThat(testProcesso.getFolhasEmbargo()).isEqualTo(UPDATED_FOLHAS_EMBARGO);
+        assertThat(testProcesso.getFolhasParecer()).isEqualTo(UPDATED_FOLHAS_PARECER);
+        assertThat(testProcesso.getFolhasEmbargo()).isEqualTo(DEFAULT_FOLHAS_EMBARGO);
         assertThat(testProcesso.getAcordaoEmbargo()).isEqualTo(DEFAULT_ACORDAO_EMBARGO);
         assertThat(testProcesso.getFolhasCienciaJulgEmbargos()).isEqualTo(UPDATED_FOLHAS_CIENCIA_JULG_EMBARGOS);
         assertThat(testProcesso.getApelacao()).isEqualTo(DEFAULT_APELACAO);
@@ -5711,52 +5641,54 @@ class ProcessoResourceIT {
         assertThat(testProcesso.getAcordaoApelacao()).isEqualTo(DEFAULT_ACORDAO_APELACAO);
         assertThat(testProcesso.getFolhasCienciaJulgApelacao()).isEqualTo(UPDATED_FOLHAS_CIENCIA_JULG_APELACAO);
         assertThat(testProcesso.getEmbargoDeclaracao()).isEqualTo(DEFAULT_EMBARGO_DECLARACAO);
+        assertThat(testProcesso.getEmbargoRecursoExtraordinario()).isEqualTo(UPDATED_EMBARGO_RECURSO_EXTRAORDINARIO);
         assertThat(testProcesso.getFolhasRecursoEspecial()).isEqualTo(DEFAULT_FOLHAS_RECURSO_ESPECIAL);
-        assertThat(testProcesso.getAcordaoRecursoEspecial()).isEqualTo(UPDATED_ACORDAO_RECURSO_ESPECIAL);
+        assertThat(testProcesso.getAcordaoRecursoEspecial()).isEqualTo(DEFAULT_ACORDAO_RECURSO_ESPECIAL);
         assertThat(testProcesso.getFolhasCienciaJulgamentoRecursoEspecial()).isEqualTo(UPDATED_FOLHAS_CIENCIA_JULGAMENTO_RECURSO_ESPECIAL);
-        assertThat(testProcesso.getEmbargoRecursoEspecial()).isEqualTo(DEFAULT_EMBARGO_RECURSO_ESPECIAL);
-        assertThat(testProcesso.getFolhasCiencia()).isEqualTo(UPDATED_FOLHAS_CIENCIA);
-        assertThat(testProcesso.getAgravoRespRe()).isEqualTo(DEFAULT_AGRAVO_RESP_RE);
-        assertThat(testProcesso.getFolhasRespRe()).isEqualTo(UPDATED_FOLHAS_RESP_RE);
+        assertThat(testProcesso.getEmbargoRecursoEspecial()).isEqualTo(UPDATED_EMBARGO_RECURSO_ESPECIAL);
+        assertThat(testProcesso.getFolhasCiencia()).isEqualTo(DEFAULT_FOLHAS_CIENCIA);
+        assertThat(testProcesso.getAgravoRespRe()).isEqualTo(UPDATED_AGRAVO_RESP_RE);
+        assertThat(testProcesso.getFolhasRespRe()).isEqualTo(DEFAULT_FOLHAS_RESP_RE);
         assertThat(testProcesso.getAcordaoAgravoRespRe()).isEqualTo(UPDATED_ACORDAO_AGRAVO_RESP_RE);
         assertThat(testProcesso.getFolhasCienciaJulgamentoAgravoRespRe()).isEqualTo(UPDATED_FOLHAS_CIENCIA_JULGAMENTO_AGRAVO_RESP_RE);
         assertThat(testProcesso.getEmbargoRespRe()).isEqualTo(UPDATED_EMBARGO_RESP_RE);
-        assertThat(testProcesso.getAgravoInterno()).isEqualTo(DEFAULT_AGRAVO_INTERNO);
-        assertThat(testProcesso.getFolhasAgravoInterno()).isEqualTo(UPDATED_FOLHAS_AGRAVO_INTERNO);
-        assertThat(testProcesso.getEmbargoRecursoAgravo()).isEqualTo(DEFAULT_EMBARGO_RECURSO_AGRAVO);
-        assertThat(testProcesso.getObservacoes()).isEqualTo(UPDATED_OBSERVACOES);
+        assertThat(testProcesso.getAgravoInterno()).isEqualTo(UPDATED_AGRAVO_INTERNO);
+        assertThat(testProcesso.getFolhasAgravoInterno()).isEqualTo(DEFAULT_FOLHAS_AGRAVO_INTERNO);
+        assertThat(testProcesso.getEmbargoRecursoAgravo()).isEqualTo(UPDATED_EMBARGO_RECURSO_AGRAVO);
+        assertThat(testProcesso.getObservacoes()).isEqualTo(DEFAULT_OBSERVACOES);
         assertThat(testProcesso.getRecursoSTJ()).isEqualTo(UPDATED_RECURSO_STJ);
-        assertThat(testProcesso.getLinkRecursoSTJ()).isEqualTo(DEFAULT_LINK_RECURSO_STJ);
+        assertThat(testProcesso.getLinkRecursoSTJ()).isEqualTo(UPDATED_LINK_RECURSO_STJ);
         assertThat(testProcesso.getFolhasRecursoSTJ()).isEqualTo(DEFAULT_FOLHAS_RECURSO_STJ);
-        assertThat(testProcesso.getRecursoSTF()).isEqualTo(UPDATED_RECURSO_STF);
-        assertThat(testProcesso.getLinkRecursoSTF()).isEqualTo(DEFAULT_LINK_RECURSO_STF);
+        assertThat(testProcesso.getRecursoSTF()).isEqualTo(DEFAULT_RECURSO_STF);
+        assertThat(testProcesso.getLinkRecursoSTF()).isEqualTo(UPDATED_LINK_RECURSO_STF);
         assertThat(testProcesso.getFolhasRecursoSTF()).isEqualTo(DEFAULT_FOLHAS_RECURSO_STF);
         assertThat(testProcesso.getFolhasMemorialMPF()).isEqualTo(DEFAULT_FOLHAS_MEMORIAL_MPF);
-        assertThat(testProcesso.getExecusaoProvisoria()).isEqualTo(UPDATED_EXECUSAO_PROVISORIA);
+        assertThat(testProcesso.getExecusaoProvisoria()).isEqualTo(DEFAULT_EXECUSAO_PROVISORIA);
         assertThat(testProcesso.getNumeracaoExecusaoProvisoria()).isEqualTo(UPDATED_NUMERACAO_EXECUSAO_PROVISORIA);
         assertThat(testProcesso.getRecuperacaoEfetivaCumprimentoSentenca()).isEqualTo(UPDATED_RECUPERACAO_EFETIVA_CUMPRIMENTO_SENTENCA);
         assertThat(testProcesso.getRecuperacaoEfetivaCumprimentoSentencaObservacoes())
-            .isEqualTo(DEFAULT_RECUPERACAO_EFETIVA_CUMPRIMENTO_SENTENCA_OBSERVACOES);
+            .isEqualTo(UPDATED_RECUPERACAO_EFETIVA_CUMPRIMENTO_SENTENCA_OBSERVACOES);
         assertThat(testProcesso.getEnvolveEmpreendimento()).isEqualTo(DEFAULT_ENVOLVE_EMPREENDIMENTO);
-        assertThat(testProcesso.getEnvolveExploracaoIlegal()).isEqualTo(UPDATED_ENVOLVE_EXPLORACAO_ILEGAL);
-        assertThat(testProcesso.getEnvolveTerraQuilombola()).isEqualTo(DEFAULT_ENVOLVE_TERRA_QUILOMBOLA);
-        assertThat(testProcesso.getEnvolveTerraComunidadeTradicional()).isEqualTo(UPDATED_ENVOLVE_TERRA_COMUNIDADE_TRADICIONAL);
+        assertThat(testProcesso.getEnvolveExploracaoIlegal()).isEqualTo(DEFAULT_ENVOLVE_EXPLORACAO_ILEGAL);
+        assertThat(testProcesso.getEnvolveTerraQuilombola()).isEqualTo(UPDATED_ENVOLVE_TERRA_QUILOMBOLA);
+        assertThat(testProcesso.getEnvolveTerraComunidadeTradicional()).isEqualTo(DEFAULT_ENVOLVE_TERRA_COMUNIDADE_TRADICIONAL);
         assertThat(testProcesso.getEnvolveTerraIndigena()).isEqualTo(UPDATED_ENVOLVE_TERRA_INDIGENA);
         assertThat(testProcesso.getResumoFatos()).isEqualTo(UPDATED_RESUMO_FATOS);
         assertThat(testProcesso.getTamanhoArea()).isEqualByComparingTo(UPDATED_TAMANHO_AREA);
         assertThat(testProcesso.getValorArea()).isEqualByComparingTo(UPDATED_VALOR_AREA);
         assertThat(testProcesso.getTamanhoAreaObservacao()).isEqualTo(UPDATED_TAMANHO_AREA_OBSERVACAO);
         assertThat(testProcesso.getDadosGeograficosLitigioConflito()).isEqualTo(UPDATED_DADOS_GEOGRAFICOS_LITIGIO_CONFLITO);
-        assertThat(testProcesso.getLatitude()).isEqualTo(DEFAULT_LATITUDE);
-        assertThat(testProcesso.getLongitude()).isEqualTo(UPDATED_LONGITUDE);
-        assertThat(testProcesso.getNumeroProcessoMPF()).isEqualTo(DEFAULT_NUMERO_PROCESSO_MPF);
+        assertThat(testProcesso.getLatitude()).isEqualTo(UPDATED_LATITUDE);
+        assertThat(testProcesso.getLongitude()).isEqualTo(DEFAULT_LONGITUDE);
+        assertThat(testProcesso.getNumeroProcessoMPF()).isEqualTo(UPDATED_NUMERO_PROCESSO_MPF);
         assertThat(testProcesso.getNumeroEmbargo()).isEqualTo(DEFAULT_NUMERO_EMBARGO);
         assertThat(testProcesso.getPautaApelacao()).isEqualTo(DEFAULT_PAUTA_APELACAO);
-        assertThat(testProcesso.getNumeroRecursoEspecial()).isEqualTo(UPDATED_NUMERO_RECURSO_ESPECIAL);
-        assertThat(testProcesso.getAdmissiblidade()).isEqualTo(DEFAULT_ADMISSIBLIDADE);
-        assertThat(testProcesso.getEnvolveGrandeProjeto()).isEqualTo(UPDATED_ENVOLVE_GRANDE_PROJETO);
+        assertThat(testProcesso.getNumeroRecursoEspecial()).isEqualTo(DEFAULT_NUMERO_RECURSO_ESPECIAL);
+        assertThat(testProcesso.getAdmissiblidade()).isEqualTo(UPDATED_ADMISSIBLIDADE);
+        assertThat(testProcesso.getEnvolveGrandeProjeto()).isEqualTo(DEFAULT_ENVOLVE_GRANDE_PROJETO);
         assertThat(testProcesso.getEnvolveUnidadeConservacao()).isEqualTo(UPDATED_ENVOLVE_UNIDADE_CONSERVACAO);
         assertThat(testProcesso.getLinkReferencia()).isEqualTo(UPDATED_LINK_REFERENCIA);
+        assertThat(testProcesso.getStatusProcesso()).isEqualTo(UPDATED_STATUS_PROCESSO);
     }
 
     @Test
@@ -5777,8 +5709,6 @@ class ProcessoResourceIT {
             .assunto(UPDATED_ASSUNTO)
             .linkUnico(UPDATED_LINK_UNICO)
             .linkTrf(UPDATED_LINK_TRF)
-            .secaoJudiciaria(UPDATED_SECAO_JUDICIARIA)
-            .subsecaoJudiciaria(UPDATED_SUBSECAO_JUDICIARIA)
             .turmaTrf1(UPDATED_TURMA_TRF_1)
             .numeroProcessoAdministrativo(UPDATED_NUMERO_PROCESSO_ADMINISTRATIVO)
             .numeroProcessoJudicialPrimeiraInstancia(UPDATED_NUMERO_PROCESSO_JUDICIAL_PRIMEIRA_INSTANCIA)
@@ -5797,6 +5727,7 @@ class ProcessoResourceIT {
             .acordaoApelacao(UPDATED_ACORDAO_APELACAO)
             .folhasCienciaJulgApelacao(UPDATED_FOLHAS_CIENCIA_JULG_APELACAO)
             .embargoDeclaracao(UPDATED_EMBARGO_DECLARACAO)
+            .embargoRecursoExtraordinario(UPDATED_EMBARGO_RECURSO_EXTRAORDINARIO)
             .folhasRecursoEspecial(UPDATED_FOLHAS_RECURSO_ESPECIAL)
             .acordaoRecursoEspecial(UPDATED_ACORDAO_RECURSO_ESPECIAL)
             .folhasCienciaJulgamentoRecursoEspecial(UPDATED_FOLHAS_CIENCIA_JULGAMENTO_RECURSO_ESPECIAL)
@@ -5841,7 +5772,8 @@ class ProcessoResourceIT {
             .admissiblidade(UPDATED_ADMISSIBLIDADE)
             .envolveGrandeProjeto(UPDATED_ENVOLVE_GRANDE_PROJETO)
             .envolveUnidadeConservacao(UPDATED_ENVOLVE_UNIDADE_CONSERVACAO)
-            .linkReferencia(UPDATED_LINK_REFERENCIA);
+            .linkReferencia(UPDATED_LINK_REFERENCIA)
+            .statusProcesso(UPDATED_STATUS_PROCESSO);
 
         restProcessoMockMvc
             .perform(
@@ -5860,8 +5792,6 @@ class ProcessoResourceIT {
         assertThat(testProcesso.getAssunto()).isEqualTo(UPDATED_ASSUNTO);
         assertThat(testProcesso.getLinkUnico()).isEqualTo(UPDATED_LINK_UNICO);
         assertThat(testProcesso.getLinkTrf()).isEqualTo(UPDATED_LINK_TRF);
-        assertThat(testProcesso.getSecaoJudiciaria()).isEqualTo(UPDATED_SECAO_JUDICIARIA);
-        assertThat(testProcesso.getSubsecaoJudiciaria()).isEqualTo(UPDATED_SUBSECAO_JUDICIARIA);
         assertThat(testProcesso.getTurmaTrf1()).isEqualTo(UPDATED_TURMA_TRF_1);
         assertThat(testProcesso.getNumeroProcessoAdministrativo()).isEqualTo(UPDATED_NUMERO_PROCESSO_ADMINISTRATIVO);
         assertThat(testProcesso.getNumeroProcessoJudicialPrimeiraInstancia())
@@ -5883,6 +5813,7 @@ class ProcessoResourceIT {
         assertThat(testProcesso.getAcordaoApelacao()).isEqualTo(UPDATED_ACORDAO_APELACAO);
         assertThat(testProcesso.getFolhasCienciaJulgApelacao()).isEqualTo(UPDATED_FOLHAS_CIENCIA_JULG_APELACAO);
         assertThat(testProcesso.getEmbargoDeclaracao()).isEqualTo(UPDATED_EMBARGO_DECLARACAO);
+        assertThat(testProcesso.getEmbargoRecursoExtraordinario()).isEqualTo(UPDATED_EMBARGO_RECURSO_EXTRAORDINARIO);
         assertThat(testProcesso.getFolhasRecursoEspecial()).isEqualTo(UPDATED_FOLHAS_RECURSO_ESPECIAL);
         assertThat(testProcesso.getAcordaoRecursoEspecial()).isEqualTo(UPDATED_ACORDAO_RECURSO_ESPECIAL);
         assertThat(testProcesso.getFolhasCienciaJulgamentoRecursoEspecial()).isEqualTo(UPDATED_FOLHAS_CIENCIA_JULGAMENTO_RECURSO_ESPECIAL);
@@ -5929,6 +5860,7 @@ class ProcessoResourceIT {
         assertThat(testProcesso.getEnvolveGrandeProjeto()).isEqualTo(UPDATED_ENVOLVE_GRANDE_PROJETO);
         assertThat(testProcesso.getEnvolveUnidadeConservacao()).isEqualTo(UPDATED_ENVOLVE_UNIDADE_CONSERVACAO);
         assertThat(testProcesso.getLinkReferencia()).isEqualTo(UPDATED_LINK_REFERENCIA);
+        assertThat(testProcesso.getStatusProcesso()).isEqualTo(UPDATED_STATUS_PROCESSO);
     }
 
     @Test

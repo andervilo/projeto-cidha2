@@ -6,7 +6,10 @@
       "home": "Início",
       "jhipster-needle-menu-add-element": "JHipster will add additional menu entries here (do not translate!)",
       "entities": {
-        "main": "Entidades",
+        "main": "Processo",
+        "main_2": "Pre Processo",
+        "main_3": "Pos Processo",
+        "main_4": "Data",
         "comarca": "Comarca",
         "quilombo": "Quilombo",
         "processo": "Processo",
@@ -42,6 +45,8 @@
         "representanteLegal": "Representante Legal",
         "parteInteresssada": "Parte Interesssada",
         "relator": "Relator",
+        "secaoJudiciaria": "Secao Judiciaria",
+        "subsecaoJudiciaria": "Subsecao Judiciaria",
         "jhipster-needle-menu-add-entry": "JHipster will add additional entities here (do not translate!)"
       },
       "account": {

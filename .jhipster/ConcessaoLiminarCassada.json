@@ -14,7 +14,6 @@
       "relationshipName": "processo"
     }
   ],
-  "changelogDate": "20210405142717",
   "entityTableName": "concessao_liminar_cassada",
   "dto": "no",
   "pagination": "pagination",
@@ -23,6 +22,6 @@
   "fluentMethods": true,
   "readOnly": false,
   "embedded": false,
-  "clientRootFolder": "",
-  "applications": "*"
+  "applications": "*",
+  "changelogDate": "20210608111913"
 }

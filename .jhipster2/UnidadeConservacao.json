@@ -1,0 +1,30 @@
+{
+  "name": "UnidadeConservacao",
+  "fields": [
+    {
+      "fieldName": "descricao",
+      "fieldType": "String"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "many-to-many",
+      "otherEntityName": "processo",
+      "otherEntityRelationshipName": "unidadeConservacao",
+      "relationshipName": "processo",
+      "otherEntityField": "oficio",
+      "ownerSide": false
+    }
+  ],
+  "changelogDate": "20210405144517",
+  "entityTableName": "unidade_conservacao",
+  "dto": "no",
+  "pagination": "pagination",
+  "service": "serviceClass",
+  "jpaMetamodelFiltering": true,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": "*"
+}

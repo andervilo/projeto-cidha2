@@ -1,0 +1,26 @@
+{
+  "cidhaApp": {
+    "secaoJudiciaria": {
+      "home": {
+        "title": "Secao Judiciarias",
+        "refreshListLabel": "Atualizar lista",
+        "createLabel": "Criar novo Secao Judiciaria",
+        "createOrEditLabel": "Criar ou editar Secao Judiciaria",
+        "notFound": "Nenhum Secao Judiciaria encontrado"
+      },
+      "created": "Um novo Secao Judiciaria foi criado com o identificador {{ param }}",
+      "updated": "Um Secao Judiciaria foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Secao Judiciaria foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Secao Judiciaria {{ id }}?"
+      },
+      "detail": {
+        "title": "Secao Judiciaria"
+      },
+      "id": "ID",
+      "sigla": "Sigla",
+      "nome": "Nome",
+      "subsecaoJudiciaria": "Subsecao Judiciaria"
+    }
+  }
+}

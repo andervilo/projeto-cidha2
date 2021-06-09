@@ -61,18 +61,6 @@ export const ProcessoDetail = (props: IProcessoDetailProps) => {
           </dt>
           <dd>{processoEntity.linkTrf}</dd>
           <dt>
-            <span id="secaoJudiciaria">
-              <Translate contentKey="cidhaApp.processo.secaoJudiciaria">Secao Judiciaria</Translate>
-            </span>
-          </dt>
-          <dd>{processoEntity.secaoJudiciaria}</dd>
-          <dt>
-            <span id="subsecaoJudiciaria">
-              <Translate contentKey="cidhaApp.processo.subsecaoJudiciaria">Subsecao Judiciaria</Translate>
-            </span>
-          </dt>
-          <dd>{processoEntity.subsecaoJudiciaria}</dd>
-          <dt>
             <span id="turmaTrf1">
               <Translate contentKey="cidhaApp.processo.turmaTrf1">Turma Trf 1</Translate>
             </span>
@@ -186,6 +174,12 @@ export const ProcessoDetail = (props: IProcessoDetailProps) => {
             </span>
           </dt>
           <dd>{processoEntity.embargoDeclaracao ? 'true' : 'false'}</dd>
+          <dt>
+            <span id="embargoRecursoExtraordinario">
+              <Translate contentKey="cidhaApp.processo.embargoRecursoExtraordinario">Embargo Recurso Extraordinario</Translate>
+            </span>
+          </dt>
+          <dd>{processoEntity.embargoRecursoExtraordinario ? 'true' : 'false'}</dd>
           <dt>
             <span id="folhasRecursoEspecial">
               <Translate contentKey="cidhaApp.processo.folhasRecursoEspecial">Folhas Recurso Especial</Translate>
@@ -465,6 +459,12 @@ export const ProcessoDetail = (props: IProcessoDetailProps) => {
           </dt>
           <dd>{processoEntity.linkReferencia}</dd>
           <dt>
+            <span id="statusProcesso">
+              <Translate contentKey="cidhaApp.processo.statusProcesso">Status Processo</Translate>
+            </span>
+          </dt>
+          <dd>{processoEntity.statusProcesso}</dd>
+          <dt>
             <Translate contentKey="cidhaApp.processo.tipoDecisao">Tipo Decisao</Translate>
           </dt>
           <dd>{processoEntity.tipoDecisao ? processoEntity.tipoDecisao.descricao : ''}</dd>
@@ -472,6 +472,10 @@ export const ProcessoDetail = (props: IProcessoDetailProps) => {
             <Translate contentKey="cidhaApp.processo.tipoEmpreendimento">Tipo Empreendimento</Translate>
           </dt>
           <dd>{processoEntity.tipoEmpreendimento ? processoEntity.tipoEmpreendimento.descricao : ''}</dd>
+          <dt>
+            <Translate contentKey="cidhaApp.processo.secaoJudiciaria">Secao Judiciaria</Translate>
+          </dt>
+          <dd>{processoEntity.secaoJudiciaria ? processoEntity.secaoJudiciaria.nome : ''}</dd>
           <dt>
             <Translate contentKey="cidhaApp.processo.comarca">Comarca</Translate>
           </dt>
@@ -481,19 +485,6 @@ export const ProcessoDetail = (props: IProcessoDetailProps) => {
                   <span key={val.id}>
                     <a>{val.nome}</a>
                     {processoEntity.comarcas && i === processoEntity.comarcas.length - 1 ? '' : ', '}
-                  </span>
-                ))
-              : null}
-          </dd>
-          <dt>
-            <Translate contentKey="cidhaApp.processo.quilombo">Quilombo</Translate>
-          </dt>
-          <dd>
-            {processoEntity.quilombos
-              ? processoEntity.quilombos.map((val, i) => (
-                  <span key={val.id}>
-                    <a>{val.nome}</a>
-                    {processoEntity.quilombos && i === processoEntity.quilombos.length - 1 ? '' : ', '}
                   </span>
                 ))
               : null}
@@ -611,6 +602,19 @@ export const ProcessoDetail = (props: IProcessoDetailProps) => {
                   <span key={val.id}>
                     <a>{val.nome}</a>
                     {processoEntity.relators && i === processoEntity.relators.length - 1 ? '' : ', '}
+                  </span>
+                ))
+              : null}
+          </dd>
+          <dt>
+            <Translate contentKey="cidhaApp.processo.quilombo">Quilombo</Translate>
+          </dt>
+          <dd>
+            {processoEntity.quilombos
+              ? processoEntity.quilombos.map((val, i) => (
+                  <span key={val.id}>
+                    <a>{val.nome}</a>
+                    {processoEntity.quilombos && i === processoEntity.quilombos.length - 1 ? '' : ', '}
                   </span>
                 ))
               : null}

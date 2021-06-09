@@ -36,6 +36,12 @@ export const QuilomboDetail = (props: IQuilomboDetailProps) => {
             </span>
           </dt>
           <dd>{quilomboEntity.nome}</dd>
+          <dt>
+            <span id="tipoQuilombo">
+              <Translate contentKey="cidhaApp.quilombo.tipoQuilombo">Tipo Quilombo</Translate>
+            </span>
+          </dt>
+          <dd>{quilomboEntity.tipoQuilombo}</dd>
         </dl>
         <Button tag={Link} to="/quilombo" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" />{' '}

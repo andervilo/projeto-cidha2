@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import br.com.cidha.IntegrationTest;
 import br.com.cidha.domain.Processo;
 import br.com.cidha.domain.Quilombo;
+import br.com.cidha.domain.enumeration.TipoQuilombo;
 import br.com.cidha.repository.QuilomboRepository;
 import br.com.cidha.service.criteria.QuilomboCriteria;
 import java.util.List;
@@ -34,6 +35,9 @@ class QuilomboResourceIT {
     private static final String DEFAULT_NOME = "AAAAAAAAAA";
     private static final String UPDATED_NOME = "BBBBBBBBBB";
 
+    private static final TipoQuilombo DEFAULT_TIPO_QUILOMBO = TipoQuilombo.COMUNIDADE;
+    private static final TipoQuilombo UPDATED_TIPO_QUILOMBO = TipoQuilombo.TERRITORIO;
+
     private static final String ENTITY_API_URL = "/api/quilombos";
     private static final String ENTITY_API_URL_ID = ENTITY_API_URL + "/{id}";
 
@@ -58,7 +62,7 @@ class QuilomboResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Quilombo createEntity(EntityManager em) {
-        Quilombo quilombo = new Quilombo().nome(DEFAULT_NOME);
+        Quilombo quilombo = new Quilombo().nome(DEFAULT_NOME).tipoQuilombo(DEFAULT_TIPO_QUILOMBO);
         return quilombo;
     }
 
@@ -69,7 +73,7 @@ class QuilomboResourceIT {
      * if they test an entity which requires the current entity.
      */
     public static Quilombo createUpdatedEntity(EntityManager em) {
-        Quilombo quilombo = new Quilombo().nome(UPDATED_NOME);
+        Quilombo quilombo = new Quilombo().nome(UPDATED_NOME).tipoQuilombo(UPDATED_TIPO_QUILOMBO);
         return quilombo;
     }
 
@@ -92,6 +96,7 @@ class QuilomboResourceIT {
         assertThat(quilomboList).hasSize(databaseSizeBeforeCreate + 1);
         Quilombo testQuilombo = quilomboList.get(quilomboList.size() - 1);
         assertThat(testQuilombo.getNome()).isEqualTo(DEFAULT_NOME);
+        assertThat(testQuilombo.getTipoQuilombo()).isEqualTo(DEFAULT_TIPO_QUILOMBO);
     }
 
     @Test
@@ -124,7 +129,8 @@ class QuilomboResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(quilombo.getId().intValue())))
-            .andExpect(jsonPath("$.[*].nome").value(hasItem(DEFAULT_NOME)));
+            .andExpect(jsonPath("$.[*].nome").value(hasItem(DEFAULT_NOME)))
+            .andExpect(jsonPath("$.[*].tipoQuilombo").value(hasItem(DEFAULT_TIPO_QUILOMBO.toString())));
     }
 
     @Test
@@ -139,7 +145,8 @@ class QuilomboResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.id").value(quilombo.getId().intValue()))
-            .andExpect(jsonPath("$.nome").value(DEFAULT_NOME));
+            .andExpect(jsonPath("$.nome").value(DEFAULT_NOME))
+            .andExpect(jsonPath("$.tipoQuilombo").value(DEFAULT_TIPO_QUILOMBO.toString()));
     }
 
     @Test
@@ -240,6 +247,58 @@ class QuilomboResourceIT {
 
     @Test
     @Transactional
+    void getAllQuilombosByTipoQuilomboIsEqualToSomething() throws Exception {
+        // Initialize the database
+        quilomboRepository.saveAndFlush(quilombo);
+
+        // Get all the quilomboList where tipoQuilombo equals to DEFAULT_TIPO_QUILOMBO
+        defaultQuilomboShouldBeFound("tipoQuilombo.equals=" + DEFAULT_TIPO_QUILOMBO);
+
+        // Get all the quilomboList where tipoQuilombo equals to UPDATED_TIPO_QUILOMBO
+        defaultQuilomboShouldNotBeFound("tipoQuilombo.equals=" + UPDATED_TIPO_QUILOMBO);
+    }
+
+    @Test
+    @Transactional
+    void getAllQuilombosByTipoQuilomboIsNotEqualToSomething() throws Exception {
+        // Initialize the database
+        quilomboRepository.saveAndFlush(quilombo);
+
+        // Get all the quilomboList where tipoQuilombo not equals to DEFAULT_TIPO_QUILOMBO
+        defaultQuilomboShouldNotBeFound("tipoQuilombo.notEquals=" + DEFAULT_TIPO_QUILOMBO);
+
+        // Get all the quilomboList where tipoQuilombo not equals to UPDATED_TIPO_QUILOMBO
+        defaultQuilomboShouldBeFound("tipoQuilombo.notEquals=" + UPDATED_TIPO_QUILOMBO);
+    }
+
+    @Test
+    @Transactional
+    void getAllQuilombosByTipoQuilomboIsInShouldWork() throws Exception {
+        // Initialize the database
+        quilomboRepository.saveAndFlush(quilombo);
+
+        // Get all the quilomboList where tipoQuilombo in DEFAULT_TIPO_QUILOMBO or UPDATED_TIPO_QUILOMBO
+        defaultQuilomboShouldBeFound("tipoQuilombo.in=" + DEFAULT_TIPO_QUILOMBO + "," + UPDATED_TIPO_QUILOMBO);
+
+        // Get all the quilomboList where tipoQuilombo equals to UPDATED_TIPO_QUILOMBO
+        defaultQuilomboShouldNotBeFound("tipoQuilombo.in=" + UPDATED_TIPO_QUILOMBO);
+    }
+
+    @Test
+    @Transactional
+    void getAllQuilombosByTipoQuilomboIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        quilomboRepository.saveAndFlush(quilombo);
+
+        // Get all the quilomboList where tipoQuilombo is not null
+        defaultQuilomboShouldBeFound("tipoQuilombo.specified=true");
+
+        // Get all the quilomboList where tipoQuilombo is null
+        defaultQuilomboShouldNotBeFound("tipoQuilombo.specified=false");
+    }
+
+    @Test
+    @Transactional
     void getAllQuilombosByProcessoIsEqualToSomething() throws Exception {
         // Initialize the database
         quilomboRepository.saveAndFlush(quilombo);
@@ -266,7 +325,8 @@ class QuilomboResourceIT {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(jsonPath("$.[*].id").value(hasItem(quilombo.getId().intValue())))
-            .andExpect(jsonPath("$.[*].nome").value(hasItem(DEFAULT_NOME)));
+            .andExpect(jsonPath("$.[*].nome").value(hasItem(DEFAULT_NOME)))
+            .andExpect(jsonPath("$.[*].tipoQuilombo").value(hasItem(DEFAULT_TIPO_QUILOMBO.toString())));
 
         // Check, that the count call also returns 1
         restQuilomboMockMvc
@@ -314,7 +374,7 @@ class QuilomboResourceIT {
         Quilombo updatedQuilombo = quilomboRepository.findById(quilombo.getId()).get();
         // Disconnect from session so that the updates on updatedQuilombo are not directly saved in db
         em.detach(updatedQuilombo);
-        updatedQuilombo.nome(UPDATED_NOME);
+        updatedQuilombo.nome(UPDATED_NOME).tipoQuilombo(UPDATED_TIPO_QUILOMBO);
 
         restQuilomboMockMvc
             .perform(
@@ -329,6 +389,7 @@ class QuilomboResourceIT {
         assertThat(quilomboList).hasSize(databaseSizeBeforeUpdate);
         Quilombo testQuilombo = quilomboList.get(quilomboList.size() - 1);
         assertThat(testQuilombo.getNome()).isEqualTo(UPDATED_NOME);
+        assertThat(testQuilombo.getTipoQuilombo()).isEqualTo(UPDATED_TIPO_QUILOMBO);
     }
 
     @Test
@@ -399,6 +460,8 @@ class QuilomboResourceIT {
         Quilombo partialUpdatedQuilombo = new Quilombo();
         partialUpdatedQuilombo.setId(quilombo.getId());
 
+        partialUpdatedQuilombo.tipoQuilombo(UPDATED_TIPO_QUILOMBO);
+
         restQuilomboMockMvc
             .perform(
                 patch(ENTITY_API_URL_ID, partialUpdatedQuilombo.getId())
@@ -412,6 +475,7 @@ class QuilomboResourceIT {
         assertThat(quilomboList).hasSize(databaseSizeBeforeUpdate);
         Quilombo testQuilombo = quilomboList.get(quilomboList.size() - 1);
         assertThat(testQuilombo.getNome()).isEqualTo(DEFAULT_NOME);
+        assertThat(testQuilombo.getTipoQuilombo()).isEqualTo(UPDATED_TIPO_QUILOMBO);
     }
 
     @Test
@@ -426,7 +490,7 @@ class QuilomboResourceIT {
         Quilombo partialUpdatedQuilombo = new Quilombo();
         partialUpdatedQuilombo.setId(quilombo.getId());
 
-        partialUpdatedQuilombo.nome(UPDATED_NOME);
+        partialUpdatedQuilombo.nome(UPDATED_NOME).tipoQuilombo(UPDATED_TIPO_QUILOMBO);
 
         restQuilomboMockMvc
             .perform(
@@ -441,6 +505,7 @@ class QuilomboResourceIT {
         assertThat(quilomboList).hasSize(databaseSizeBeforeUpdate);
         Quilombo testQuilombo = quilomboList.get(quilomboList.size() - 1);
         assertThat(testQuilombo.getNome()).isEqualTo(UPDATED_NOME);
+        assertThat(testQuilombo.getTipoQuilombo()).isEqualTo(UPDATED_TIPO_QUILOMBO);
     }
 
     @Test

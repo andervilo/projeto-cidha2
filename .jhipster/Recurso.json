@@ -32,7 +32,6 @@
       "otherEntityField": "oficio"
     }
   ],
-  "changelogDate": "20210405143017",
   "entityTableName": "recurso",
   "dto": "no",
   "pagination": "pagination",
@@ -41,6 +40,6 @@
   "fluentMethods": true,
   "readOnly": false,
   "embedded": false,
-  "clientRootFolder": "",
-  "applications": "*"
+  "applications": "*",
+  "changelogDate": "20210608111935"
 }

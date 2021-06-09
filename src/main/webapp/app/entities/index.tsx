@@ -39,6 +39,8 @@ import TipoRepresentante from './tipo-representante';
 import RepresentanteLegal from './representante-legal';
 import ParteInteresssada from './parte-interesssada';
 import Relator from './relator';
+import SecaoJudiciaria from './secao-judiciaria';
+import SubsecaoJudiciaria from './subsecao-judiciaria';
 /* jhipster-needle-add-route-import - JHipster will add routes here */
 
 const Routes = ({ match }) => (
@@ -80,6 +82,8 @@ const Routes = ({ match }) => (
       <ErrorBoundaryRoute path={`${match.url}representante-legal`} component={RepresentanteLegal} />
       <ErrorBoundaryRoute path={`${match.url}parte-interesssada`} component={ParteInteresssada} />
       <ErrorBoundaryRoute path={`${match.url}relator`} component={Relator} />
+      <ErrorBoundaryRoute path={`${match.url}secao-judiciaria`} component={SecaoJudiciaria} />
+      <ErrorBoundaryRoute path={`${match.url}subsecao-judiciaria`} component={SubsecaoJudiciaria} />
       {/* jhipster-needle-add-route-path - JHipster will add routes here */}
     </Switch>
   </div>

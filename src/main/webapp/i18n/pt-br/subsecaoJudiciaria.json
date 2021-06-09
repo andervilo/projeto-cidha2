@@ -1,0 +1,25 @@
+{
+  "cidhaApp": {
+    "subsecaoJudiciaria": {
+      "home": {
+        "title": "Subsecao Judiciarias",
+        "refreshListLabel": "Atualizar lista",
+        "createLabel": "Criar novo Subsecao Judiciaria",
+        "createOrEditLabel": "Criar ou editar Subsecao Judiciaria",
+        "notFound": "Nenhum Subsecao Judiciaria encontrado"
+      },
+      "created": "Um novo Subsecao Judiciaria foi criado com o identificador {{ param }}",
+      "updated": "Um Subsecao Judiciaria foi atualizado com o identificador {{ param }}",
+      "deleted": "Um Subsecao Judiciaria foi excluído com o identificador {{ param }}",
+      "delete": {
+        "question": "Tem certeza de que deseja excluir Subsecao Judiciaria {{ id }}?"
+      },
+      "detail": {
+        "title": "Subsecao Judiciaria"
+      },
+      "id": "ID",
+      "sigla": "Sigla",
+      "nome": "Nome"
+    }
+  }
+}

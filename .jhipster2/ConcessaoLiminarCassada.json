@@ -1,0 +1,28 @@
+{
+  "name": "ConcessaoLiminarCassada",
+  "fields": [
+    {
+      "fieldName": "descricao",
+      "fieldType": "String"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "processo",
+      "otherEntityRelationshipName": "concessaoLiminarCassada",
+      "relationshipName": "processo"
+    }
+  ],
+  "changelogDate": "20210405142717",
+  "entityTableName": "concessao_liminar_cassada",
+  "dto": "no",
+  "pagination": "pagination",
+  "service": "serviceClass",
+  "jpaMetamodelFiltering": true,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": "*"
+}

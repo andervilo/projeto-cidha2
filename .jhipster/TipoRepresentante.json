@@ -7,7 +7,6 @@
     }
   ],
   "relationships": [],
-  "changelogDate": "20210405145117",
   "entityTableName": "tipo_representante",
   "dto": "no",
   "pagination": "pagination",
@@ -16,6 +15,6 @@
   "fluentMethods": true,
   "readOnly": false,
   "embedded": false,
-  "clientRootFolder": "",
-  "applications": "*"
+  "applications": "*",
+  "changelogDate": "20210608111944"
 }

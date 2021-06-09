@@ -93,12 +93,6 @@ public class ProcessoQueryService extends QueryService<Processo> {
             if (criteria.getLinkTrf() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getLinkTrf(), Processo_.linkTrf));
             }
-            if (criteria.getSecaoJudiciaria() != null) {
-                specification = specification.and(buildStringSpecification(criteria.getSecaoJudiciaria(), Processo_.secaoJudiciaria));
-            }
-            if (criteria.getSubsecaoJudiciaria() != null) {
-                specification = specification.and(buildStringSpecification(criteria.getSubsecaoJudiciaria(), Processo_.subsecaoJudiciaria));
-            }
             if (criteria.getTurmaTrf1() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getTurmaTrf1(), Processo_.turmaTrf1));
             }
@@ -165,6 +159,12 @@ public class ProcessoQueryService extends QueryService<Processo> {
             }
             if (criteria.getEmbargoDeclaracao() != null) {
                 specification = specification.and(buildSpecification(criteria.getEmbargoDeclaracao(), Processo_.embargoDeclaracao));
+            }
+            if (criteria.getEmbargoRecursoExtraordinario() != null) {
+                specification =
+                    specification.and(
+                        buildSpecification(criteria.getEmbargoRecursoExtraordinario(), Processo_.embargoRecursoExtraordinario)
+                    );
             }
             if (criteria.getFolhasRecursoEspecial() != null) {
                 specification =
@@ -299,6 +299,9 @@ public class ProcessoQueryService extends QueryService<Processo> {
                 specification =
                     specification.and(buildSpecification(criteria.getEnvolveUnidadeConservacao(), Processo_.envolveUnidadeConservacao));
             }
+            if (criteria.getStatusProcesso() != null) {
+                specification = specification.and(buildSpecification(criteria.getStatusProcesso(), Processo_.statusProcesso));
+            }
             if (criteria.getConcessaoLiminarId() != null) {
                 specification =
                     specification.and(
@@ -371,19 +374,19 @@ public class ProcessoQueryService extends QueryService<Processo> {
                         )
                     );
             }
+            if (criteria.getSecaoJudiciariaId() != null) {
+                specification =
+                    specification.and(
+                        buildSpecification(
+                            criteria.getSecaoJudiciariaId(),
+                            root -> root.join(Processo_.secaoJudiciaria, JoinType.LEFT).get(SecaoJudiciaria_.id)
+                        )
+                    );
+            }
             if (criteria.getComarcaId() != null) {
                 specification =
                     specification.and(
                         buildSpecification(criteria.getComarcaId(), root -> root.join(Processo_.comarcas, JoinType.LEFT).get(Comarca_.id))
-                    );
-            }
-            if (criteria.getQuilomboId() != null) {
-                specification =
-                    specification.and(
-                        buildSpecification(
-                            criteria.getQuilomboId(),
-                            root -> root.join(Processo_.quilombos, JoinType.LEFT).get(Quilombo_.id)
-                        )
                     );
             }
             if (criteria.getMunicipioId() != null) {
@@ -462,6 +465,15 @@ public class ProcessoQueryService extends QueryService<Processo> {
                 specification =
                     specification.and(
                         buildSpecification(criteria.getRelatorId(), root -> root.join(Processo_.relators, JoinType.LEFT).get(Relator_.id))
+                    );
+            }
+            if (criteria.getQuilomboId() != null) {
+                specification =
+                    specification.and(
+                        buildSpecification(
+                            criteria.getQuilomboId(),
+                            root -> root.join(Processo_.quilombos, JoinType.LEFT).get(Quilombo_.id)
+                        )
                     );
             }
             if (criteria.getProblemaJuridicoId() != null) {

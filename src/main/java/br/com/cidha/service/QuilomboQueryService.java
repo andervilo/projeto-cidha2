@@ -84,6 +84,9 @@ public class QuilomboQueryService extends QueryService<Quilombo> {
             if (criteria.getNome() != null) {
                 specification = specification.and(buildStringSpecification(criteria.getNome(), Quilombo_.nome));
             }
+            if (criteria.getTipoQuilombo() != null) {
+                specification = specification.and(buildSpecification(criteria.getTipoQuilombo(), Quilombo_.tipoQuilombo));
+            }
             if (criteria.getProcessoId() != null) {
                 specification =
                     specification.and(

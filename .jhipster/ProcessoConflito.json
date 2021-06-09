@@ -44,7 +44,6 @@
       "ownerSide": false
     }
   ],
-  "changelogDate": "20210405145017",
   "entityTableName": "processo_conflito",
   "dto": "no",
   "pagination": "pagination",
@@ -53,6 +52,6 @@
   "fluentMethods": true,
   "readOnly": false,
   "embedded": false,
-  "clientRootFolder": "",
-  "applications": "*"
+  "applications": "*",
+  "changelogDate": "20210608111934"
 }

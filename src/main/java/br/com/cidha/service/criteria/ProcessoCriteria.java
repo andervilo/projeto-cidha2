@@ -1,5 +1,6 @@
 package br.com.cidha.service.criteria;
 
+import br.com.cidha.domain.enumeration.StatusProcesso;
 import java.io.Serializable;
 import java.util.Objects;
 import tech.jhipster.service.Criteria;
@@ -23,6 +24,23 @@ import tech.jhipster.service.filter.StringFilter;
  */
 public class ProcessoCriteria implements Serializable, Criteria {
 
+    /**
+     * Class for filtering StatusProcesso
+     */
+    public static class StatusProcessoFilter extends Filter<StatusProcesso> {
+
+        public StatusProcessoFilter() {}
+
+        public StatusProcessoFilter(StatusProcessoFilter filter) {
+            super(filter);
+        }
+
+        @Override
+        public StatusProcessoFilter copy() {
+            return new StatusProcessoFilter(this);
+        }
+    }
+
     private static final long serialVersionUID = 1L;
 
     private LongFilter id;
@@ -34,10 +52,6 @@ public class ProcessoCriteria implements Serializable, Criteria {
     private StringFilter linkUnico;
 
     private StringFilter linkTrf;
-
-    private StringFilter secaoJudiciaria;
-
-    private StringFilter subsecaoJudiciaria;
 
     private StringFilter turmaTrf1;
 
@@ -66,6 +80,8 @@ public class ProcessoCriteria implements Serializable, Criteria {
     private StringFilter folhasCienciaJulgApelacao;
 
     private BooleanFilter embargoDeclaracao;
+
+    private BooleanFilter embargoRecursoExtraordinario;
 
     private StringFilter folhasRecursoEspecial;
 
@@ -137,6 +153,8 @@ public class ProcessoCriteria implements Serializable, Criteria {
 
     private BooleanFilter envolveUnidadeConservacao;
 
+    private StatusProcessoFilter statusProcesso;
+
     private LongFilter concessaoLiminarId;
 
     private LongFilter concessaoLiminarCassadaId;
@@ -153,9 +171,9 @@ public class ProcessoCriteria implements Serializable, Criteria {
 
     private LongFilter tipoEmpreendimentoId;
 
-    private LongFilter comarcaId;
+    private LongFilter secaoJudiciariaId;
 
-    private LongFilter quilomboId;
+    private LongFilter comarcaId;
 
     private LongFilter municipioId;
 
@@ -175,6 +193,8 @@ public class ProcessoCriteria implements Serializable, Criteria {
 
     private LongFilter relatorId;
 
+    private LongFilter quilomboId;
+
     private LongFilter problemaJuridicoId;
 
     public ProcessoCriteria() {}
@@ -185,8 +205,6 @@ public class ProcessoCriteria implements Serializable, Criteria {
         this.oficio = other.oficio == null ? null : other.oficio.copy();
         this.linkUnico = other.linkUnico == null ? null : other.linkUnico.copy();
         this.linkTrf = other.linkTrf == null ? null : other.linkTrf.copy();
-        this.secaoJudiciaria = other.secaoJudiciaria == null ? null : other.secaoJudiciaria.copy();
-        this.subsecaoJudiciaria = other.subsecaoJudiciaria == null ? null : other.subsecaoJudiciaria.copy();
         this.turmaTrf1 = other.turmaTrf1 == null ? null : other.turmaTrf1.copy();
         this.numeroProcessoAdministrativo = other.numeroProcessoAdministrativo == null ? null : other.numeroProcessoAdministrativo.copy();
         this.numeroProcessoJudicialPrimeiraInstancia =
@@ -204,6 +222,7 @@ public class ProcessoCriteria implements Serializable, Criteria {
         this.folhasApelacao = other.folhasApelacao == null ? null : other.folhasApelacao.copy();
         this.folhasCienciaJulgApelacao = other.folhasCienciaJulgApelacao == null ? null : other.folhasCienciaJulgApelacao.copy();
         this.embargoDeclaracao = other.embargoDeclaracao == null ? null : other.embargoDeclaracao.copy();
+        this.embargoRecursoExtraordinario = other.embargoRecursoExtraordinario == null ? null : other.embargoRecursoExtraordinario.copy();
         this.folhasRecursoEspecial = other.folhasRecursoEspecial == null ? null : other.folhasRecursoEspecial.copy();
         this.folhasCienciaJulgamentoRecursoEspecial =
             other.folhasCienciaJulgamentoRecursoEspecial == null ? null : other.folhasCienciaJulgamentoRecursoEspecial.copy();
@@ -243,6 +262,7 @@ public class ProcessoCriteria implements Serializable, Criteria {
         this.numeroRecursoEspecial = other.numeroRecursoEspecial == null ? null : other.numeroRecursoEspecial.copy();
         this.envolveGrandeProjeto = other.envolveGrandeProjeto == null ? null : other.envolveGrandeProjeto.copy();
         this.envolveUnidadeConservacao = other.envolveUnidadeConservacao == null ? null : other.envolveUnidadeConservacao.copy();
+        this.statusProcesso = other.statusProcesso == null ? null : other.statusProcesso.copy();
         this.concessaoLiminarId = other.concessaoLiminarId == null ? null : other.concessaoLiminarId.copy();
         this.concessaoLiminarCassadaId = other.concessaoLiminarCassadaId == null ? null : other.concessaoLiminarCassadaId.copy();
         this.embargoDeclaracaoId = other.embargoDeclaracaoId == null ? null : other.embargoDeclaracaoId.copy();
@@ -251,8 +271,8 @@ public class ProcessoCriteria implements Serializable, Criteria {
         this.embargoRespReId = other.embargoRespReId == null ? null : other.embargoRespReId.copy();
         this.tipoDecisaoId = other.tipoDecisaoId == null ? null : other.tipoDecisaoId.copy();
         this.tipoEmpreendimentoId = other.tipoEmpreendimentoId == null ? null : other.tipoEmpreendimentoId.copy();
+        this.secaoJudiciariaId = other.secaoJudiciariaId == null ? null : other.secaoJudiciariaId.copy();
         this.comarcaId = other.comarcaId == null ? null : other.comarcaId.copy();
-        this.quilomboId = other.quilomboId == null ? null : other.quilomboId.copy();
         this.municipioId = other.municipioId == null ? null : other.municipioId.copy();
         this.territorioId = other.territorioId == null ? null : other.territorioId.copy();
         this.atividadeExploracaoIlegalId = other.atividadeExploracaoIlegalId == null ? null : other.atividadeExploracaoIlegalId.copy();
@@ -262,6 +282,7 @@ public class ProcessoCriteria implements Serializable, Criteria {
         this.processoConflitoId = other.processoConflitoId == null ? null : other.processoConflitoId.copy();
         this.parteInteresssadaId = other.parteInteresssadaId == null ? null : other.parteInteresssadaId.copy();
         this.relatorId = other.relatorId == null ? null : other.relatorId.copy();
+        this.quilomboId = other.quilomboId == null ? null : other.quilomboId.copy();
         this.problemaJuridicoId = other.problemaJuridicoId == null ? null : other.problemaJuridicoId.copy();
     }
 
@@ -343,36 +364,6 @@ public class ProcessoCriteria implements Serializable, Criteria {
 
     public void setLinkTrf(StringFilter linkTrf) {
         this.linkTrf = linkTrf;
-    }
-
-    public StringFilter getSecaoJudiciaria() {
-        return secaoJudiciaria;
-    }
-
-    public StringFilter secaoJudiciaria() {
-        if (secaoJudiciaria == null) {
-            secaoJudiciaria = new StringFilter();
-        }
-        return secaoJudiciaria;
-    }
-
-    public void setSecaoJudiciaria(StringFilter secaoJudiciaria) {
-        this.secaoJudiciaria = secaoJudiciaria;
-    }
-
-    public StringFilter getSubsecaoJudiciaria() {
-        return subsecaoJudiciaria;
-    }
-
-    public StringFilter subsecaoJudiciaria() {
-        if (subsecaoJudiciaria == null) {
-            subsecaoJudiciaria = new StringFilter();
-        }
-        return subsecaoJudiciaria;
-    }
-
-    public void setSubsecaoJudiciaria(StringFilter subsecaoJudiciaria) {
-        this.subsecaoJudiciaria = subsecaoJudiciaria;
     }
 
     public StringFilter getTurmaTrf1() {
@@ -583,6 +574,21 @@ public class ProcessoCriteria implements Serializable, Criteria {
 
     public void setEmbargoDeclaracao(BooleanFilter embargoDeclaracao) {
         this.embargoDeclaracao = embargoDeclaracao;
+    }
+
+    public BooleanFilter getEmbargoRecursoExtraordinario() {
+        return embargoRecursoExtraordinario;
+    }
+
+    public BooleanFilter embargoRecursoExtraordinario() {
+        if (embargoRecursoExtraordinario == null) {
+            embargoRecursoExtraordinario = new BooleanFilter();
+        }
+        return embargoRecursoExtraordinario;
+    }
+
+    public void setEmbargoRecursoExtraordinario(BooleanFilter embargoRecursoExtraordinario) {
+        this.embargoRecursoExtraordinario = embargoRecursoExtraordinario;
     }
 
     public StringFilter getFolhasRecursoEspecial() {
@@ -1110,6 +1116,21 @@ public class ProcessoCriteria implements Serializable, Criteria {
         this.envolveUnidadeConservacao = envolveUnidadeConservacao;
     }
 
+    public StatusProcessoFilter getStatusProcesso() {
+        return statusProcesso;
+    }
+
+    public StatusProcessoFilter statusProcesso() {
+        if (statusProcesso == null) {
+            statusProcesso = new StatusProcessoFilter();
+        }
+        return statusProcesso;
+    }
+
+    public void setStatusProcesso(StatusProcessoFilter statusProcesso) {
+        this.statusProcesso = statusProcesso;
+    }
+
     public LongFilter getConcessaoLiminarId() {
         return concessaoLiminarId;
     }
@@ -1230,6 +1251,21 @@ public class ProcessoCriteria implements Serializable, Criteria {
         this.tipoEmpreendimentoId = tipoEmpreendimentoId;
     }
 
+    public LongFilter getSecaoJudiciariaId() {
+        return secaoJudiciariaId;
+    }
+
+    public LongFilter secaoJudiciariaId() {
+        if (secaoJudiciariaId == null) {
+            secaoJudiciariaId = new LongFilter();
+        }
+        return secaoJudiciariaId;
+    }
+
+    public void setSecaoJudiciariaId(LongFilter secaoJudiciariaId) {
+        this.secaoJudiciariaId = secaoJudiciariaId;
+    }
+
     public LongFilter getComarcaId() {
         return comarcaId;
     }
@@ -1243,21 +1279,6 @@ public class ProcessoCriteria implements Serializable, Criteria {
 
     public void setComarcaId(LongFilter comarcaId) {
         this.comarcaId = comarcaId;
-    }
-
-    public LongFilter getQuilomboId() {
-        return quilomboId;
-    }
-
-    public LongFilter quilomboId() {
-        if (quilomboId == null) {
-            quilomboId = new LongFilter();
-        }
-        return quilomboId;
-    }
-
-    public void setQuilomboId(LongFilter quilomboId) {
-        this.quilomboId = quilomboId;
     }
 
     public LongFilter getMunicipioId() {
@@ -1395,6 +1416,21 @@ public class ProcessoCriteria implements Serializable, Criteria {
         this.relatorId = relatorId;
     }
 
+    public LongFilter getQuilomboId() {
+        return quilomboId;
+    }
+
+    public LongFilter quilomboId() {
+        if (quilomboId == null) {
+            quilomboId = new LongFilter();
+        }
+        return quilomboId;
+    }
+
+    public void setQuilomboId(LongFilter quilomboId) {
+        this.quilomboId = quilomboId;
+    }
+
     public LongFilter getProblemaJuridicoId() {
         return problemaJuridicoId;
     }
@@ -1425,8 +1461,6 @@ public class ProcessoCriteria implements Serializable, Criteria {
             Objects.equals(oficio, that.oficio) &&
             Objects.equals(linkUnico, that.linkUnico) &&
             Objects.equals(linkTrf, that.linkTrf) &&
-            Objects.equals(secaoJudiciaria, that.secaoJudiciaria) &&
-            Objects.equals(subsecaoJudiciaria, that.subsecaoJudiciaria) &&
             Objects.equals(turmaTrf1, that.turmaTrf1) &&
             Objects.equals(numeroProcessoAdministrativo, that.numeroProcessoAdministrativo) &&
             Objects.equals(numeroProcessoJudicialPrimeiraInstancia, that.numeroProcessoJudicialPrimeiraInstancia) &&
@@ -1441,6 +1475,7 @@ public class ProcessoCriteria implements Serializable, Criteria {
             Objects.equals(folhasApelacao, that.folhasApelacao) &&
             Objects.equals(folhasCienciaJulgApelacao, that.folhasCienciaJulgApelacao) &&
             Objects.equals(embargoDeclaracao, that.embargoDeclaracao) &&
+            Objects.equals(embargoRecursoExtraordinario, that.embargoRecursoExtraordinario) &&
             Objects.equals(folhasRecursoEspecial, that.folhasRecursoEspecial) &&
             Objects.equals(folhasCienciaJulgamentoRecursoEspecial, that.folhasCienciaJulgamentoRecursoEspecial) &&
             Objects.equals(embargoRecursoEspecial, that.embargoRecursoEspecial) &&
@@ -1476,6 +1511,7 @@ public class ProcessoCriteria implements Serializable, Criteria {
             Objects.equals(numeroRecursoEspecial, that.numeroRecursoEspecial) &&
             Objects.equals(envolveGrandeProjeto, that.envolveGrandeProjeto) &&
             Objects.equals(envolveUnidadeConservacao, that.envolveUnidadeConservacao) &&
+            Objects.equals(statusProcesso, that.statusProcesso) &&
             Objects.equals(concessaoLiminarId, that.concessaoLiminarId) &&
             Objects.equals(concessaoLiminarCassadaId, that.concessaoLiminarCassadaId) &&
             Objects.equals(embargoDeclaracaoId, that.embargoDeclaracaoId) &&
@@ -1484,8 +1520,8 @@ public class ProcessoCriteria implements Serializable, Criteria {
             Objects.equals(embargoRespReId, that.embargoRespReId) &&
             Objects.equals(tipoDecisaoId, that.tipoDecisaoId) &&
             Objects.equals(tipoEmpreendimentoId, that.tipoEmpreendimentoId) &&
+            Objects.equals(secaoJudiciariaId, that.secaoJudiciariaId) &&
             Objects.equals(comarcaId, that.comarcaId) &&
-            Objects.equals(quilomboId, that.quilomboId) &&
             Objects.equals(municipioId, that.municipioId) &&
             Objects.equals(territorioId, that.territorioId) &&
             Objects.equals(atividadeExploracaoIlegalId, that.atividadeExploracaoIlegalId) &&
@@ -1495,6 +1531,7 @@ public class ProcessoCriteria implements Serializable, Criteria {
             Objects.equals(processoConflitoId, that.processoConflitoId) &&
             Objects.equals(parteInteresssadaId, that.parteInteresssadaId) &&
             Objects.equals(relatorId, that.relatorId) &&
+            Objects.equals(quilomboId, that.quilomboId) &&
             Objects.equals(problemaJuridicoId, that.problemaJuridicoId)
         );
     }
@@ -1507,8 +1544,6 @@ public class ProcessoCriteria implements Serializable, Criteria {
             oficio,
             linkUnico,
             linkTrf,
-            secaoJudiciaria,
-            subsecaoJudiciaria,
             turmaTrf1,
             numeroProcessoAdministrativo,
             numeroProcessoJudicialPrimeiraInstancia,
@@ -1523,6 +1558,7 @@ public class ProcessoCriteria implements Serializable, Criteria {
             folhasApelacao,
             folhasCienciaJulgApelacao,
             embargoDeclaracao,
+            embargoRecursoExtraordinario,
             folhasRecursoEspecial,
             folhasCienciaJulgamentoRecursoEspecial,
             embargoRecursoEspecial,
@@ -1558,6 +1594,7 @@ public class ProcessoCriteria implements Serializable, Criteria {
             numeroRecursoEspecial,
             envolveGrandeProjeto,
             envolveUnidadeConservacao,
+            statusProcesso,
             concessaoLiminarId,
             concessaoLiminarCassadaId,
             embargoDeclaracaoId,
@@ -1566,8 +1603,8 @@ public class ProcessoCriteria implements Serializable, Criteria {
             embargoRespReId,
             tipoDecisaoId,
             tipoEmpreendimentoId,
+            secaoJudiciariaId,
             comarcaId,
-            quilomboId,
             municipioId,
             territorioId,
             atividadeExploracaoIlegalId,
@@ -1577,6 +1614,7 @@ public class ProcessoCriteria implements Serializable, Criteria {
             processoConflitoId,
             parteInteresssadaId,
             relatorId,
+            quilomboId,
             problemaJuridicoId
         );
     }
@@ -1590,8 +1628,6 @@ public class ProcessoCriteria implements Serializable, Criteria {
             (oficio != null ? "oficio=" + oficio + ", " : "") +
             (linkUnico != null ? "linkUnico=" + linkUnico + ", " : "") +
             (linkTrf != null ? "linkTrf=" + linkTrf + ", " : "") +
-            (secaoJudiciaria != null ? "secaoJudiciaria=" + secaoJudiciaria + ", " : "") +
-            (subsecaoJudiciaria != null ? "subsecaoJudiciaria=" + subsecaoJudiciaria + ", " : "") +
             (turmaTrf1 != null ? "turmaTrf1=" + turmaTrf1 + ", " : "") +
             (numeroProcessoAdministrativo != null ? "numeroProcessoAdministrativo=" + numeroProcessoAdministrativo + ", " : "") +
             (numeroProcessoJudicialPrimeiraInstancia != null ? "numeroProcessoJudicialPrimeiraInstancia=" + numeroProcessoJudicialPrimeiraInstancia + ", " : "") +
@@ -1606,6 +1642,7 @@ public class ProcessoCriteria implements Serializable, Criteria {
             (folhasApelacao != null ? "folhasApelacao=" + folhasApelacao + ", " : "") +
             (folhasCienciaJulgApelacao != null ? "folhasCienciaJulgApelacao=" + folhasCienciaJulgApelacao + ", " : "") +
             (embargoDeclaracao != null ? "embargoDeclaracao=" + embargoDeclaracao + ", " : "") +
+            (embargoRecursoExtraordinario != null ? "embargoRecursoExtraordinario=" + embargoRecursoExtraordinario + ", " : "") +
             (folhasRecursoEspecial != null ? "folhasRecursoEspecial=" + folhasRecursoEspecial + ", " : "") +
             (folhasCienciaJulgamentoRecursoEspecial != null ? "folhasCienciaJulgamentoRecursoEspecial=" + folhasCienciaJulgamentoRecursoEspecial + ", " : "") +
             (embargoRecursoEspecial != null ? "embargoRecursoEspecial=" + embargoRecursoEspecial + ", " : "") +
@@ -1641,6 +1678,7 @@ public class ProcessoCriteria implements Serializable, Criteria {
             (numeroRecursoEspecial != null ? "numeroRecursoEspecial=" + numeroRecursoEspecial + ", " : "") +
             (envolveGrandeProjeto != null ? "envolveGrandeProjeto=" + envolveGrandeProjeto + ", " : "") +
             (envolveUnidadeConservacao != null ? "envolveUnidadeConservacao=" + envolveUnidadeConservacao + ", " : "") +
+            (statusProcesso != null ? "statusProcesso=" + statusProcesso + ", " : "") +
             (concessaoLiminarId != null ? "concessaoLiminarId=" + concessaoLiminarId + ", " : "") +
             (concessaoLiminarCassadaId != null ? "concessaoLiminarCassadaId=" + concessaoLiminarCassadaId + ", " : "") +
             (embargoDeclaracaoId != null ? "embargoDeclaracaoId=" + embargoDeclaracaoId + ", " : "") +
@@ -1649,8 +1687,8 @@ public class ProcessoCriteria implements Serializable, Criteria {
             (embargoRespReId != null ? "embargoRespReId=" + embargoRespReId + ", " : "") +
             (tipoDecisaoId != null ? "tipoDecisaoId=" + tipoDecisaoId + ", " : "") +
             (tipoEmpreendimentoId != null ? "tipoEmpreendimentoId=" + tipoEmpreendimentoId + ", " : "") +
+            (secaoJudiciariaId != null ? "secaoJudiciariaId=" + secaoJudiciariaId + ", " : "") +
             (comarcaId != null ? "comarcaId=" + comarcaId + ", " : "") +
-            (quilomboId != null ? "quilomboId=" + quilomboId + ", " : "") +
             (municipioId != null ? "municipioId=" + municipioId + ", " : "") +
             (territorioId != null ? "territorioId=" + territorioId + ", " : "") +
             (atividadeExploracaoIlegalId != null ? "atividadeExploracaoIlegalId=" + atividadeExploracaoIlegalId + ", " : "") +
@@ -1660,6 +1698,7 @@ public class ProcessoCriteria implements Serializable, Criteria {
             (processoConflitoId != null ? "processoConflitoId=" + processoConflitoId + ", " : "") +
             (parteInteresssadaId != null ? "parteInteresssadaId=" + parteInteresssadaId + ", " : "") +
             (relatorId != null ? "relatorId=" + relatorId + ", " : "") +
+            (quilomboId != null ? "quilomboId=" + quilomboId + ", " : "") +
             (problemaJuridicoId != null ? "problemaJuridicoId=" + problemaJuridicoId + ", " : "") +
             "}";
     }

@@ -1,0 +1,30 @@
+{
+  "name": "Quilombo",
+  "fields": [
+    {
+      "fieldName": "nome",
+      "fieldType": "String"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "many-to-many",
+      "otherEntityName": "processo",
+      "otherEntityRelationshipName": "quilombo",
+      "relationshipName": "processo",
+      "otherEntityField": "oficio",
+      "ownerSide": false
+    }
+  ],
+  "changelogDate": "20210405142117",
+  "entityTableName": "quilombo",
+  "dto": "no",
+  "pagination": "pagination",
+  "service": "serviceClass",
+  "jpaMetamodelFiltering": true,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "clientRootFolder": "",
+  "applications": "*"
+}

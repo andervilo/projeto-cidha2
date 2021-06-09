@@ -11,10 +11,10 @@ import { ITipoDecisao } from 'app/shared/model/tipo-decisao.model';
 import { getEntities as getTipoDecisaos } from 'app/entities/tipo-decisao/tipo-decisao.reducer';
 import { ITipoEmpreendimento } from 'app/shared/model/tipo-empreendimento.model';
 import { getEntities as getTipoEmpreendimentos } from 'app/entities/tipo-empreendimento/tipo-empreendimento.reducer';
+import { ISecaoJudiciaria } from 'app/shared/model/secao-judiciaria.model';
+import { getEntities as getSecaoJudiciarias } from 'app/entities/secao-judiciaria/secao-judiciaria.reducer';
 import { IComarca } from 'app/shared/model/comarca.model';
 import { getEntities as getComarcas } from 'app/entities/comarca/comarca.reducer';
-import { IQuilombo } from 'app/shared/model/quilombo.model';
-import { getEntities as getQuilombos } from 'app/entities/quilombo/quilombo.reducer';
 import { IMunicipio } from 'app/shared/model/municipio.model';
 import { getEntities as getMunicipios } from 'app/entities/municipio/municipio.reducer';
 import { ITerritorio } from 'app/shared/model/territorio.model';
@@ -33,6 +33,8 @@ import { IParteInteresssada } from 'app/shared/model/parte-interesssada.model';
 import { getEntities as getParteInteresssadas } from 'app/entities/parte-interesssada/parte-interesssada.reducer';
 import { IRelator } from 'app/shared/model/relator.model';
 import { getEntities as getRelators } from 'app/entities/relator/relator.reducer';
+import { IQuilombo } from 'app/shared/model/quilombo.model';
+import { getEntities as getQuilombos } from 'app/entities/quilombo/quilombo.reducer';
 import { IProblemaJuridico } from 'app/shared/model/problema-juridico.model';
 import { getEntities as getProblemaJuridicos } from 'app/entities/problema-juridico/problema-juridico.reducer';
 import { getEntity, updateEntity, createEntity, setBlob, reset } from './processo.reducer';
@@ -44,7 +46,6 @@ export interface IProcessoUpdateProps extends StateProps, DispatchProps, RouteCo
 
 export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
   const [idscomarca, setIdscomarca] = useState([]);
-  const [idsquilombo, setIdsquilombo] = useState([]);
   const [idsmunicipio, setIdsmunicipio] = useState([]);
   const [idsterritorio, setIdsterritorio] = useState([]);
   const [idsatividadeExploracaoIlegal, setIdsatividadeExploracaoIlegal] = useState([]);
@@ -54,14 +55,15 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
   const [idsprocessoConflito, setIdsprocessoConflito] = useState([]);
   const [idsparteInteresssada, setIdsparteInteresssada] = useState([]);
   const [idsrelator, setIdsrelator] = useState([]);
+  const [idsquilombo, setIdsquilombo] = useState([]);
   const [isNew] = useState(!props.match.params || !props.match.params.id);
 
   const {
     processoEntity,
     tipoDecisaos,
     tipoEmpreendimentos,
+    secaoJudiciarias,
     comarcas,
-    quilombos,
     municipios,
     territorios,
     atividadeExploracaoIlegals,
@@ -71,6 +73,7 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
     processoConflitos,
     parteInteresssadas,
     relators,
+    quilombos,
     problemaJuridicos,
     loading,
     updating,
@@ -107,8 +110,8 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
 
     props.getTipoDecisaos();
     props.getTipoEmpreendimentos();
+    props.getSecaoJudiciarias();
     props.getComarcas();
-    props.getQuilombos();
     props.getMunicipios();
     props.getTerritorios();
     props.getAtividadeExploracaoIlegals();
@@ -118,6 +121,7 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
     props.getProcessoConflitos();
     props.getParteInteresssadas();
     props.getRelators();
+    props.getQuilombos();
     props.getProblemaJuridicos();
   }, []);
 
@@ -141,7 +145,6 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
         ...processoEntity,
         ...values,
         comarcas: mapIdList(values.comarcas),
-        quilombos: mapIdList(values.quilombos),
         municipios: mapIdList(values.municipios),
         territorios: mapIdList(values.territorios),
         atividadeExploracaoIlegals: mapIdList(values.atividadeExploracaoIlegals),
@@ -151,8 +154,10 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
         processoConflitos: mapIdList(values.processoConflitos),
         parteInteresssadas: mapIdList(values.parteInteresssadas),
         relators: mapIdList(values.relators),
+        quilombos: mapIdList(values.quilombos),
         tipoDecisao: tipoDecisaos.find(it => it.id.toString() === values.tipoDecisaoId.toString()),
         tipoEmpreendimento: tipoEmpreendimentos.find(it => it.id.toString() === values.tipoEmpreendimentoId.toString()),
+        secaoJudiciaria: secaoJudiciarias.find(it => it.id.toString() === values.secaoJudiciariaId.toString()),
       };
 
       if (isNew) {
@@ -215,18 +220,6 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
                   <Translate contentKey="cidhaApp.processo.linkTrf">Link Trf</Translate>
                 </Label>
                 <AvField id="processo-linkTrf" data-cy="linkTrf" type="text" name="linkTrf" />
-              </AvGroup>
-              <AvGroup>
-                <Label id="secaoJudiciariaLabel" for="processo-secaoJudiciaria">
-                  <Translate contentKey="cidhaApp.processo.secaoJudiciaria">Secao Judiciaria</Translate>
-                </Label>
-                <AvField id="processo-secaoJudiciaria" data-cy="secaoJudiciaria" type="text" name="secaoJudiciaria" />
-              </AvGroup>
-              <AvGroup>
-                <Label id="subsecaoJudiciariaLabel" for="processo-subsecaoJudiciaria">
-                  <Translate contentKey="cidhaApp.processo.subsecaoJudiciaria">Subsecao Judiciaria</Translate>
-                </Label>
-                <AvField id="processo-subsecaoJudiciaria" data-cy="subsecaoJudiciaria" type="text" name="subsecaoJudiciaria" />
               </AvGroup>
               <AvGroup>
                 <Label id="turmaTrf1Label" for="processo-turmaTrf1">
@@ -389,6 +382,18 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
                     name="embargoDeclaracao"
                   />
                   <Translate contentKey="cidhaApp.processo.embargoDeclaracao">Embargo Declaracao</Translate>
+                </Label>
+              </AvGroup>
+              <AvGroup check>
+                <Label id="embargoRecursoExtraordinarioLabel">
+                  <AvInput
+                    id="processo-embargoRecursoExtraordinario"
+                    data-cy="embargoRecursoExtraordinario"
+                    type="checkbox"
+                    className="form-check-input"
+                    name="embargoRecursoExtraordinario"
+                  />
+                  <Translate contentKey="cidhaApp.processo.embargoRecursoExtraordinario">Embargo Recurso Extraordinario</Translate>
                 </Label>
               </AvGroup>
               <AvGroup>
@@ -771,6 +776,22 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
                 <AvInput id="processo-linkReferencia" data-cy="linkReferencia" type="textarea" name="linkReferencia" />
               </AvGroup>
               <AvGroup>
+                <Label id="statusProcessoLabel" for="processo-statusProcesso">
+                  <Translate contentKey="cidhaApp.processo.statusProcesso">Status Processo</Translate>
+                </Label>
+                <AvInput
+                  id="processo-statusProcesso"
+                  data-cy="statusProcesso"
+                  type="select"
+                  className="form-control"
+                  name="statusProcesso"
+                  value={(!isNew && processoEntity.statusProcesso) || 'EM_ANDAMENTO'}
+                >
+                  <option value="EM_ANDAMENTO">{translate('cidhaApp.StatusProcesso.EM_ANDAMENTO')}</option>
+                  <option value="FINALIZADO">{translate('cidhaApp.StatusProcesso.FINALIZADO')}</option>
+                </AvInput>
+              </AvGroup>
+              <AvGroup>
                 <Label for="processo-tipoDecisao">
                   <Translate contentKey="cidhaApp.processo.tipoDecisao">Tipo Decisao</Translate>
                 </Label>
@@ -807,6 +828,27 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
                 </AvInput>
               </AvGroup>
               <AvGroup>
+                <Label for="processo-secaoJudiciaria">
+                  <Translate contentKey="cidhaApp.processo.secaoJudiciaria">Secao Judiciaria</Translate>
+                </Label>
+                <AvInput
+                  id="processo-secaoJudiciaria"
+                  data-cy="secaoJudiciaria"
+                  type="select"
+                  className="form-control"
+                  name="secaoJudiciariaId"
+                >
+                  <option value="" key="0" />
+                  {secaoJudiciarias
+                    ? secaoJudiciarias.map(otherEntity => (
+                        <option value={otherEntity.id} key={otherEntity.id}>
+                          {otherEntity.nome}
+                        </option>
+                      ))
+                    : null}
+                </AvInput>
+              </AvGroup>
+              <AvGroup>
                 <Label for="processo-comarca">
                   <Translate contentKey="cidhaApp.processo.comarca">Comarca</Translate>
                 </Label>
@@ -822,29 +864,6 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
                   <option value="" key="0" />
                   {comarcas
                     ? comarcas.map(otherEntity => (
-                        <option value={otherEntity.id} key={otherEntity.id}>
-                          {otherEntity.nome}
-                        </option>
-                      ))
-                    : null}
-                </AvInput>
-              </AvGroup>
-              <AvGroup>
-                <Label for="processo-quilombo">
-                  <Translate contentKey="cidhaApp.processo.quilombo">Quilombo</Translate>
-                </Label>
-                <AvInput
-                  id="processo-quilombo"
-                  data-cy="quilombo"
-                  type="select"
-                  multiple
-                  className="form-control"
-                  name="quilombos"
-                  value={!isNew && processoEntity.quilombos && processoEntity.quilombos.map(e => e.id)}
-                >
-                  <option value="" key="0" />
-                  {quilombos
-                    ? quilombos.map(otherEntity => (
                         <option value={otherEntity.id} key={otherEntity.id}>
                           {otherEntity.nome}
                         </option>
@@ -1059,6 +1078,29 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
                     : null}
                 </AvInput>
               </AvGroup>
+              <AvGroup>
+                <Label for="processo-quilombo">
+                  <Translate contentKey="cidhaApp.processo.quilombo">Quilombo</Translate>
+                </Label>
+                <AvInput
+                  id="processo-quilombo"
+                  data-cy="quilombo"
+                  type="select"
+                  multiple
+                  className="form-control"
+                  name="quilombos"
+                  value={!isNew && processoEntity.quilombos && processoEntity.quilombos.map(e => e.id)}
+                >
+                  <option value="" key="0" />
+                  {quilombos
+                    ? quilombos.map(otherEntity => (
+                        <option value={otherEntity.id} key={otherEntity.id}>
+                          {otherEntity.nome}
+                        </option>
+                      ))
+                    : null}
+                </AvInput>
+              </AvGroup>
               <Button tag={Link} id="cancel-save" to="/processo" replace color="info">
                 <FontAwesomeIcon icon="arrow-left" />
                 &nbsp;
@@ -1083,8 +1125,8 @@ export const ProcessoUpdate = (props: IProcessoUpdateProps) => {
 const mapStateToProps = (storeState: IRootState) => ({
   tipoDecisaos: storeState.tipoDecisao.entities,
   tipoEmpreendimentos: storeState.tipoEmpreendimento.entities,
+  secaoJudiciarias: storeState.secaoJudiciaria.entities,
   comarcas: storeState.comarca.entities,
-  quilombos: storeState.quilombo.entities,
   municipios: storeState.municipio.entities,
   territorios: storeState.territorio.entities,
   atividadeExploracaoIlegals: storeState.atividadeExploracaoIlegal.entities,
@@ -1094,6 +1136,7 @@ const mapStateToProps = (storeState: IRootState) => ({
   processoConflitos: storeState.processoConflito.entities,
   parteInteresssadas: storeState.parteInteresssada.entities,
   relators: storeState.relator.entities,
+  quilombos: storeState.quilombo.entities,
   problemaJuridicos: storeState.problemaJuridico.entities,
   processoEntity: storeState.processo.entity,
   loading: storeState.processo.loading,
@@ -1104,8 +1147,8 @@ const mapStateToProps = (storeState: IRootState) => ({
 const mapDispatchToProps = {
   getTipoDecisaos,
   getTipoEmpreendimentos,
+  getSecaoJudiciarias,
   getComarcas,
-  getQuilombos,
   getMunicipios,
   getTerritorios,
   getAtividadeExploracaoIlegals,
@@ -1115,6 +1158,7 @@ const mapDispatchToProps = {
   getProcessoConflitos,
   getParteInteresssadas,
   getRelators,
+  getQuilombos,
   getProblemaJuridicos,
   getEntity,
   updateEntity,
