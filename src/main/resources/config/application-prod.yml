@@ -36,9 +36,9 @@ spring:
     #    url: jdbc:postgresql://localhost:5432/cidha-react
     #    username: postgres
     #    password: 123456
-    url: jdbc:postgresql://ec2-18-214-140-149.compute-1.amazonaws.com/dkuevdvbt5mtj
-    username: dvxguxetiwivzj
-    password: ea5a70f20630a5388e9c04c11e149a1777cdad131d98916c8fb395df79385d69
+    url: jdbc:postgresql://ec2-34-202-54-225.compute-1.amazonaws.com/ddidtv522mcuqc
+    username: aqznjoaryuvuli
+    password: 5ed900dc9b8921d165aca9124415b0588224502cae8cb8411a72521cc88652db
     hikari:
       poolName: Hikari
       auto-commit: false
